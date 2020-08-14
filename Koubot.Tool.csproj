@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>7zou</Authors>
+    <Product>Koubot.Tool</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>There are some tools for helping to develop projects of Koubot related, but it also can be used to develop other project because it contains a host of useful and frequently-used  tools such as System related expand methods, helper of web,  file, etc. Actually it can be regarded as my self-use library of tools.</Description>
+    <PackageReleaseNotes>something useful system related expand methods</PackageReleaseNotes>
+    <PackageTags>Koubot</PackageTags>
+    <RepositoryUrl>https://github.com/Euynac/Koubot.Tool</RepositoryUrl>
+    <PackageProjectUrl></PackageProjectUrl>
+    <NeutralLanguage>(None)</NeutralLanguage>
+  </PropertyGroup>
+
+</Project>
