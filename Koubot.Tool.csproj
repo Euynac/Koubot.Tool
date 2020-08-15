@@ -11,6 +11,7 @@
     <RepositoryUrl>https://github.com/Euynac/Koubot.Tool</RepositoryUrl>
     <PackageProjectUrl></PackageProjectUrl>
     <NeutralLanguage>(None)</NeutralLanguage>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
