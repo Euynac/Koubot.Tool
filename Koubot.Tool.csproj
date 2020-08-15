@@ -13,4 +13,8 @@
     <NeutralLanguage>(None)</NeutralLanguage>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\dell\Desktop\Project\LittleKou\Koubot\Koubot.Tool\Koubot.Tool.xml</DocumentationFile>
+  </PropertyGroup>
+
 </Project>

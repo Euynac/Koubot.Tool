@@ -10,52 +10,49 @@ using JetBrains.Annotations;
 namespace Koubot.Tool.Expand
 {
     /// <summary>
+    /// 时间戳（格林威治时间1970年01月01日00时00分00秒）类型
+    /// </summary>
+    public enum TimeStampType
+    {
+        /// <summary>
+        /// 总秒数
+        /// </summary>
+        Unix,
+        /// <summary>
+        /// 总毫秒数
+        /// </summary>
+        Javascript
+    }
+    /// <summary>
     /// 系统类拓展方法集
     /// </summary>
     public static class SystemExpand
     {
         #region 时间类拓展
         /// <summary>
-        /// 时间戳（格林威治时间1970年01月01日00时00分00秒）类型
-        /// </summary>
-        public enum TimeStampType
-        {
-            /// <summary>
-            /// 总秒数
-            /// </summary>
-            unix,
-            /// <summary>
-            /// 总毫秒数
-            /// </summary>
-            javascript
-        }
-        /// <summary>
         /// 字符串形式时间戳转DateTime
         /// </summary>
-        /// <param name="timestampStr"></param>
-        /// <param name="timeStampType"></param>
-        /// <returns></returns>
-        public static DateTime ToDateTime(this string timestampStr, TimeStampType timeStampType = TimeStampType.unix)
+        /// <returns>转换失败返回<see cref="DateTime"/>的default</returns>
+        public static DateTime ToDateTime(this string timestampStr, TimeStampType timeStampType = TimeStampType.Unix)
         {
-            long.TryParse(timestampStr, out long timestamp);
-            return ToDateTime(timestamp, timeStampType);
+            return long.TryParse(timestampStr, out long timestamp) ? ToDateTime(timestamp, timeStampType) : default;
         }
         /// <summary>
-        /// 获取 Unix 时间戳的 <see cref="DateTime"/> 表示形式
+        /// 获取指定类型的时间戳的 <see cref="DateTime"/> 表示形式
         /// </summary>
-        /// <param name="timestamp">unix 时间戳（秒为单位）</param>
-        /// <param name="timeStampType"></param>
+        /// <param name="timestamp">时间戳</param>
+        /// <param name="timeStampType">指定类型，默认Unix（秒为单位）</param>
         /// <returns></returns>
-        public static DateTime ToDateTime(this long timestamp, TimeStampType timeStampType = TimeStampType.unix)
+        public static DateTime ToDateTime(this long timestamp, TimeStampType timeStampType = TimeStampType.Unix)
         {
             DateTime startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
             DateTime daTime = new DateTime();
             switch (timeStampType)
             {
-                case TimeStampType.unix:
+                case TimeStampType.Unix:
                     daTime = startTime.AddSeconds(timestamp);
                     break;
-                case TimeStampType.javascript:
+                case TimeStampType.Javascript:
                     daTime = startTime.AddMilliseconds(timestamp);
                     break;
             }
@@ -67,30 +64,31 @@ namespace Koubot.Tool.Expand
         /// <param name="dateTime"></param>
         /// <param name="timeStampType"></param>
         /// <returns></returns>
-        public static long ToTimeStamp(this DateTime dateTime, TimeStampType timeStampType = TimeStampType.unix)
+        public static long ToTimeStamp(this DateTime dateTime, TimeStampType timeStampType = TimeStampType.Unix)
         {
             DateTime startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
             long timestamp = 0;
             switch (timeStampType)
             {
-                case TimeStampType.unix:
+                case TimeStampType.Unix:
                     timestamp = (long)(dateTime - startTime).TotalSeconds;
                     break;
-                case TimeStampType.javascript:
+                case TimeStampType.Javascript:
                     timestamp = (long)(dateTime - startTime).TotalMilliseconds;
                     break;
             }
             return timestamp;
         }
+
         /// <summary>
         /// 字符串形式DateTime转时间戳
         /// </summary>
         /// <param name="dateTimeStr"></param>
-        /// <returns></returns>
-        public static long ToUnixTimeStamp(this string dateTimeStr, TimeStampType timeStampType = TimeStampType.unix)
+        /// <param name="timeStampType"></param>
+        /// <returns>转换失败返回0</returns>
+        public static long ToUnixTimeStamp(this string dateTimeStr, TimeStampType timeStampType = TimeStampType.Unix)
         {
-            DateTime.TryParse(dateTimeStr, out DateTime dateTime);
-            return ToTimeStamp(dateTime, timeStampType);
+            return  DateTime.TryParse(dateTimeStr, out DateTime dateTime) ? ToTimeStamp(dateTime, timeStampType) : 0;
         }
 
         
@@ -151,7 +149,7 @@ namespace Koubot.Tool.Expand
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
-        /// <param name="flags"></param>
+        /// <param name="flag"></param>
         /// <returns></returns>
         public static bool HasTheFlag<T>(this T value,T flag) where T : Enum
             =>   value.HasFlag(flag);
@@ -236,8 +234,6 @@ namespace Koubot.Tool.Expand
         /// 判断元素是否满足任意一个方法
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="predicate"></param>
-        /// <param name="objects"></param>
         /// <returns></returns>
         public static bool SatisfyAny<T>(this T obj, params Func<T, bool>[] predicates) where T : class
         {
@@ -247,8 +243,6 @@ namespace Koubot.Tool.Expand
         /// 判断元素是否满足所有方法
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="predicate"></param>
-        /// <param name="objects"></param>
         /// <returns></returns>
         public static bool SatisfyAll<T>(this T obj, params Func<T, bool>[] predicates) where T : class
         {
@@ -324,12 +318,14 @@ namespace Koubot.Tool.Expand
         {
             return s != null && Regex.IsMatch(s, pattern, regexOptions);
         }
+
         /// <summary>
         /// 搜索指定正则表达式的第一个匹配项并得到捕获的子字符串，不存在的默认返回("")
         /// </summary>
         /// <param name="s">要测试的字符串</param>
         /// <param name="pattern">要匹配的正则表达式模式</param>
         /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
+        /// <param name="ifNotExistReturnNull">如果不存在返回 null，而不是("")</param>
         /// <returns></returns>
         public static string Match([CanBeNull] this string s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None, bool ifNotExistReturnNull = false)
         {
@@ -525,6 +521,7 @@ namespace Koubot.Tool.Expand
         /// 向字典中批量添加键值对
         /// </summary>
         /// <param name="dict"></param>
+        /// <param name="values"></param>
         /// <param name="replaceExisted">如果已存在，是否替换</param>
         public static IDictionary<TKey, TValue> AddRange<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<KeyValuePair<TKey, TValue>> values, bool replaceExisted = false)
         {
@@ -555,7 +552,7 @@ namespace Koubot.Tool.Expand
         /// 检查指定字典中是否存在任意一个给定的元素
         /// </summary>
         /// <param name="dict"></param>
-        /// <param name="key"></param>
+        /// <param name="keys"></param>
         /// <returns></returns>
         [ContractAnnotation("dict:null => false; keys:null => false")]
         public static bool ContainsAny<TKey, TValue>([CanBeNull] this IDictionary<TKey, TValue> dict, params TKey[] keys)
@@ -567,7 +564,7 @@ namespace Koubot.Tool.Expand
         /// 检查指定字典中是否存在任意一个给定的元素
         /// </summary>
         /// <param name="dict"></param>
-        /// <param name="key"></param>
+        /// <param name="keys"></param>
         /// <returns></returns>
         [ContractAnnotation("dict:null => false; keys:null => false")]
         public static bool ContainsAll<TKey, TValue>([CanBeNull] this IDictionary<TKey, TValue> dict, params TKey[] keys)
@@ -592,6 +589,7 @@ namespace Koubot.Tool.Expand
         /// <summary>
         /// 尝试通过Value获取Key的值（多个value相同仅获取一个key，所以一般用于value和key一对一）
         /// </summary>
+        /// <param name="dict"></param>
         /// <param name="value">预测Dictionary中会有的值</param>
         /// <param name="key">若是存在value将返回key</param>
         /// <returns>成功返回true且返回key，不成功则返回false</returns>
