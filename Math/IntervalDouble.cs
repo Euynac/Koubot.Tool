@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Koubot.Tool.Expand;
+using System;
 using System.Text.RegularExpressions;
-using Koubot.Tool.Expand;
 
 namespace Koubot.Tool.Math
 {
@@ -27,7 +27,7 @@ namespace Koubot.Tool.Math
     /// </summary>
     public class IntervalDouble
     {
-        
+
         /// <summary>
         /// 数的类型
         /// </summary>
@@ -89,14 +89,14 @@ namespace Koubot.Tool.Math
                         if (groups[0].Value.StartsWith("(")) intervalLeft.IsOpen = true;
                         intervalLeft.Value = left;
                     }
-                    else intervalLeft.NumType = IntervalDouble.NumberType.Infinitesimal;//无法判断或空则是认为是无穷小
+                    else intervalLeft.NumType = NumberType.Infinitesimal;//无法判断或空则是认为是无穷小
 
                     if (double.TryParse(groups[2].Value, out double right))
                     {
                         if (groups[0].Value.EndsWith(")")) intervalRight.IsOpen = true;
                         intervalRight.Value = right;
                     }
-                    else intervalRight.NumType = IntervalDouble.NumberType.Infinity;//无法判断或空则是认为是无穷大
+                    else intervalRight.NumType = NumberType.Infinity;//无法判断或空则是认为是无穷大
                 }
 
                 if (intervalLeft > intervalRight) return false;

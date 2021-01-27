@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Koubot.Tool.Expand;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using Koubot.Tool.Expand;
 
 namespace Koubot.Tool.General
 {

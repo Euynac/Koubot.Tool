@@ -730,6 +730,59 @@
             marked with the <see cref="T:JetBrains.Annotations.XamlItemsControlAttribute"/> attribute.
             </remarks>
         </member>
+        <member name="T:Koubot.Tool.Expand.CustomAttributeExtensions">
+            <summary>
+            CustomAttribute扩展方法
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Expand.CustomAttributeExtensions._cache">
+            <summary>
+            Cache Data [TypeName + AttributeName组成的Key, Attribute对象]
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``1(System.Type)">
+            <summary>
+            获取指定类型的CustomAttribute
+            </summary>
+            <typeparam name="TAttribute">要获取的Attribute</typeparam>
+            <returns>返回Attribute的值，没有则返回null</returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``3(System.Type,``0,System.Linq.Expressions.Expression{System.Func{``1,``2}})">
+            <summary>
+            获取指定类的指定属性或方法的CustomAttribute
+            </summary>
+            <typeparam name="TAttribute">要获取的Attribute</typeparam>
+            <typeparam name="TClass"></typeparam>
+            <typeparam name="TProperty"></typeparam>
+            <returns>返回Attribute的值，没有则返回null</returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``3(``1,``0,System.Linq.Expressions.Expression{System.Func{``1,``2}})">
+            <summary>
+            获取指定类的指定属性或方法的CustomAttribute
+            </summary>
+            <typeparam name="TClass"></typeparam>
+            <typeparam name="TProperty"></typeparam>
+            <typeparam name="TAttribute"></typeparam>
+            <returns>返回Attribute的值，没有则返回null</returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``1(System.Type,System.String)">
+            <summary>
+            获取指定类的指定属性或方法的CustomAttribute
+            </summary>
+            <typeparam name="TAttribute"></typeparam>
+            <param name="sourceType">指定的类</param>
+            <param name="name">指定属性或方法名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetValue``1(System.Type,System.String)">
+            <summary>
+            获取指定类或其属性或方法的CustomAttribute
+            </summary>
+            <typeparam name="TAttribute"></typeparam>
+            <param name="type"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
         <member name="T:Koubot.Tool.Expand.TimeStampType">
             <summary>
             时间戳（格林威治时间1970年01月01日00时00分00秒）类型
@@ -793,6 +846,24 @@
             读取 <see cref="T:System.Enum"/> 标记 <see cref="T:System.ComponentModel.DescriptionAttribute"/> 的值
             </summary>
             <param name="value">原始 <see cref="T:System.Enum"/> 值</param>
+            <returns>如果成功获取返回特性标记的值，否则返回给定的枚举的<seealso cref="T:System.String"/>形式，或 null</returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.Remove``1(``0,``0[])">
+            <summary>
+            移除按位枚举中的指定枚举
+            </summary>
+            <param name="flags"></param>
+            <param name="removeFlags">要移除的枚举</param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.Add``1(``0,``0[])">
+            <summary>
+            添加指定枚举到指定按位枚举中
+            </summary>
+            <param name="flags"></param>
+            <param name="addFlags">要添加的枚举</param>
+            <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.HasAnyFlag``1(``0,``0[])">
@@ -963,8 +1034,28 @@
             <summary>
             搜索指定正则表达式的所有匹配项并返回捕获到的所有子字符串，不存在的将返回null
             </summary>
-            <param name="s"></param>
-            <param name="pattern"></param>
+            <param name="s">要测试的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.RegexReplace(System.String,System.String,System.String,System.Nullable{System.Int32})">
+            <summary>
+            正则表达式替换
+            </summary>
+            <param name="s">要被替换的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="replacement">匹配的字符串被替换为</param>
+            <param name="count">为null全部替换，否则替换指定次数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.MatchedGroupValues(System.String,System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
+            <summary>
+            找到字符串中符合正则表达式的给定命名捕获组名的所有匹配项
+            </summary>
+            <param name="s">要测试的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="groupName">正则表达式中的命名捕获组中的名字</param>
             <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
             <returns></returns>
         </member>
@@ -1013,6 +1104,14 @@
             <param name="reverse">默认正向Key替换为Value，为true则Value替换Key</param>
             <returns></returns>
         </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.RetainDecimal(System.Double,System.Int32)">
+            <summary>
+            保留指定位数的小数（四舍五入）
+            </summary>
+            <param name="number"></param>
+            <param name="digits">保留位数</param>
+            <returns></returns>
+        </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int32,System.Int32)">
             <summary>
             将指定数字限定在特定范围内
@@ -1031,6 +1130,24 @@
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Double,System.Double,System.Double)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Double,System.Nullable{System.Double},System.Nullable{System.Double})">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int32,System.Nullable{System.Double},System.Nullable{System.Double})">
             <summary>
             将指定数字限定在特定范围内
             </summary>
@@ -1097,6 +1214,18 @@
             <param name="collection">指定的集合</param>
             <returns></returns>
         </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.TryGetValueOrDefault``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1@,``1)">
+            <summary>
+            尝试获取与指定的键相关联的值
+            </summary>
+            <param name="dict">可为空</param>
+            <param name="value">当本方法返回时，如果找到了指定的键，则返回与该键相关联的值；否则，返回值参数类型的默认值或设定的值。这个参数是在未初始化的情况下传递的。</param>
+            <param name="key">要获取值的键</param>
+            <param name="defaultValue">失败时返回的默认值或设定的值</param>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TValue"></typeparam>
+            <returns></returns>
+        </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.TryGetKey``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},``1,``0@)">
             <summary>
             尝试通过Value获取Key的值（多个value相同仅获取一个key，所以一般用于value和key一对一）
@@ -1119,7 +1248,7 @@
         </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.ConvertToNotNullable``1(System.Collections.Generic.IEnumerable{System.Nullable{``0}})">
             <summary>
-            将可空类型的Enumerable集合转换为不可空的
+            将可空类型的集合转换为不可空的<seealso cref="T:System.Collections.Generic.IEnumerable`1"/>
             </summary>
             <typeparam name="T"></typeparam>
             <param name="list"></param>
@@ -1342,6 +1471,26 @@
             翻页使用的上一页的关键词
             </summary>
         </member>
+        <member name="F:Koubot.Tool.KouData.KouStaticData.AutoModelAddAction">
+            <summary>
+            数据库增加的关键词
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.KouData.KouStaticData.AutoModelDeleteAction">
+            <summary>
+            数据库删除的关键词
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.KouData.KouStaticData.AutoModelModifyAction">
+            <summary>
+            数据库修改的关键词
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.KouData.KouStaticData.AutoModelSearchAction">
+            <summary>
+            数据库查询的关键词
+            </summary>
+        </member>
         <member name="T:Koubot.Tool.Math.ExpressionCalculator">
             <summary>
             表达式计算器
@@ -1370,24 +1519,29 @@
             <param name="opr"></param>  
             <returns></returns>  
         </member>
-        <member name="T:Koubot.Tool.Math.IntervalDouble">
+        <member name="T:Koubot.Tool.Math.NumberType">
             <summary>
-            区间支持型Double，默认闭区间，使用区间用小于等于或大于等于（当是开区间的时候实际上不会取到等于）
+            数的类型
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Math.IntervalDouble.NumberType.RealNumber">
+        <member name="F:Koubot.Tool.Math.NumberType.RealNumber">
             <summary>
             实数
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Math.IntervalDouble.NumberType.Infinitesimal">
+        <member name="F:Koubot.Tool.Math.NumberType.Infinitesimal">
             <summary>
             无穷小
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Math.IntervalDouble.NumberType.Infinity">
+        <member name="F:Koubot.Tool.Math.NumberType.Infinity">
             <summary>
             无穷大
+            </summary>
+        </member>
+        <member name="T:Koubot.Tool.Math.IntervalDouble">
+            <summary>
+            区间支持型Double，默认闭区间，使用区间用小于等于或大于等于（当是开区间的时候实际上不会取到等于）
             </summary>
         </member>
         <member name="P:Koubot.Tool.Math.IntervalDouble.NumType">
@@ -1453,70 +1607,6 @@
             <param name="str"></param>
             <param name="left">左值</param>
             <param name="right">右值</param>
-            <returns></returns>
-        </member>
-        <member name="T:Koubot.Tool.Math.NumberConvertor">
-            <summary>
-            常用的数字转换器
-            </summary>
-        </member>
-        <member name="M:Koubot.Tool.Math.NumberConvertor.WebUnitDouble(System.String,System.Double@)">
-            <summary>
-            使用网络、英文缩写等常用数字单位缩写表达处理字符串为double
-            </summary>
-            <param name="str">支持格式为1k、1w、1kw</param>
-            <param name="result"></param>
-            <returns></returns>
-        </member>
-        <member name="T:Koubot.Tool.Math.ZhNumber">
-            <summary>
-            中文数字类
-            </summary>
-        </member>
-        <member name="M:Koubot.Tool.Math.ZhNumber.ToZhUpper(System.String)">
-            <summary>
-            数字中文小写转中文大写
-            </summary>
-            <param name="str"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Math.ZhNumber.ToZhLower(System.String)">
-            <summary>
-            数字中文大写转中文小写
-            </summary>
-            <param name="str"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Math.ZhNumber.CharToNumber(System.Char)">
-            <summary>
-            转换数字
-            </summary>
-        </member>
-        <member name="M:Koubot.Tool.Math.ZhNumber.CharToUnit(System.Char)">
-            <summary>
-            转换单位
-            </summary>
-        </member>
-        <member name="M:Koubot.Tool.Math.ZhNumber.ParseZnToInt(System.String)">
-            <summary>
-            将中文（大写/小写）数字转换阿拉伯数字（未完善 比如：十一万）
-            </summary>
-            <param name="cnum">汉字数字</param>
-            <returns>长整型阿拉伯数字</returns>
-            原始来源 https://www.xuebuyuan.com/691129.html 
-        </member>
-        <member name="M:Koubot.Tool.Math.ZhNumber.ToArabicNumber(System.String)">
-            <summary>
-            将字符串中所有中文数字转成阿拉伯数字数字
-            </summary>
-            <param name="str"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Math.ZhNumber.IsContainZhNumber(System.String)">
-            <summary>
-            判断字符串是否存在中文（大/小写）数字
-            </summary>
-            <param name="str"></param>
             <returns></returns>
         </member>
         <member name="T:Koubot.Tool.Model.FilterType">
@@ -1743,6 +1833,15 @@
             <param name="parsedPage">处理后的页数</param>
             <returns>错误输入返回false，能够处理页数返回true</returns>
         </member>
+        <member name="M:Koubot.Tool.String.KouStringTool.ToIListString``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            使用特定的分割字符串合并一个Enumerable中的所有元素的字符串形式
+            （本质是string.Join方法）
+            </summary>
+            <param name="values"></param>
+            <param name="separator"></param>
+            <returns></returns>
+        </member>
         <member name="M:Koubot.Tool.String.KouStringTool.TryToIList``1(System.String,System.Collections.Generic.List{``0}@,System.String,System.Int32,System.Boolean,System.String,System.Text.RegularExpressions.RegexOptions)">
             <summary>
             转换为指定类型的List
@@ -1750,20 +1849,16 @@
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryToIList(System.String,System.Collections.IList@,System.Type,System.String,System.Int32,System.Boolean,System.String,System.Text.RegularExpressions.RegexOptions,System.Boolean,System.Boolean)">
+        <member name="M:Koubot.Tool.String.KouStringTool.TryToIList(System.String,System.Collections.IList@,System.Type,System.String,System.Int32,System.Boolean,System.String,System.Text.RegularExpressions.RegexOptions,System.Boolean,System.Boolean,System.Nullable{System.Double},System.Nullable{System.Double})">
             <summary>
             尝试将string转换为指定类型的IList
             </summary>
-            <param name="str"></param>
-            <param name="resultList"></param>
-            <param name="listType"></param>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.TryToBool(System.String,System.Boolean@,System.Boolean)">
             <summary>
             将字符串类型的数字转换为bool类型，支持中文以及英文、数字
             </summary>
             <param name="str"></param>
-            <param name="doubleResult"></param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.TryToDouble(System.String,System.Double@,System.Boolean)">
@@ -1810,13 +1905,22 @@
             </summary>
             <param name="str"></param>
             <param name="timeSpan"></param>
+            <param name="kouType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouStringTool.TryGetTimeSpanFromZhDescription(System.String,System.TimeSpan@)">
+            <summary>
+            获取中文描述的时间获取相对于现在的时间间隔（例：明天上午13点15分）
+            </summary>
+            <param name="str"></param>
+            <param name="timeSpan"></param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.TryGetTimeSpanFromAncientStr(System.String,System.TimeSpan@)">
             <summary>
             使用古代格式的字符尝试转换为TimeSpan格式的时间间隔
             </summary>
-            <param name="str">支持格式为 旬10天[旬]；候5天[候]；须臾48分钟[须臾]；昼夜24小时[昼夜]；2小时[更|鼓|时辰]；30分钟[炷香|顿饭]；24分钟[点]；15分[刻|盏茶]；144秒[罗预]；7200毫秒[弹指]；360毫秒[瞬]；18毫秒[念|刹那]；</param>
+            <param name="str">支持格式为 旬10天[旬]；候5天[候]；须臾48分钟[须臾]；昼夜24小时[昼夜]；2小时[更|鼓|时辰]；30分钟[炷香|顿饭]；15分[刻|盏茶]；144秒[罗预]；7200毫秒[弹指]；360毫秒[瞬]；18毫秒[念|刹那]；</param>
             <param name="timeSpan"></param>
             <returns></returns>
         </member>
@@ -1895,6 +1999,70 @@
             <param name="countConstraint">个数限制</param>
             <param name="regexOptions">正则表达式匹配设置</param>
             <returns>成功返回true且返回分割完后的list</returns>
+        </member>
+        <member name="T:Koubot.Tool.String.NumberConvertor">
+            <summary>
+            常用的数字转换器
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.String.NumberConvertor.WebUnitDouble(System.String,System.Double@)">
+            <summary>
+            使用网络、英文缩写等常用数字单位缩写表达处理字符串为double
+            </summary>
+            <param name="str">支持格式为1k、1w、1kw</param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.String.ZhNumber">
+            <summary>
+            中文数字类
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.String.ZhNumber.ToZhUpper(System.String)">
+            <summary>
+            数字中文小写转中文大写
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.ZhNumber.ToZhLower(System.String)">
+            <summary>
+            数字中文大写转中文小写
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.ZhNumber.CharToNumber(System.Char)">
+            <summary>
+            转换数字
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.String.ZhNumber.CharToUnit(System.Char)">
+            <summary>
+            转换单位
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.String.ZhNumber.ParseZnToInt(System.String)">
+            <summary>
+            将中文（大写/小写）数字转换阿拉伯数字（未完善 比如：十一万）
+            </summary>
+            <param name="cnum">汉字数字</param>
+            <returns>长整型阿拉伯数字</returns>
+            原始来源 https://www.xuebuyuan.com/691129.html 
+        </member>
+        <member name="M:Koubot.Tool.String.ZhNumber.ToArabicNumber(System.String)">
+            <summary>
+            将字符串中所有中文数字转成阿拉伯数字数字
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.ZhNumber.IsContainZhNumber(System.String)">
+            <summary>
+            判断字符串是否存在中文（大/小写）数字
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
         </member>
         <member name="T:Koubot.Tool.Web.APILimiting.ILimitingService">
             <summary>

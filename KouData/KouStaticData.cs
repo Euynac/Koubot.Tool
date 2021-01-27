@@ -42,5 +42,34 @@ namespace Koubot.Tool.KouData
         {
             "上","p","previous","上一页","前","上一个","earlier","preceding"
         };
+
+        /// <summary>
+        /// 数据库增加的关键词
+        /// </summary>
+        public static readonly IReadOnlyList<string> AutoModelAddAction = new List<string>
+        {
+            "add", "create", "增", "增加", "学", "学习", "添加", "加", "新增", "learn","append","a","c"
+        };
+        /// <summary>
+        /// 数据库删除的关键词
+        /// </summary>
+        public static readonly IReadOnlyList<string> AutoModelDeleteAction = new List<string>
+        {
+            "delete", "d","remove","删除","丢弃","删","删掉","忘记","forget",
+        };
+        /// <summary>
+        /// 数据库修改的关键词
+        /// </summary>
+        public static readonly IReadOnlyList<string> AutoModelModifyAction = new List<string>
+        {
+            "modify", "update", "修改","更改","更新","u","alter","改"
+        };
+        /// <summary>
+        /// 数据库查询的关键词
+        /// </summary>
+        public static readonly IReadOnlyList<string> AutoModelSearchAction = new List<string>
+        {
+            "search","retrieve","检索","搜索","查询","query","r","查"
+        };
     }
 }

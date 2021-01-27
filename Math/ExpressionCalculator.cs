@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Koubot.Tool.Expand;
+using Koubot.Tool.General;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using Koubot.Tool.Expand;
-using Koubot.Tool.General;
 
 namespace Koubot.Tool.Math
 {

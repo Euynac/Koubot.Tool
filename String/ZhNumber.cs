@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Koubot.Tool.Expand;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Koubot.Tool.Expand;
 
 namespace Koubot.Tool.String
 {

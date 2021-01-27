@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Koubot.Tool.Expand;
+﻿using Koubot.Tool.Expand;
 using Koubot.Tool.General;
 using Koubot.Tool.Math;
 using Koubot.Tool.String;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using IntervalDouble = Koubot.Tool.Math.IntervalDouble;
 
 namespace Koubot.Tool.Model

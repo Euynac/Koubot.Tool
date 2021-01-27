@@ -12,9 +12,15 @@
     <PackageProjectUrl></PackageProjectUrl>
     <NeutralLanguage>(None)</NeutralLanguage>
     <LangVersion>latest</LangVersion>
+    <AssemblyVersion>1.0.*</AssemblyVersion>
+        <Deterministic>false</Deterministic>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\dell\Desktop\Project\LittleKou\Koubot\Koubot.Tool\Koubot.Tool.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>C:\Users\dell\Desktop\Project\LittleKou\Koubot\Koubot.Tool\Koubot.Tool.xml</DocumentationFile>
   </PropertyGroup>
 

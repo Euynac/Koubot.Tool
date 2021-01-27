@@ -1,11 +1,11 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
 
 namespace Koubot.Tool.Expand
 {
@@ -88,10 +88,10 @@ namespace Koubot.Tool.Expand
         /// <returns>转换失败返回0</returns>
         public static long ToUnixTimeStamp(this string dateTimeStr, TimeStampType timeStampType = TimeStampType.Unix)
         {
-            return  DateTime.TryParse(dateTimeStr, out DateTime dateTime) ? ToTimeStamp(dateTime, timeStampType) : 0;
+            return DateTime.TryParse(dateTimeStr, out DateTime dateTime) ? ToTimeStamp(dateTime, timeStampType) : 0;
         }
 
-        
+
         #endregion
 
         #region Attribute类拓展
@@ -116,12 +116,48 @@ namespace Koubot.Tool.Expand
         /// 读取 <see cref="System.Enum"/> 标记 <see cref="System.ComponentModel.DescriptionAttribute"/> 的值
         /// </summary>
         /// <param name="value">原始 <see cref="System.Enum"/> 值</param>
-        /// <returns></returns>
+        /// <returns>如果成功获取返回特性标记的值，否则返回给定的枚举的<seealso cref="string"/>形式，或 null</returns>
         public static string GetDescription(this Enum value)
         {
             DescriptionAttribute attribute = value?.GetType().GetField(value.ToString())?.GetCustomAttribute<DescriptionAttribute>(false);
-            return attribute?.Description;
+            return attribute?.Description ?? value?.ToString();
         }
+
+        /// <summary>
+        /// 移除按位枚举中的指定枚举
+        /// </summary>
+        /// <param name="flags"></param>
+        /// <param name="removeFlags">要移除的枚举</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T Remove<T>(this T flags, params T[] removeFlags) where T : Enum
+        {
+            int flagInt = flags.GetHashCode();
+            foreach (var removeFlag in removeFlags)//其实var直接用dynamic更好，不过当前版本不支持?
+            {
+                flagInt &= ~removeFlag.GetHashCode();//避免装箱产生过多损耗 
+            }
+
+            return (T)(object)flagInt;
+        }
+        /// <summary>
+        /// 添加指定枚举到指定按位枚举中
+        /// </summary>
+        /// <param name="flags"></param>
+        /// <param name="addFlags">要添加的枚举</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T Add<T>(this T flags, params T[] addFlags) where T : Enum
+        {
+            int flagInt = flags.GetHashCode();
+            foreach (var removeFlag in addFlags)
+            {
+                flagInt |= removeFlag.GetHashCode();
+            }
+
+            return (T)(object)flagInt;
+        }
+
         /// <summary>
         /// 判断按位枚举是否存在指定的任意一个选项
         /// </summary>
@@ -151,9 +187,9 @@ namespace Koubot.Tool.Expand
         /// <param name="value"></param>
         /// <param name="flag"></param>
         /// <returns></returns>
-        public static bool HasTheFlag<T>(this T value,T flag) where T : Enum
-            =>   value.HasFlag(flag);
-        
+        public static bool HasTheFlag<T>(this T value, T flag) where T : Enum
+            => value.HasFlag(flag);
+
         #endregion
 
         #region Object类拓展
@@ -351,8 +387,8 @@ namespace Koubot.Tool.Expand
         /// <summary>
         /// 搜索指定正则表达式的所有匹配项并返回捕获到的所有子字符串，不存在的将返回null
         /// </summary>
-        /// <param name="s"></param>
-        /// <param name="pattern"></param>
+        /// <param name="s">要测试的字符串</param>
+        /// <param name="pattern">要匹配的正则表达式模式</param>
         /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
         /// <returns></returns>
         public static string[] Matches([CanBeNull] this string s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None)
@@ -367,6 +403,45 @@ namespace Koubot.Tool.Expand
                 i++;
             }
             return result;
+        }
+        /// <summary>
+        /// 正则表达式替换
+        /// </summary>
+        /// <param name="s">要被替换的字符串</param>
+        /// <param name="pattern">要匹配的正则表达式模式</param>
+        /// <param name="replacement">匹配的字符串被替换为</param>
+        /// <param name="count">为null全部替换，否则替换指定次数</param>
+        /// <returns></returns>
+        public static string RegexReplace([CanBeNull] this string s, [RegexPattern] string pattern,
+            string replacement, int? count = null)
+        {
+            if (s == null) return null;
+            Regex regex = new Regex(pattern);
+            return count != null ? regex.Replace(s, replacement, count.Value) : regex.Replace(s, replacement);
+        }
+
+        /// <summary>
+        /// 找到字符串中符合正则表达式的给定命名捕获组名的所有匹配项
+        /// </summary>
+        /// <param name="s">要测试的字符串</param>
+        /// <param name="pattern">要匹配的正则表达式模式</param>
+        /// <param name="groupName">正则表达式中的命名捕获组中的名字</param>
+        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
+        /// <returns></returns>
+        public static List<string> MatchedGroupValues([CanBeNull] this string s,
+            [RegexPattern] string pattern, string groupName,
+            RegexOptions regexOptions = RegexOptions.None)
+        {
+            List<string> itemList = new List<string>();
+            if (s == null || groupName.IsNullOrEmpty()) return itemList;
+            Regex regex = new Regex(pattern);
+            foreach (Match match in regex.Matches(s))
+            {
+                var matched = match.Groups[groupName].Value;
+                if(!matched.IsNullOrEmpty()) itemList.Add(matched);
+            }
+
+            return itemList;
         }
 
         /// <summary>
@@ -453,7 +528,17 @@ namespace Koubot.Tool.Expand
         }
         #endregion
 
-        #region int类拓展
+        #region 数字类拓展
+        /// <summary>
+        /// 保留指定位数的小数（四舍五入）
+        /// </summary>
+        /// <param name="number"></param>
+        /// <param name="digits">保留位数</param>
+        /// <returns></returns>
+        public static double RetainDecimal(this double number, int digits = 2)
+            =>   System.Math.Round(number, digits, MidpointRounding.AwayFromZero);
+        
+
         /// <summary>
         /// 将指定数字限定在特定范围内
         /// </summary>
@@ -485,6 +570,38 @@ namespace Koubot.Tool.Expand
         public static double LimitInRange(this double num, double min, double max)
         {
             return (num > max) ? max : (num < min) ? min : num;
+        }
+        /// <summary>
+        /// 将指定数字限定在特定范围内
+        /// </summary>
+        /// <param name="num"></param>
+        /// <param name="min">最小值，小于则取这个最小值</param>
+        /// <param name="max">最大值，大于则取这个最大值</param>
+        /// <returns></returns>
+        public static double LimitInRange(this double num, double? min, double? max)
+        {
+            if (min == null)
+            {
+                return max == null ? num : num.LimitInRange(max.Value);
+            }
+
+            return max == null ? num < min ? min.Value : num : num.LimitInRange(min.Value, max.Value);
+        }
+        /// <summary>
+        /// 将指定数字限定在特定范围内
+        /// </summary>
+        /// <param name="num"></param>
+        /// <param name="min">最小值，小于则取这个最小值</param>
+        /// <param name="max">最大值，大于则取这个最大值</param>
+        /// <returns></returns>
+        public static int LimitInRange(this int num, double? min, double? max)
+        {
+            if (min == null)
+            {
+                return max == null ? num : num > max ? (int)max.Value : num;
+            }
+
+            return max == null ? num < min ? (int)min.Value : num : num.LimitInRange((int)min.Value, (int)max.Value);
         }
         /// <summary>
         /// 将指定数字限定在特定范围内
@@ -586,6 +703,30 @@ namespace Koubot.Tool.Expand
             return collection == null || !collection.Any();
         }
 
+
+        /// <summary>
+        /// 尝试获取与指定的键相关联的值
+        /// </summary>
+        /// <param name="dict">可为空</param>
+        /// <param name="value">当本方法返回时，如果找到了指定的键，则返回与该键相关联的值；否则，返回值参数类型的默认值或设定的值。这个参数是在未初始化的情况下传递的。</param>
+        /// <param name="key">要获取值的键</param>
+        /// <param name="defaultValue">失败时返回的默认值或设定的值</param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns></returns>
+        [ContractAnnotation("dict:null => false")]
+        public static bool TryGetValueOrDefault<TKey, TValue>([CanBeNull] this IDictionary<TKey, TValue> dict, TKey key, out TValue value, TValue defaultValue = default)
+        {
+            if (dict.IsNullOrEmptySet())
+            {
+                value = defaultValue;
+                return false;
+            }
+            if (dict.TryGetValue(key, out value)) return true;
+            value = defaultValue;
+            return false;
+        }
+        
         /// <summary>
         /// 尝试通过Value获取Key的值（多个value相同仅获取一个key，所以一般用于value和key一对一）
         /// </summary>
@@ -632,7 +773,7 @@ namespace Koubot.Tool.Expand
             return false;
         }
         /// <summary>
-        /// 将可空类型的Enumerable集合转换为不可空的
+        /// 将可空类型的集合转换为不可空的<seealso cref="IEnumerable{T}"/>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>

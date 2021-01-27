@@ -1,13 +1,13 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using Koubot.Tool.Expand;
+using Koubot.Tool.KouData;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
-using Koubot.Tool.Expand;
-using Koubot.Tool.KouData;
-using Koubot.Tool.Math;
 
 namespace Koubot.Tool.String
 {
@@ -48,22 +48,16 @@ namespace Koubot.Tool.String
         #endregion
 
         #region 格式化
+        /// <summary>
+        /// 使用特定的分割字符串合并一个Enumerable中的所有元素的字符串形式
+        /// （本质是string.Join方法）
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string ToIListString<T>([CanBeNull]this IEnumerable<T> values, string separator) => 
+            values == null ? string.Empty : string.Join(separator, values);
 
-        public static string ToIListString(this object obj, string splitedStr = ",")
-        {
-            if (obj is IList list)
-            {
-                string result = "";
-                foreach (var item in list)
-                {
-                    result += item.BeNullOr(item + splitedStr);
-                }
-
-                return result;
-            }
-
-            return obj?.ToString();
-        }
         #endregion
 
         #region KouType类型适配
@@ -89,13 +83,10 @@ namespace Koubot.Tool.String
         /// <summary>
         /// 尝试将string转换为指定类型的IList
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="resultList"></param>
-        /// <param name="listType"></param>
         public static bool TryToIList(string str, out IList resultList, Type listType,
             string constraintPattern = @"[\s\S]+", int countConstraint = 0, bool allowDuplicate = false,
             string splitStr = ",;；，、\\\\", RegexOptions regexOptions = RegexOptions.IgnoreCase, bool useKouType = true,
-            bool onceFailReplyError = false)
+            bool onceFailReplyError = false, double? numberMin = null, double? numberMax = null)
         {
             resultList = null;
             if (!MultiSelectionHelper.TryGetMultiSelections(str, out List<string> list, constraintPattern,
@@ -143,7 +134,10 @@ namespace Koubot.Tool.String
                 {
                     if (TryToInt(item, out int intResult,
                         useKouType))
+                    {
+                        intResult = intResult.LimitInRange(numberMin, numberMax);
                         intList.Add(intResult);
+                    }
                     continue;
                 }
 
@@ -151,7 +145,11 @@ namespace Koubot.Tool.String
                 {
                     if (TryToDouble(item, out double doubleResult,
                         useKouType))
+                    {
+                        doubleResult = doubleResult.LimitInRange(numberMin, numberMax);
                         doubleList.Add(doubleResult);
+                    }
+
                     continue;
                 }
 
@@ -199,12 +197,11 @@ namespace Koubot.Tool.String
             return false;
         }
 
-        
+
         /// <summary>
         /// 将字符串类型的数字转换为bool类型，支持中文以及英文、数字
         /// </summary>
         /// <param name="str"></param>
-        /// <param name="doubleResult"></param>
         /// <returns></returns>
         public static bool TryToBool(string str, out bool boolResult, bool kouType = true)
         {
@@ -336,34 +333,122 @@ namespace Koubot.Tool.String
         /// </summary>
         /// <param name="str"></param>
         /// <param name="timeSpan"></param>
+        /// <param name="kouType"></param>
         /// <returns></returns>
         public static bool TryToTimeSpan(string str, out TimeSpan timeSpan, bool kouType = true)
         {
+            if (str.Length > 1000) return false;//这么大基本是来找麻烦的
             bool success = false;
             timeSpan = new TimeSpan();
             if (str.IsNullOrWhiteSpace()) return false;
             if (!kouType) return TimeSpan.TryParse(str, out timeSpan);
             if (ZhNumber.IsContainZhNumber(str)) str = ZhNumber.ToArabicNumber(str);
+            if(TryGetTimeSpanFromZhDescription(str, out timeSpan)) return true;
             if (DateTime.TryParse(str, out DateTime dateTime)) //使用日期格式尝试转换
             {
                 timeSpan = dateTime - DateTime.Now;
                 return true;
             }
-            if (str.IsMatch(@"^\d+$") && int.TryParse(str, out int second)) { timeSpan = new TimeSpan(0, 0, second); return true; }
+
+            if (str.IsMatch(@"^\d+$") && int.TryParse(str, out int second))
+            {
+                timeSpan = new TimeSpan(0, 0, second);
+                return true;
+            }
             if (str.TryGetTimeSpan(out TimeSpan timeSpanFormal, false))
             {
                 timeSpan += timeSpanFormal;
                 return true;
             }
-            if (TryGetTimeSpanFromStr(str, out TimeSpan timeSpanModern)) { timeSpan += timeSpanModern; success = true; }
-            if (TryGetTimeSpanFromAncientStr(str, out TimeSpan timeSpanAncient)) { timeSpan += timeSpanAncient; success = true; }
+
+            if (TryGetTimeSpanFromStr(str, out TimeSpan timeSpanModern))
+            {
+                timeSpan += timeSpanModern; 
+                success = true;
+            }
+
+            if (TryGetTimeSpanFromAncientStr(str, out TimeSpan timeSpanAncient))
+            {
+                timeSpan += timeSpanAncient; 
+                success = true;
+            }
             return success;
         }
 
         /// <summary>
+        /// 获取中文描述的时间获取相对于现在的时间间隔（例：明天上午13点15分）
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
+        public static bool TryGetTimeSpanFromZhDescription(string str, out TimeSpan timeSpan)
+        {
+            if (str.IsNullOrWhiteSpace()) return false;
+            Regex regex = new Regex(@"(?:(?<day>大前|前|昨|今|当|明|后|大后)(?:日|天))?(?<period>早上|上午|下午|晚上)?(?<hour>\d{1,2})[:点]过?(?<minute>\d{1,2})?[:分]?(?:(?<second>\d{1,7})秒?)?(?<period2>[pa]\.?m\.?)?");
+            if(!regex.IsMatch(str)) return false;
+            var match = regex.Match(str);
+            bool? isAM = null;//为null是24小时制，否则true为AM，false为PM
+            int dayAwayFromNow = 0;//距离今天的天数
+            var day = match.Groups["day"]?.Value;
+            var period = match.Groups["period"]?.Value;
+            var hourStr = match.Groups["hour"]?.Value;
+            var minuteStr = match.Groups["minute"]?.Value;
+            var secondStr = match.Groups["second"]?.Value;
+            int minute = 0, second = 0;
+            if (hourStr.IsNullOrEmpty() || !int.TryParse(hourStr, out int hour)) return false;
+            if (!minuteStr.IsNullOrEmpty() && !int.TryParse(minuteStr, out minute)) return false;
+            if (!secondStr.IsNullOrEmpty() && !int.TryParse(secondStr, out second)) return false;
+            var period2 = match.Groups["period2"]?.Value;
+            if (!day.IsNullOrEmpty())
+            {
+                dayAwayFromNow = day switch
+                {
+                    "大前" => -3,
+                    "前" => -2,
+                    "昨" => -1,
+                    "今" => 0,
+                    "当" => 0,
+                    "明" => 1,
+                    "后" => 2,
+                    "大后" => 3,
+                    _ => dayAwayFromNow
+                };
+            }
+
+            if (!period.IsNullOrEmpty())
+            {
+                isAM = period switch
+                {
+                    "早上" => true,
+                    "上午" => true,
+                    "下午" => false,
+                    "晚上" => false,
+                    _ => false
+                };
+            }
+
+            if (!period2.IsNullOrEmpty())
+            {
+                isAM = period2.StartsWith("a");
+            }
+
+            if (isAM == false)//是下午
+            {
+                hour += 12;
+            }
+            var after = DateTime.Now;
+            after = after.AddDays(dayAwayFromNow);
+            after = after.AddHours(0 - after.Hour + hour);
+            after = after.AddMinutes(0 - after.Minute + minute);
+            after = after.AddSeconds(0 - after.Second + second);
+            timeSpan = after - DateTime.Now;
+            return true;
+        }
+        
+        /// <summary>
         /// 使用古代格式的字符尝试转换为TimeSpan格式的时间间隔
         /// </summary>
-        /// <param name="str">支持格式为 旬10天[旬]；候5天[候]；须臾48分钟[须臾]；昼夜24小时[昼夜]；2小时[更|鼓|时辰]；30分钟[炷香|顿饭]；24分钟[点]；15分[刻|盏茶]；144秒[罗预]；7200毫秒[弹指]；360毫秒[瞬]；18毫秒[念|刹那]；</param>
+        /// <param name="str">支持格式为 旬10天[旬]；候5天[候]；须臾48分钟[须臾]；昼夜24小时[昼夜]；2小时[更|鼓|时辰]；30分钟[炷香|顿饭]；15分[刻|盏茶]；144秒[罗预]；7200毫秒[弹指]；360毫秒[瞬]；18毫秒[念|刹那]；</param>
         /// <param name="timeSpan"></param>
         /// <returns></returns>
         public static bool TryGetTimeSpanFromAncientStr(string str, out TimeSpan timeSpan)
@@ -379,14 +464,13 @@ namespace Koubot.Tool.String
                 @"\d+(\.\d+)?(须臾)",//3
                 @"\d+(\.\d+)?(更|鼓|时辰)",//4
                 @"\d+(\.\d+)?(柱香|炷香|顿饭)",//5 
-                @"\d+(\.\d+)?(点)",//6
-                @"\d+(\.\d+)?(刻|盏茶)",//7
-                @"\d+(\.\d+)?(罗预)",//8
-                @"\d+(\.\d+)?(弹指)",//9
-                @"\d+(\.\d+)?(瞬)",//10
-                @"\d+(\.\d+)?(念|刹那)",//11
+                @"\d+(\.\d+)?(刻|盏茶)",//6
+                @"\d+(\.\d+)?(罗预)",//7
+                @"\d+(\.\d+)?(弹指)",//8
+                @"\d+(\.\d+)?(瞬)",//9
+                @"\d+(\.\d+)?(念|刹那)",//10
             };
-            int day = 0, hour = 0, minute = 0, second = 0, millisecond = 0;
+            double day = 0, hour = 0, minute = 0, second = 0, millisecond = 0;
             bool success = false;//指示是否成功转换过一次
             for (int i = 0; i < patternList.Count; i++)
             {
@@ -397,53 +481,55 @@ namespace Koubot.Tool.String
                 {
                     //转化为天
                     case 0://旬
-                        day += (num *= 10) > 1000000 ? 0 : Convert.ToInt32(num);//Convert.ToInt32可以四舍六入五取偶
+                        day += (num *= 10) > long.MaxValue ? 0 : Convert.ToInt64(num);//Convert.ToInt64可以四舍六入五取偶
                         break;
                     case 1://候
-                        day += (num *= 5) > 1000000 ? 0 : Convert.ToInt32(num);
+                        day += (num *= 5) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     case 2://昼夜
-                        hour += (num *= 24) > 1000000 ? 0 : Convert.ToInt32(num);
+                        hour += (num *= 24) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     //转化为分钟
                     case 3://须臾
-                        minute += (num *= 48) > 100000000 ? 0 : Convert.ToInt32(num);
+                        minute += (num *= 48) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     case 4://更|鼓|时辰
-                        minute += (num *= 120) > 100000000 ? 0 : Convert.ToInt32(num);
+                        minute += (num *= 120) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     case 5://炷香|顿饭
-                        minute += (num *= 30) > 100000000 ? 0 : Convert.ToInt32(num);
+                        minute += (num *= 30) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
-                    case 6://点
-                        minute += (num *= 24) > 100000000 ? 0 : Convert.ToInt32(num);
-                        break;
-                    case 7://刻|盏茶
-                        minute += (num *= 15) > 100000000 ? 0 : Convert.ToInt32(num);
+                    case 6://刻|盏茶
+                        minute += (num *= 15) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     //转化为秒：
-                    case 8://罗预
-                        second += (num *= 144) > 100000000 ? 0 : Convert.ToInt32(num);
+                    case 7://罗预
+                        second += (num *= 144) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
-                    case 9://弹指
-                        millisecond += (num *= 7200) > 2100000000 ? 0 : Convert.ToInt32(num);
+                    case 8://弹指
+                        millisecond += (num *= 7200) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
-                    case 10://瞬
-                        millisecond += (num *= 360) > 2100000000 ? 0 : Convert.ToInt32(num);
+                    case 9://瞬
+                        millisecond += (num *= 360) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
-                    case 11://念|刹那
-                        millisecond += (num *= 18) > 2100000000 ? 0 : Convert.ToInt32(num);
+                    case 10://念|刹那
+                        millisecond += (num *= 18) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     default:
                         break;
                 }
             }
-            if (success)
+            if (!success) return false;
+            
+            try
             {
-                timeSpan = new TimeSpan(day, hour, minute, second, millisecond);
-                return true;
+                timeSpan = new TimeSpan((int)day, (int)hour, (int)minute, (int)second, (int)millisecond);
             }
-            return false;
+            catch (Exception)
+            {
+                timeSpan = TimeSpan.MaxValue;//10675199.02:48:05.4775807
+            }
+            return true;
         }
 
         /// <summary>
@@ -471,7 +557,7 @@ namespace Koubot.Tool.String
                 @"\d+(\.\d+)?(s|秒)",//8
                 @"\d+(\.\d+)?(ms|毫秒)",//9
             };
-            int day = 0, hour = 0, minute = 0, second = 0, millisecond = 0;
+            long day = 0, hour = 0, minute = 0, second = 0, millisecond = 0;
             bool success = false;//指示是否成功转换过一次
             for (int i = 0; i < patternList.Count; i++)
             {
@@ -482,46 +568,73 @@ namespace Koubot.Tool.String
                 {
                     //转化为天
                     case 0://世纪
-                        day += (num *= 36500) > 1000000 ? 0 : Convert.ToInt32(num);//Convert.ToInt32可以四舍六入五取偶
+                        day += (num *= 36500) > long.MaxValue ? 0 : Convert.ToInt64(num);//Convert.ToInt32可以四舍六入五取偶
                         break;
                     case 1://年
-                        day += (num *= 365) > 1000000 ? 0 : Convert.ToInt32(num);
+                        day += (num *= 365) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     case 2://季
-                        day += (num *= 91.25) > 1000000 ? 0 : Convert.ToInt32(num);
+                        day += (num *= 91.25) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     //转化为小时
                     case 3://月
-                        hour += (num *= 730) > 100000000 ? 0 : Convert.ToInt32(num);
+                        hour += (num *= 730) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     case 4://周
-                        hour += (num *= 168) > 100000000 ? 0 : Convert.ToInt32(num);
+                        hour += (num *= 168) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     //转化为分钟
                     case 5://天
-                        minute += (num *= 1440) > 100000000 ? 0 : Convert.ToInt32(num);
+                        minute += (num *= 1440) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     //转化为秒
                     case 6://时
-                        second += (num *= 3600) > 100000000 ? 0 : Convert.ToInt32(num);
+                        second += (num *= 3600) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     case 7://分
-                        second += (num *= 60) > 100000000 ? 0 : Convert.ToInt32(num);
+                        second += (num *= 60) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     //转化为毫秒：
                     case 8://秒
-                        millisecond += (num *= 1000) > 100000000 ? 0 : Convert.ToInt32(num);
+                        millisecond += (num *= 1000) > long.MaxValue ? 0 : Convert.ToInt64(num);
                         break;
                     case 9://毫秒
-                        millisecond += Convert.ToInt32(num);
+                        millisecond += Convert.ToInt64(num);
                         break;
                     default:
                         break;
                 }
             }
-
+            //继续突破最高限制
+            if (millisecond > int.MaxValue)
+            {
+                second += (millisecond - int.MaxValue) / 1000;
+                millisecond = int.MaxValue;
+            }
+            if (second > int.MaxValue)
+            {
+                minute += (second - int.MaxValue) / 60;
+                second = int.MaxValue;
+            }
+            if (minute > int.MaxValue)
+            {
+                hour += (minute - int.MaxValue) / 60;
+                minute = int.MaxValue;
+            }
+            if (hour > int.MaxValue)
+            {
+                day += (hour - int.MaxValue) / 24;
+                hour = int.MaxValue;
+            }
             if (!success) return false;
-            timeSpan = new TimeSpan(day, hour, minute, second, millisecond);
+            try
+            {
+                timeSpan = new TimeSpan((int)day, (int)hour, (int)minute, (int)second, (int)millisecond);
+            }
+            catch (Exception)
+            {
+                timeSpan = TimeSpan.MaxValue;
+            }
             return true;
         }
 

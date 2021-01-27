@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Koubot.Tool.Expand;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Koubot.Tool.Expand;
 
 namespace Koubot.Tool.Random
 {
@@ -12,7 +12,7 @@ namespace Koubot.Tool.Random
     public static class RandomTool
     {
         public static System.Random randomSeed = new System.Random();//只初始化一次比较好？
-        
+
         #region 随机生成
         /// <summary>
         /// 获取强随机byte数组

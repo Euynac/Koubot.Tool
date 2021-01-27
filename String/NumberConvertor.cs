@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Koubot.Tool.Expand;
+﻿using Koubot.Tool.Expand;
+using System.Collections.Generic;
 
 namespace Koubot.Tool.String
 {
