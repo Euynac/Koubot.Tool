@@ -1461,6 +1461,11 @@
             bool值的转换
             </summary>
         </member>
+        <member name="P:Koubot.Tool.KouData.KouStaticData.ZhMathToSymbolMath">
+            <summary>
+            中文数学运算转对应符号
+            </summary>
+        </member>
         <member name="F:Koubot.Tool.KouData.KouStaticData.PageNextList">
             <summary>
             翻页使用的下一页的关键词
@@ -1539,6 +1544,64 @@
             无穷大
             </summary>
         </member>
+        <member name="T:Koubot.Tool.Math.IntervalDoublePair">
+            <summary>
+            区间支持型Double对，即组成一个区间
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Math.IntervalDoublePair.LeftInterval">
+            <summary>
+            左区间
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Math.IntervalDoublePair.RightInterval">
+            <summary>
+            右区间
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Math.IntervalDoublePair.#ctor">
+            <summary>
+            建立初始区间[0,0]
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Math.IntervalDoublePair.#ctor(Koubot.Tool.Math.IntervalDouble,Koubot.Tool.Math.IntervalDouble)">
+            <summary>
+            使用IntervalDouble对建立一个区间
+            </summary>
+            <param name="left"></param>
+            <param name="right"></param>
+        </member>
+        <member name="M:Koubot.Tool.Math.IntervalDoublePair.#ctor(System.Double,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            使用double对建立一个区间
+            </summary>
+            <param name="left"></param>
+            <param name="right"></param>
+            <param name="leftIsOpen">左边是否是开区间</param>
+            <param name="rightIsOpen">右边是否是开区间</param>
+        </member>
+        <member name="M:Koubot.Tool.Math.IntervalDoublePair.TryGetIntervalDoublePair(System.String,Koubot.Tool.Math.IntervalDoublePair@,System.Boolean)">
+            <summary>
+            尝试从字符串中获取区间
+            </summary>
+            <param name="str"></param>
+            <param name="intervalDoublePair"></param>
+            <param name="force">若是能转为double但无法转为区间，强制转换为区间（即left=right值）</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Math.IntervalDoublePair.GetIntervalLength">
+            <summary>
+            获取区间长度（最大不超过int.MaxValue）
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Math.IntervalDoublePair.IsInInterval(System.Double)">
+            <summary>
+            判断一个数是否在区间中
+            </summary>
+            <param name="number"></param>
+            <returns></returns>
+        </member>
         <member name="T:Koubot.Tool.Math.IntervalDouble">
             <summary>
             区间支持型Double，默认闭区间，使用区间用小于等于或大于等于（当是开区间的时候实际上不会取到等于）
@@ -1559,6 +1622,20 @@
             是否是开区间
             </summary>
         </member>
+        <member name="M:Koubot.Tool.Math.IntervalDouble.#ctor(System.Double,System.Boolean,Koubot.Tool.Math.NumberType)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="isOpen"></param>
+            <param name="numberType"></param>
+        </member>
+        <member name="M:Koubot.Tool.Math.IntervalDouble.#ctor(Koubot.Tool.Math.NumberType)">
+            <summary>
+            
+            </summary>
+            <param name="numberType"></param>
+        </member>
         <member name="M:Koubot.Tool.Math.IntervalDouble.IsInfinite(Koubot.Tool.Math.IntervalDouble)">
             <summary>
             指示是否是无穷数值（无穷大或无穷小）
@@ -1573,7 +1650,7 @@
             <param name="str"></param>
             <param name="intervalLeft">左区间 (、[</param>
             <param name="intervalRight">右区间 )、]</param>
-            /// <param name="force">若是能转为double但无法转为区间，强制转换为区间（即left=right值）</param>
+            <param name="force">若是能转为double但无法转为区间，强制转换为区间（即left=right值）</param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Math.IntervalDouble.GetInterval(System.String,System.Double@,System.Double@,System.Boolean)">
@@ -1593,16 +1670,16 @@
         </member>
         <member name="M:Koubot.Tool.Math.IntervalDoubleTool.TryGetInterval(System.String,Koubot.Tool.Math.IntervalDouble@,Koubot.Tool.Math.IntervalDouble@,System.Boolean)">
             <summary>
-            获取区间值（左到右）返回IntervalDouble类型，默认闭区间
+            获取区间值（左到右）返回IntervalDouble类型，默认闭区间（[1,3)这种形式）
             </summary>
             <param name="str"></param>
-            <param name="left"></param>
-            <param name="right"></param>
+            <param name="intervalLeft"></param>
+            <param name="intervalRight"></param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Math.IntervalDoubleTool.TryGetInterval(System.String,System.Double@,System.Double@,System.Boolean)">
             <summary>
-            获取区间值（左到右）
+            获取区间值（左到右）（1-3这种形式）
             </summary>
             <param name="str"></param>
             <param name="left">左值</param>
@@ -1768,6 +1845,11 @@
             随机工具类
             </summary>
         </member>
+        <member name="F:Koubot.Tool.Random.RandomTool._randomSeed">
+            <summary>
+            随机数种子
+            </summary>
+        </member>
         <member name="M:Koubot.Tool.Random.RandomTool.GetSecurityRandomByte(System.Int32)">
             <summary>
             获取强随机byte数组
@@ -1787,6 +1869,14 @@
             <param name="custom">要包含的自定义字符，直接输入要包含的字符列表</param>
             <returns>指定长度的随机字符串</returns>
         </member>
+        <member name="M:Koubot.Tool.Random.RandomTool.RandomGetOne``1(``0[])">
+            <summary>
+            从数组中随机获取一个item，失败返回default(T)
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
         <member name="M:Koubot.Tool.Random.RandomTool.RandomGetOne``1(System.Collections.Generic.IList{``0})">
             <summary>
             从<see cref="T:System.Collections.Generic.IList`1"/>中随机获取一个item，失败返回default(T)
@@ -1797,7 +1887,7 @@
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.RandomGetItems``1(System.Collections.Generic.IList{``0},System.Int32)">
             <summary>
-            从<see cref="T:System.Collections.Generic.IList`1"/>中随机获取规定数量的items，返回list，失败返回null
+            从<see cref="T:System.Collections.Generic.IList`1"/>中随机获取规定数量的items（不会重复），返回list，失败返回null
             </summary>
             <typeparam name="T"></typeparam>
             <param name="list"></param>
@@ -1816,7 +1906,20 @@
             <summary>
             从Enum中随机选取一个（需要Enum类是0-n连续的）
             </summary>
-            <param name="enumType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomDouble(Koubot.Tool.Math.IntervalDoublePair)">
+            <summary>
+            产生区间范围中的随机浮点数
+            </summary>
+            <param name="intervalDoublePair">区间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomInt(Koubot.Tool.Math.IntervalDoublePair)">
+            <summary>
+            产生区间范围中的随机整数
+            </summary>
+            <param name="intervalDoublePair">区间</param>
             <returns></returns>
         </member>
         <member name="T:Koubot.Tool.String.KouStringTool">
@@ -1859,6 +1962,8 @@
             将字符串类型的数字转换为bool类型，支持中文以及英文、数字
             </summary>
             <param name="str"></param>
+            <param name="boolResult"></param>
+            <param name="kouType"></param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.TryToDouble(System.String,System.Double@,System.Boolean)">
@@ -1867,6 +1972,7 @@
             </summary>
             <param name="str"></param>
             <param name="doubleResult"></param>
+            <param name="kouType"></param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.TryToInt(System.String,System.Int32@,System.Boolean)">
@@ -1875,6 +1981,7 @@
             </summary>
             <param name="str"></param>
             <param name="intResult"></param>
+            <param name="kouType"></param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.ToEnPunctuation(System.String)">
@@ -2005,12 +2112,12 @@
             常用的数字转换器
             </summary>
         </member>
-        <member name="M:Koubot.Tool.String.NumberConvertor.WebUnitDouble(System.String,System.Double@)">
+        <member name="M:Koubot.Tool.String.NumberConvertor.WebUnitDouble(System.String,System.String@)">
             <summary>
-            使用网络、英文缩写等常用数字单位缩写表达处理字符串为double
+            使用网络、英文缩写等常用数字单位缩写表达处理字符串，将其全部替换为数字
             </summary>
             <param name="str">支持格式为1k、1w、1kw</param>
-            <param name="result"></param>
+            <param name="parsedStr">处理成数字的的字符串</param>
             <returns></returns>
         </member>
         <member name="T:Koubot.Tool.String.ZhNumber">
@@ -2044,7 +2151,7 @@
         </member>
         <member name="M:Koubot.Tool.String.ZhNumber.ParseZnToInt(System.String)">
             <summary>
-            将中文（大写/小写）数字转换阿拉伯数字（未完善 比如：十一万）
+            将中文（大写/小写）数字转换阿拉伯数字（未完善 比如：十一万、一千五）
             </summary>
             <param name="cnum">汉字数字</param>
             <returns>长整型阿拉伯数字</returns>

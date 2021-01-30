@@ -23,6 +23,114 @@ namespace Koubot.Tool.Math
         Infinity
     }
     /// <summary>
+    /// 区间支持型Double对，即组成一个区间
+    /// </summary>
+    public class IntervalDoublePair
+    {
+        /// <summary>
+        /// 左区间
+        /// </summary>
+        public IntervalDouble LeftInterval { get; set; }
+        /// <summary>
+        /// 右区间
+        /// </summary>
+        public IntervalDouble RightInterval { get; set; }
+        /// <summary>
+        /// 建立初始区间[0,0]
+        /// </summary>
+        public IntervalDoublePair()
+        {
+            LeftInterval = new IntervalDouble(0);
+            RightInterval = new IntervalDouble(0);
+        }
+        /// <summary>
+        /// 使用IntervalDouble对建立一个区间
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        public IntervalDoublePair(IntervalDouble left, IntervalDouble right)
+        {
+            LeftInterval = left;
+            RightInterval = right;
+        }
+        /// <summary>
+        /// 使用double对建立一个区间
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="leftIsOpen">左边是否是开区间</param>
+        /// <param name="rightIsOpen">右边是否是开区间</param>
+        public IntervalDoublePair(double left, double right, bool leftIsOpen = false, bool rightIsOpen = false)
+        {
+            if (left > right) throw new Exception("区间double不可以左边大于右边");
+            LeftInterval = new IntervalDouble(left);
+            RightInterval = new IntervalDouble(right);
+        }
+        /// <summary>
+        /// 尝试从字符串中获取区间
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="intervalDoublePair"></param>
+        /// <param name="force">若是能转为double但无法转为区间，强制转换为区间（即left=right值）</param>
+        /// <returns></returns>
+        public static bool TryGetIntervalDoublePair(string str, out IntervalDoublePair intervalDoublePair, bool force = false)
+        {
+            if (IntervalDouble.GetInterval(str, out IntervalDouble left, out IntervalDouble right, force))
+            {
+                intervalDoublePair = new IntervalDoublePair(left, right);
+                return true;
+            }
+
+            intervalDoublePair = default;
+            return false;
+        }
+
+        /// <summary>
+        /// 获取区间长度（最大不超过int.MaxValue）
+        /// </summary>
+        /// <returns></returns>
+        public int GetIntervalLength()
+        {
+            int left = LeftInterval.Value < int.MinValue ? int.MinValue : (int) LeftInterval.Value;
+            int right = RightInterval.Value > int.MaxValue ? int.MaxValue : (int) RightInterval.Value;
+            if (SubOk(right, left)) return right - left;
+            return int.MaxValue;
+        }
+
+        private bool AddOk(int x, int y)
+        {
+            int z = x + y;
+            switch (x)
+            {
+                case > 0 when y > 0 && z < 0:
+                case < 0 when y < 0 && z > 0:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
+        private bool SubOk(int x, int y)
+        {
+            int z = x - y;
+            switch (x)
+            {
+                case > 0 when y < 0 && z < 0:
+                case < 0 when y > 0 && z > 0:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+        /// <summary>
+        /// 判断一个数是否在区间中
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public bool IsInInterval(double number) => number <= RightInterval && number >= LeftInterval;
+    }
+
+    /// <summary>
     /// 区间支持型Double，默认闭区间，使用区间用小于等于或大于等于（当是开区间的时候实际上不会取到等于）
     /// </summary>
     public class IntervalDouble
@@ -41,6 +149,12 @@ namespace Koubot.Tool.Math
         /// </summary>
         public bool IsOpen { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="isOpen"></param>
+        /// <param name="numberType"></param>
         public IntervalDouble(double value, bool isOpen = false, NumberType numberType = NumberType.RealNumber)
         {
             Value = value;
@@ -48,6 +162,10 @@ namespace Koubot.Tool.Math
             NumType = numberType;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="numberType"></param>
         public IntervalDouble(NumberType numberType)
         {
             NumType = numberType;
@@ -70,7 +188,7 @@ namespace Koubot.Tool.Math
         /// <param name="str"></param>
         /// <param name="intervalLeft">左区间 (、[</param>
         /// <param name="intervalRight">右区间 )、]</param>
-        /// /// <param name="force">若是能转为double但无法转为区间，强制转换为区间（即left=right值）</param>
+        /// <param name="force">若是能转为double但无法转为区间，强制转换为区间（即left=right值）</param>
         /// <returns></returns>
         public static bool GetInterval(string str, out IntervalDouble intervalLeft, out IntervalDouble intervalRight, bool force = false)
         {
@@ -264,11 +382,11 @@ namespace Koubot.Tool.Math
     public static class IntervalDoubleTool
     {
         /// <summary>
-        /// 获取区间值（左到右）返回IntervalDouble类型，默认闭区间
+        /// 获取区间值（左到右）返回IntervalDouble类型，默认闭区间（[1,3)这种形式）
         /// </summary>
         /// <param name="str"></param>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
+        /// <param name="intervalLeft"></param>
+        /// <param name="intervalRight"></param>
         /// <returns></returns>
         public static bool TryGetInterval(this string str, out IntervalDouble intervalLeft, out IntervalDouble intervalRight, bool force = false)
         {
@@ -276,7 +394,7 @@ namespace Koubot.Tool.Math
         }
 
         /// <summary>
-        /// 获取区间值（左到右）
+        /// 获取区间值（左到右）（1-3这种形式）
         /// </summary>
         /// <param name="str"></param>
         /// <param name="left">左值</param>

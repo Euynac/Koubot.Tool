@@ -1,5 +1,7 @@
 ﻿using Koubot.Tool.Expand;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Koubot.Tool.String
 {
@@ -9,39 +11,50 @@ namespace Koubot.Tool.String
     public static class NumberConvertor
     {
         /// <summary>
-        /// 使用网络、英文缩写等常用数字单位缩写表达处理字符串为double
+        /// 使用网络、英文缩写等常用数字单位缩写表达处理字符串，将其全部替换为数字
         /// </summary>
         /// <param name="str">支持格式为1k、1w、1kw</param>
-        /// <param name="result"></param>
+        /// <param name="parsedStr">处理成数字的的字符串</param>
         /// <returns></returns>
-        public static bool WebUnitDouble(string str, out double result)
+        public static bool WebUnitDouble(string str, out string parsedStr)
         {
-            result = 0;
+ 
+            parsedStr = str;
             if (str.IsNullOrWhiteSpace()) return false;
             List<string> patternList = new List<string>()
             {
-                @"\d+(\.\d+)?(k(?!w))",//0
-                @"\d+(\.\d+)?(w)",//1
-                @"\d+(\.\d+)?(kw)",//2
+                @"(?<k>\d+(\.\d+)?)(?:k(?!w))(?<tail>\d+)?",//0 匹配10k、1k500之类
+                @"(?<w>\d+(?:\.\d+)?)(?:w)((?<k>\d+(\.\d+)?)(?:k(?!w)))?(?<tail>\d+)?",//1  匹配6w1k、6w1k500之类
+                @"(?<kw>\d+(\.\d+)?)(?:kw)((?<w>\d+(?:\.\d+)?)(?:w))?((?<k>\d+(\.\d+)?)(?:k(?!w)))?(?<tail>\d+)?",//2 匹配6kw6w
             };
             bool success = false;//指示是否成功转换过一次
-            for (int i = 0; i < patternList.Count; i++)
+            
+            for (int i = patternList.Count - 1; i >= 0; i--)
             {
-                var numStr = str.Match(patternList[i]);
-                if (numStr.IsNullOrEmpty() || !double.TryParse(numStr.Match(@"\d+(\.\d+)?"), out double num)) continue;
-                success = true;
-                switch (i)
+                Regex regex = new Regex(patternList[i]);
+                if (regex.IsMatch(str))
                 {
-                    case 0:
-                        result += num * 1000;
-                        break;
-                    case 1:
-                        result += num * 10000;
-                        break;
-                    case 2:
-                        result += num * 10000000;
-                        break;
+                    success = true;
+                    foreach (Match match in regex.Matches(str))
+                    {
+                        var kwStr = match.Groups["kw"].Value;
+                        var wStr = match.Groups["w"].Value;
+                        var kStr = match.Groups["k"].Value;
+                        var tailStr = match.Groups["tail"].Value;
+                        double.TryParse(kwStr, out double kw);
+                        double.TryParse(wStr, out double w);
+                        double.TryParse(kStr, out double k);
+                        double.TryParse(tailStr, out double tail);
+                        double total = kw * 10000000 + w * 10000 + k * 1000 + tail;
+                        parsedStr = regex.Replace(parsedStr, total.ToString(CultureInfo.InvariantCulture), 1);
+                    }
                 }
+            }
+
+            if (success)
+            {
+                parsedStr = parsedStr.Replace("k", "");
+                parsedStr = parsedStr.Replace("w", "");
             }
             return success;
         }

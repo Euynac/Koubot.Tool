@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Koubot.Tool.Math;
 
 namespace Koubot.Tool.Random
 {
@@ -11,7 +12,10 @@ namespace Koubot.Tool.Random
     /// </summary>
     public static class RandomTool
     {
-        public static System.Random randomSeed = new System.Random();//只初始化一次比较好？
+        /// <summary>
+        /// 随机数种子
+        /// </summary>
+        private static readonly System.Random _randomSeed = new();//只初始化一次比较好？
 
         #region 随机生成
         /// <summary>
@@ -46,7 +50,7 @@ namespace Koubot.Tool.Random
             if (useSpecial) { randomPool += "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"; }
             while (length-- > 0)
             {
-                s.Append(randomPool.Substring(randomSeed.Next(0, randomPool.Length), 1));
+                s.Append(randomPool.Substring(_randomSeed.Next(0, randomPool.Length), 1));
             }
             return s.ToString();
         }
@@ -55,6 +59,18 @@ namespace Koubot.Tool.Random
 
         #region IList的类拓展
         /// <summary>
+        /// 从数组中随机获取一个item，失败返回default(T)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T RandomGetOne<T>(this T[] list)
+        {
+            if (list == null || !list.Any()) return default;
+            return list[_randomSeed.Next(list.Length)];
+        }
+
+        /// <summary>
         /// 从<see cref="IList&lt;T&gt;"/>中随机获取一个item，失败返回default(T)
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -62,13 +78,11 @@ namespace Koubot.Tool.Random
         /// <returns></returns>
         public static T RandomGetOne<T>(this IList<T> list)
         {
-            if (list == null || !list.Any()) return default(T);
-            var items = RandomGetItems<T>(list, 1);
-            if (items != null && items.Any()) return items.First();
-            return default(T);
+            if (list == null || !list.Any()) return default;
+            return list[_randomSeed.Next(list.Count)];
         }
         /// <summary>
-        /// 从<see cref="IList&lt;T&gt;"/>中随机获取规定数量的items，返回list，失败返回null
+        /// 从<see cref="IList&lt;T&gt;"/>中随机获取规定数量的items（不会重复），返回list，失败返回null
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
@@ -79,7 +93,7 @@ namespace Koubot.Tool.Random
             if (list == null || !list.Any()) return null;
             if (count > list.Count())
             {
-                return RandomList<T>(list);
+                return RandomList(list);
             }
             return list.OrderBy(_ => Guid.NewGuid()).Take(count).ToList();
         }
@@ -92,7 +106,7 @@ namespace Koubot.Tool.Random
         public static IList<T> RandomList<T>(this IList<T> list)
         {
             if (list == null || !list.Any()) return list;
-            return list.OrderBy(o => randomSeed.Next(0, list.Count())).ToList();
+            return list.OrderBy(o => _randomSeed.Next(0, list.Count())).ToList();
         }
         #endregion
 
@@ -100,14 +114,54 @@ namespace Koubot.Tool.Random
         /// <summary>
         /// 从Enum中随机选取一个（需要Enum类是0-n连续的）
         /// </summary>
-        /// <param name="enumType"></param>
         /// <returns></returns>
         public static T EnumRandomGetOne<T>() where T : Enum
         {
             Type enumType = typeof(T);
             int length = Enum.GetNames(enumType).Length;
-            return (T)Enum.Parse(enumType, randomSeed.Next(length).ToString());
+            return (T)Enum.Parse(enumType, _randomSeed.Next(length).ToString());
         }
         #endregion
+
+
+        /// <summary>
+        /// 产生区间范围中的随机浮点数
+        /// </summary>
+        /// <param name="intervalDoublePair">区间</param>
+        /// <returns></returns>
+        public static double GenerateRandomDouble(this IntervalDoublePair intervalDoublePair)
+        {
+            var rightInterval = intervalDoublePair.RightInterval;
+            var leftInterval = intervalDoublePair.LeftInterval;
+            double maxValue = rightInterval.NumType == NumberType.Infinity
+                ? double.MaxValue
+                : rightInterval.Value;
+            double minValue = leftInterval.NumType == NumberType.Infinitesimal ? double.MinValue : leftInterval.Value;
+            if (rightInterval.NumType == NumberType.Infinity || leftInterval.NumType == NumberType.Infinitesimal)
+            {
+                var randomFactor = _randomSeed.NextDouble();
+                return minValue + randomFactor * maxValue - randomFactor * minValue;//如不这样可能会溢出
+            }
+
+            return _randomSeed.NextDouble() * (maxValue - minValue) + minValue;
+        }
+        /// <summary>
+        /// 产生区间范围中的随机整数
+        /// </summary>
+        /// <param name="intervalDoublePair">区间</param>
+        /// <returns></returns>
+        public static int GenerateRandomInt(this IntervalDoublePair intervalDoublePair)
+        {
+            var rightInterval = intervalDoublePair.RightInterval;
+            var leftInterval = intervalDoublePair.LeftInterval;
+            int maxValue = rightInterval.NumType == NumberType.Infinity
+                ? int.MaxValue
+                : (int)System.Math.Floor(rightInterval.Value);
+            int minValue = leftInterval.NumType == NumberType.Infinitesimal ? int.MinValue : (int)System.Math.Ceiling(leftInterval.Value);
+            if (leftInterval.IsOpen) minValue += 1;
+            if (!rightInterval.IsOpen && maxValue != int.MaxValue) maxValue += 1;
+            if (minValue > maxValue) return minValue;//区间相同就麻烦了
+            return _randomSeed.Next(minValue, maxValue);
+        }
     }
 }

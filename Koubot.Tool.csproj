@@ -6,7 +6,13 @@
     <Product>Koubot.Tool</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>There are some tools for helping to develop projects of Koubot related, but it also can be used to develop other project because it contains a host of useful and frequently-used  tools such as System related expand methods, helper of web,  file, etc. Actually it can be regarded as my self-use library of tools.</Description>
-    <PackageReleaseNotes>something useful system related expand methods</PackageReleaseNotes>
+    <PackageReleaseNotes>优化部分代码，增加更多功能
+【String】新增能够根据如“明天上午十点30分”之类的描述获取距离当前时间间隔的功能；快速正则替换、获取匹配的命名捕获组的功能；自动合并字符串实现优化
+【Attribute】新增关于CustomAttribute的拓展方法
+【int】保留小数、限制范围的扩展方法
+【Dictionary】TryGetValueOrDefault，拓展自带的TryGetValue，支持null且支持设定Default
+【Enum】增加按位枚举相关拓展
+【Another】补充、优化部分说明</PackageReleaseNotes>
     <PackageTags>Koubot</PackageTags>
     <RepositoryUrl>https://github.com/Euynac/Koubot.Tool</RepositoryUrl>
     <PackageProjectUrl></PackageProjectUrl>
@@ -14,6 +20,9 @@
     <LangVersion>latest</LangVersion>
     <AssemblyVersion>1.0.*</AssemblyVersion>
         <Deterministic>false</Deterministic>
+        <Version>1.0.2</Version>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Copyright>Copyright (c) 2020 7zou</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

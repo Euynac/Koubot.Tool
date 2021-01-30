@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Koubot.Tool.Math;
 
 namespace Koubot.Tool.String
 {
@@ -89,6 +90,12 @@ namespace Koubot.Tool.String
             bool onceFailReplyError = false, double? numberMin = null, double? numberMax = null)
         {
             resultList = null;
+            IList<IntervalDoublePair> intervalDoublePairList = null;
+            if (typeof(IList<IntervalDoublePair>).IsAssignableFrom(listType)) //特别处理它的constraintPattern，因为不能为,
+            {
+                splitStr = splitStr.Replace(",", "");
+                intervalDoublePairList = new List<IntervalDoublePair>();
+            }
             if (!MultiSelectionHelper.TryGetMultiSelections(str, out List<string> list, constraintPattern,
                 countConstraint,
                 allowDuplicate
@@ -108,6 +115,7 @@ namespace Koubot.Tool.String
             IList<double?> doubleList = null;
             IList<bool?> boolList = null;
             IList<TimeSpan?> timeSpanList = null;
+            
             bool nullable = false;
             //判断是哪个类型列表
             if (listType.SatisfyAny(typeof(IList<int>).IsAssignableFrom
@@ -168,6 +176,13 @@ namespace Koubot.Tool.String
                         timeSpanList.Add(timeSpanResult);
                     continue;
                 }
+
+                if (intervalDoublePairList != null)
+                {
+                    if (IntervalDoublePair.TryGetIntervalDoublePair(item, out IntervalDoublePair interval))
+                        intervalDoublePairList.Add(interval);
+                    continue;
+                }
             }
 
             if (intList != null)
@@ -194,6 +209,11 @@ namespace Koubot.Tool.String
                 return true;
             }
 
+            if (intervalDoublePairList != null)
+            {
+                resultList = (IList)intervalDoublePairList;
+                return true;
+            }
             return false;
         }
 
@@ -202,6 +222,8 @@ namespace Koubot.Tool.String
         /// 将字符串类型的数字转换为bool类型，支持中文以及英文、数字
         /// </summary>
         /// <param name="str"></param>
+        /// <param name="boolResult"></param>
+        /// <param name="kouType"></param>
         /// <returns></returns>
         public static bool TryToBool(string str, out bool boolResult, bool kouType = true)
         {
@@ -210,11 +232,13 @@ namespace Koubot.Tool.String
             return !kouType ? bool.TryParse(str, out boolResult) :
                 KouStaticData.StringToBoolDict.TryGetValue(str, out boolResult);
         }
+
         /// <summary>
         /// 将字符串类型的数字转换为double类型，支持中文以及带单位
         /// </summary>
         /// <param name="str"></param>
         /// <param name="doubleResult"></param>
+        /// <param name="kouType"></param>
         /// <returns></returns>
         public static bool TryToDouble(string str, out double doubleResult, bool kouType = true)
         {
@@ -223,14 +247,21 @@ namespace Koubot.Tool.String
             if (!kouType) return double.TryParse(str, out doubleResult);
             //如果有中文的数字，转为阿拉伯数字
             if (ZhNumber.IsContainZhNumber(str)) str = ZhNumber.ToArabicNumber(str);
-            if (!Double.TryParse(str, NumberStyles.Float, null, out doubleResult))
+            if (!double.TryParse(str, NumberStyles.Float, null, out doubleResult))
             {
-                if (NumberConvertor.WebUnitDouble(str, out doubleResult))
+                if (NumberConvertor.WebUnitDouble(str, out string parsedStr))
                 {
-                    // 将末尾无单位的那个数字取出来（比如10k500，则结果为500）
-                    Double.TryParse(str.Match(@"\d+(\.\d+)?$"), NumberStyles.Float, null, out double tailNumber);
-                    doubleResult += tailNumber;
-                    return true;
+                    str = parsedStr;
+                }
+
+                ExpressionCalculator calculator = new ExpressionCalculator();
+                if (str.Contains("上")) str = str.Replace("上", "");//乘上、加上等
+                if (str.Contains("去")) str = str.Replace("去", "");
+                str = str.ReplaceAllFromPairSet(KouStaticData.ZhMathToSymbolMath);
+                var result = calculator.Calculate(str)?.ToString();
+                if (result != null && result != double.NaN.ToString(CultureInfo.InvariantCulture))
+                {
+                    return double.TryParse(result, out doubleResult);
                 }
                 return false;
             }
@@ -242,6 +273,7 @@ namespace Koubot.Tool.String
         /// </summary>
         /// <param name="str"></param>
         /// <param name="intResult"></param>
+        /// <param name="kouType"></param>
         /// <returns></returns>
         public static bool TryToInt(string str, out int intResult, bool kouType = true)
         {
@@ -289,16 +321,16 @@ namespace Koubot.Tool.String
             if (regex.IsMatch(str))
             {
                 var groups = regex.Match(str).Groups;
-                Int32.TryParse(groups["lday"]?.Value, out int lday);
-                Int32.TryParse(groups["lhour"]?.Value, out int lhour);
-                Int32.TryParse(groups["lminute"]?.Value, out int lminute);
-                Int32.TryParse(groups["lsecond"]?.Value, out int lsecond);
-                Int32.TryParse(groups["lmillisecond"]?.Value, out int lmillisecond);
-                Int32.TryParse(groups["rday"]?.Value, out int rday);
-                Int32.TryParse(groups["rhour"]?.Value, out int rhour);
-                Int32.TryParse(groups["rminute"]?.Value, out int rminute);
-                Int32.TryParse(groups["rsecond"]?.Value, out int rsecond);
-                Int32.TryParse(groups["rmillisecond"]?.Value, out int rmillisecond);
+                int.TryParse(groups["lday"]?.Value, out int lday);
+                int.TryParse(groups["lhour"]?.Value, out int lhour);
+                int.TryParse(groups["lminute"]?.Value, out int lminute);
+                int.TryParse(groups["lsecond"]?.Value, out int lsecond);
+                int.TryParse(groups["lmillisecond"]?.Value, out int lmillisecond);
+                int.TryParse(groups["rday"]?.Value, out int rday);
+                int.TryParse(groups["rhour"]?.Value, out int rhour);
+                int.TryParse(groups["rminute"]?.Value, out int rminute);
+                int.TryParse(groups["rsecond"]?.Value, out int rsecond);
+                int.TryParse(groups["rmillisecond"]?.Value, out int rmillisecond);
                 left = new TimeSpan(lday, lhour, lminute, lsecond, lmillisecond);
                 right = new TimeSpan(rday, rhour, rminute, rsecond, rmillisecond);
                 if (left <= right) return true;
@@ -475,7 +507,7 @@ namespace Koubot.Tool.String
             for (int i = 0; i < patternList.Count; i++)
             {
                 var timeStr = str.Match(patternList[i]);
-                if (timeStr.IsNullOrEmpty() || !Double.TryParse(timeStr.Match(@"\d+(\.\d+)?"), out double num)) continue;
+                if (timeStr.IsNullOrEmpty() || !double.TryParse(timeStr.Match(@"\d+(\.\d+)?"), out double num)) continue;
                 success = true;
                 switch (i)
                 {
@@ -562,7 +594,7 @@ namespace Koubot.Tool.String
             for (int i = 0; i < patternList.Count; i++)
             {
                 var timeStr = str.Match(patternList[i]);
-                if (timeStr.IsNullOrEmpty() || !Double.TryParse(timeStr.Match(@"\d+(\.\d+)?"), out double num)) continue;
+                if (timeStr.IsNullOrEmpty() || !double.TryParse(timeStr.Match(@"\d+(\.\d+)?"), out double num)) continue;
                 success = true;
                 switch (i)
                 {
@@ -652,11 +684,11 @@ namespace Koubot.Tool.String
             if (regex.IsMatch(str))
             {
                 var groups = regex.Match(str).Groups;
-                Int32.TryParse(groups["day"]?.Value, out int day);
-                Int32.TryParse(groups["hour"]?.Value, out int hour);
-                Int32.TryParse(groups["minute"]?.Value, out int minute);
-                Int32.TryParse(groups["second"]?.Value, out int second);
-                Int32.TryParse(groups["millisecond"]?.Value, out int millisecond);
+                int.TryParse(groups["day"]?.Value, out int day);
+                int.TryParse(groups["hour"]?.Value, out int hour);
+                int.TryParse(groups["minute"]?.Value, out int minute);
+                int.TryParse(groups["second"]?.Value, out int second);
+                int.TryParse(groups["millisecond"]?.Value, out int millisecond);
                 timeSpan = new TimeSpan(day, hour, minute, second, millisecond);
                 return true;
             }
@@ -689,11 +721,11 @@ namespace Koubot.Tool.String
             if (regex.IsMatch(str))
             {
                 var groups = regex.Match(str).Groups;
-                Int32.TryParse(groups["day"]?.Value, out int day);
-                Int32.TryParse(groups["hour"]?.Value, out int hour);
-                Int32.TryParse(groups["minute"]?.Value, out int minute);
-                Int32.TryParse(groups["second"]?.Value, out int second);
-                Int32.TryParse(groups["millisecond"]?.Value, out int millisecond);
+                int.TryParse(groups["day"]?.Value, out int day);
+                int.TryParse(groups["hour"]?.Value, out int hour);
+                int.TryParse(groups["minute"]?.Value, out int minute);
+                int.TryParse(groups["second"]?.Value, out int second);
+                int.TryParse(groups["millisecond"]?.Value, out int millisecond);
                 timeSpan = new TimeSpan(day, hour, minute, second, millisecond);
                 return true;
             }

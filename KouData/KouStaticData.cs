@@ -29,6 +29,13 @@ namespace Koubot.Tool.KouData
             {"开启", true},{"打开", true},{"t", true},{"f", false}
         };
         /// <summary>
+        /// 中文数学运算转对应符号
+        /// </summary>
+        public static IReadOnlyDictionary<string, string> ZhMathToSymbolMath { get; } = new Dictionary<string, string>()
+        {
+            {"加", "+"},{"减", "-"},{"乘", "*"},{"除","/"}
+        };
+        /// <summary>
         /// 翻页使用的下一页的关键词
         /// </summary>
         public static readonly IReadOnlyList<string> PageNextList = new List<string>

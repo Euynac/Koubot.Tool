@@ -85,7 +85,7 @@ namespace Koubot.Tool.String
             };
         }
         /// <summary>
-        /// 将中文（大写/小写）数字转换阿拉伯数字（未完善 比如：十一万）
+        /// 将中文（大写/小写）数字转换阿拉伯数字（未完善 比如：十一万、一千五）
         /// </summary>
         /// <param name="cnum">汉字数字</param>
         /// <returns>长整型阿拉伯数字</returns>
