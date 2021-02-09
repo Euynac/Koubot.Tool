@@ -12,7 +12,7 @@ namespace Koubot.Tool.General
     public static class ReflectionTool
     {
         /// <summary>
-        /// 克隆某个对象中所有属性值（EFCore会追踪修改）
+        /// 克隆某个对象中所有属性值到对象（EFCore会追踪修改，因为做的是Action操作）
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
