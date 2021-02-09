@@ -58,7 +58,60 @@ namespace Koubot.Tool.String
         /// <returns></returns>
         public static string ToIListString<T>([CanBeNull]this IEnumerable<T> values, string separator) => 
             values == null ? string.Empty : string.Join(separator, values);
+        /// <summary>
+        /// 智能拼接
+        /// </summary>
+        /// <param name="mainStr">其中有$0的将会自动将secondStr拼接进去，否则是mainStr在前secondStr在后拼接</param>
+        /// <param name="secondStr">要拼接到主字符串中$0或后面的字符串</param>
+        /// <returns></returns>
+        public static string SmartConcat(this string mainStr, string secondStr)
+        {
+            if (mainStr == null || secondStr == null || !mainStr.Contains("$0")) return mainStr + secondStr;
+            return mainStr.Replace("$0", secondStr);
+        }
 
+        /// <summary>
+        /// 智能拼接（必定按照$num来拼接，不会自动向后拼接。$num如果要跳过一个可以赋值null）
+        /// </summary>
+        /// <param name="mainStr">$0的将会自动将整个secondStr拼接进去，$1拼接第一个，$2拼接第二个，最多九个以此类推</param>
+        /// <param name="notParse">不处理第几号元素，一般用于嵌套使用</param>
+        /// <param name="numStr">要拼接到主字符串中$num的字符串，按顺序，最多9个</param>
+        /// <returns></returns>
+        public static string SmartConcat(this string mainStr, int? notParse = null, params string[] numStr)
+        {
+            Regex regex = new Regex(@"\$(?<index>\d)");
+            if (mainStr == null || numStr == null || !regex.IsMatch(mainStr)) return mainStr;
+            foreach (Match match in regex.Matches(mainStr))
+            {
+                string replaceStr = "";
+                int secondStrCount = numStr.Length;
+                if (int.TryParse(match.Groups["index"].Value, out int index))
+                {
+                    if(index == notParse) continue;
+                    switch (index)
+                    {
+                        case < 0:
+                            continue;
+                        case 0:
+                            replaceStr = numStr.ToIListString("");
+                            break;
+                        default:
+                        {
+                            if (index <= secondStrCount)
+                            {
+                                replaceStr = numStr[index - 1];
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+                mainStr = regex.Replace(mainStr, replaceStr, 1);
+            }
+
+            return mainStr;
+        }
         #endregion
 
         #region KouType类型适配

@@ -128,6 +128,28 @@ namespace Koubot.Tool.Math
         /// <param name="number"></param>
         /// <returns></returns>
         public bool IsInInterval(double number) => number <= RightInterval && number >= LeftInterval;
+        /// <summary>
+        /// 获取在区间内左边最近整数，无穷小则返回int.MinValue
+        /// </summary>
+        /// <returns></returns>
+        public int GetLeftIntervalNearestNumber()
+        {
+            int minValue = LeftInterval.NumType == NumberType.Infinitesimal ? int.MinValue : (int)System.Math.Ceiling(LeftInterval.Value);
+            if (LeftInterval.IsOpen && minValue == (int)LeftInterval.Value) minValue += 1;
+            return minValue;
+        }
+        /// <summary>
+        /// 获取在区间内右边最近整数，无穷大则返回int.MaxValue
+        /// </summary>
+        /// <returns></returns>
+        public int GetRightIntervalNearestNumber()
+        {
+            int maxValue = RightInterval.NumType == NumberType.Infinity
+                ? int.MaxValue
+                : (int)System.Math.Floor(RightInterval.Value);
+            if (RightInterval.IsOpen && maxValue == (int)RightInterval.Value) maxValue -= 1;
+            return maxValue;
+        }
     }
 
     /// <summary>
@@ -246,7 +268,7 @@ namespace Koubot.Tool.Math
             var result = str.Matches(@"(?<!\d)-?\d*\.?\d+");//支持匹配浮点数以及负数
             left = default;
             right = default;
-            if (result == null || result.Length < 2)
+            if (result == null || result.Count < 2)
             {
                 if (force && Double.TryParse(str, out double num))
                 {
@@ -255,7 +277,7 @@ namespace Koubot.Tool.Math
                 }
                 return false;
             }
-            for (int i = 0; i < result.Length; i++)
+            for (int i = 0; i < result.Count; i++)
             {
                 if (i == 0)
                 {
@@ -270,6 +292,10 @@ namespace Koubot.Tool.Math
             if (left > right) return false;
             return true;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return this.NumType switch
@@ -282,6 +308,11 @@ namespace Koubot.Tool.Math
         #endregion
 
         #region 运算符重载 传入空值会报错
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (obj is IntervalDouble intervalDouble)
@@ -290,6 +321,10 @@ namespace Koubot.Tool.Math
                     && IsOpen == intervalDouble.IsOpen;
             return false;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode() //这里实验一下若是使用按照值计算hashcode是不是hashSet中就不能放多个一样的；若是按照地址计算又是不是可以放多个，虽然这违背了初衷
         {
             return base.GetHashCode();

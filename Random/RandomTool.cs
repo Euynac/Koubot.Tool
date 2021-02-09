@@ -1,6 +1,7 @@
 ﻿using Koubot.Tool.Expand;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using Koubot.Tool.Math;
@@ -123,6 +124,7 @@ namespace Koubot.Tool.Random
         }
         #endregion
 
+        #region 数字类拓展
 
         /// <summary>
         /// 产生区间范围中的随机浮点数
@@ -152,16 +154,52 @@ namespace Koubot.Tool.Random
         /// <returns></returns>
         public static int GenerateRandomInt(this IntervalDoublePair intervalDoublePair)
         {
-            var rightInterval = intervalDoublePair.RightInterval;
-            var leftInterval = intervalDoublePair.LeftInterval;
-            int maxValue = rightInterval.NumType == NumberType.Infinity
-                ? int.MaxValue
-                : (int)System.Math.Floor(rightInterval.Value);
-            int minValue = leftInterval.NumType == NumberType.Infinitesimal ? int.MinValue : (int)System.Math.Ceiling(leftInterval.Value);
-            if (leftInterval.IsOpen) minValue += 1;
-            if (!rightInterval.IsOpen && maxValue != int.MaxValue) maxValue += 1;
+            int maxValue = intervalDoublePair.GetRightIntervalNearestNumber();
+            int minValue = intervalDoublePair.GetLeftIntervalNearestNumber();
             if (minValue > maxValue) return minValue;//区间相同就麻烦了
-            return _randomSeed.Next(minValue, maxValue);
+            if (maxValue == int.MaxValue) maxValue--;
+            return _randomSeed.Next(minValue, maxValue + 1);
         }
+
+        #endregion
+
+        #region object类拓展
+
+        /// <summary>
+        /// 有x%可能性不返回null，就是有x%可能性会做（链式上?截断用于概率执行）
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="probability">概率基础值，不返回null的可能性[0-1]</param>
+        /// <param name="influenceValue">影响值，与原始基础概率相加，可为负</param>
+        /// <param name="maxProbability">最大可能性，影响值+基础值的最大值</param>
+        /// <param name="minProbability">最小可能性，影响值+基础值的最小值</param>
+        /// <returns></returns>
+        public static T ProbablyDo<T>(this T obj, double probability , double influenceValue = 0, double maxProbability = 1, double minProbability = 0) where T : class
+            => ProbablyTrue(probability, influenceValue, maxProbability, minProbability) ? obj : null;
+
+        /// <summary>
+        /// 有x%可能性会成为给定的对象
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="become">x%可能会返回的对象</param>
+        /// <param name="probability">概率基础值，不返回null的可能性[0-1]</param>
+        /// <param name="influenceValue">影响值，与原始基础概率相加，可为负</param>
+        /// <param name="maxProbability">最大可能性，影响值+基础值的最大值</param>
+        /// <param name="minProbability">最小可能性，影响值+基础值的最小值</param>
+        /// <returns></returns>
+        public static T ProbablyBe<T>(this T obj, T become, double probability , double influenceValue = 0, double maxProbability = 1, double minProbability = 0)
+            => ProbablyTrue(probability, influenceValue, maxProbability, minProbability) ? become : obj;
+
+        /// <summary>
+        /// 有x%可能性返回true
+        /// </summary>
+        /// <param name="probability">概率基础值，返回true的可能性[0-1]</param>
+        /// <param name="influenceValue">影响值，与原始基础概率相加，可为负</param>
+        /// <param name="maxProbability">0-1之间 最大可能性，影响值+基础值的最大值</param>
+        /// <param name="minProbability">0-1之间 最小可能性，影响值+基础值的最小值</param>
+        /// <returns></returns>
+        public static bool ProbablyTrue(this double probability, double influenceValue = 0, double maxProbability = 1, double minProbability = 0)
+            => (probability + influenceValue).LimitInRange(minProbability, maxProbability) - _randomSeed.NextDouble() > 0;
+        #endregion
     }
 }

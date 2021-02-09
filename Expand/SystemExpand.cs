@@ -124,6 +124,31 @@ namespace Koubot.Tool.Expand
         }
 
         /// <summary>
+        /// 读取按位枚举<see cref="System.Enum"/> 标记 <see cref="System.ComponentModel.DescriptionAttribute"/>中所有含有的枚举值
+        /// </summary>
+        /// <param name="flags"></param>
+        /// <param name="separator">分隔符</param>
+        /// <param name="ignoreEnums"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string GetFlagsDescription<T>(this T flags, char separator = '、', params T[] ignoreEnums) where T : Enum
+        {
+            var enumValues = Enum.GetValues(typeof(T));
+            StringBuilder stringBuilder = new StringBuilder();
+            List<T> ignoreList = ignoreEnums.ToList();
+            foreach (var value in enumValues)
+            {
+                if (ignoreList.Contains((T) value)) continue;
+                if (flags.HasFlag((T) value))
+                {
+                    stringBuilder.Append(((T) value).GetDescription());
+                    stringBuilder.Append(separator);
+                }
+            }
+
+            return stringBuilder.ToString().TrimEnd(separator);
+        }
+        /// <summary>
         /// 移除按位枚举中的指定枚举
         /// </summary>
         /// <param name="flags"></param>
@@ -138,7 +163,7 @@ namespace Koubot.Tool.Expand
                 flagInt &= ~removeFlag.GetHashCode();//避免装箱产生过多损耗 
             }
 
-            return (T)(object)flagInt;
+            return (T)(flagInt as object);
         }
         /// <summary>
         /// 添加指定枚举到指定按位枚举中
@@ -155,7 +180,7 @@ namespace Koubot.Tool.Expand
                 flagInt |= removeFlag.GetHashCode();
             }
 
-            return (T)(object)flagInt;
+            return (T)(flagInt as object);
         }
 
         /// <summary>
@@ -385,24 +410,18 @@ namespace Koubot.Tool.Expand
             return count > 0 ? regex.Replace(s, replacement, count) : regex.Replace(s, replacement);
         }
         /// <summary>
-        /// 搜索指定正则表达式的所有匹配项并返回捕获到的所有子字符串，不存在的将返回null
+        /// 搜索指定正则表达式的所有匹配项并返回捕获到的所有子字符串，不存在的将返回count=0的list
         /// </summary>
         /// <param name="s">要测试的字符串</param>
         /// <param name="pattern">要匹配的正则表达式模式</param>
         /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
         /// <returns></returns>
-        public static string[] Matches([CanBeNull] this string s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None)
+        public static List<string> Matches([CanBeNull] this string s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None)
         {
-            if (string.IsNullOrEmpty(s)) return null;
-            var collection = Regex.Matches(s, pattern, regexOptions);
-            string[] result = new string[collection.Count];
-            int i = 0;
-            foreach (Match item in collection)
-            {
-                result[i] = item.Value;
-                i++;
-            }
-            return result;
+            List<string> list = new List<string>();
+            if (string.IsNullOrEmpty(s)) return list;
+            list.AddRange(from Match item in Regex.Matches(s, pattern, regexOptions) select item.Value);
+            return list;
         }
         /// <summary>
         /// 正则表达式替换
@@ -460,29 +479,28 @@ namespace Koubot.Tool.Expand
         }
 
         /// <summary>
-        /// 指定字符串在某字符串中出现的所有Index集合，没有则返回null
+        /// 指定字符串在某字符串中出现的所有Index集合（可用于判断出现次数），没有则返回count=0的list
         /// </summary>
         /// <param name="source">源字符串</param>
         /// <param name="value">要搜索的字符串</param>
+        /// <param name="repeat">可以重复判断已经出现过的字符（即包括子序列）</param>
         /// <returns></returns>
-        public static List<int> AllIndexOf(this string source, string value)
+        [ContractAnnotation("source:null => notnull")]
+        public static List<int> AllIndexOf(this string source, string value, bool repeat = false)
         {
-            if (source.Contains(value))
+            List<int> list = new List<int>();
+            if (source.IsNullOrEmpty() || value.IsNullOrEmpty()) return list;
+            if (!source.Contains(value)) return list;
+            int i = 0;
+            while (i >= 0 && i < source.Length)
             {
-                List<int> list = new List<int>();
-                int i = 0;
-                while (i >= 0 && i < source.Length)
-                {
-                    i = source.IndexOf(value, i, StringComparison.Ordinal);
-                    if (i >= 0)
-                    {
-                        list.Add(i);
-                        i++;
-                    }
-                }
-                if (list.Count != 0) return list;
+                i = source.IndexOf(value, i, StringComparison.Ordinal);
+                if (i < 0) continue;
+                list.Add(i);
+                if (repeat) i++;
+                else i += value.Length;
             }
-            return null;
+            return list;
         }
         /// <summary>
         /// 返回一个值，该值指示指定的子串是否出现在此字符串中。

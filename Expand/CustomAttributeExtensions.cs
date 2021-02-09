@@ -15,7 +15,7 @@ namespace Koubot.Tool.Expand
         /// <summary>
         /// Cache Data [TypeName + AttributeName组成的Key, Attribute对象]
         /// </summary>
-        private static readonly ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
+        private static readonly ConcurrentDictionary<string, object> _cache = new();
 
         /// <summary>
         /// 获取指定类型的CustomAttribute
@@ -36,7 +36,7 @@ namespace Koubot.Tool.Expand
         /// <typeparam name="TProperty"></typeparam>
         /// <returns>返回Attribute的值，没有则返回null</returns>
         public static TAttribute GetCustomAttributeCached<TAttribute, TClass, TProperty>(this Type classType,
-            TAttribute attributeType, Expression<Func<TClass, TProperty>> property)
+            Expression<Func<TClass, TProperty>> property)
             where TAttribute : Attribute
         {
             var name = ((MemberExpression)property.Body).Member.Name;

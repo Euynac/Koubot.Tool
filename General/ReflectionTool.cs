@@ -1,6 +1,7 @@
 ﻿using System;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Koubot.Tool.General
@@ -10,6 +11,27 @@ namespace Koubot.Tool.General
     /// </summary>
     public static class ReflectionTool
     {
+        /// <summary>
+        /// 克隆某个对象中所有属性值（EFCore会追踪修改）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="copyObj">需要复制值的对象用以克隆</param>
+        /// <param name="ignoreParameterNames">设定忽略克隆的属性名</param>
+        /// <returns></returns>
+        public static void CloneParameters<T>(this T obj, T copyObj, params string[] ignoreParameterNames)
+        {
+            var ignoreList = ignoreParameterNames.ToList();
+            foreach (PropertyInfo propertyInfo in typeof(T).GetProperties())
+            {
+                //获取属性值：
+                object propertyValue = propertyInfo.GetValue(copyObj);
+                //获取属性名：
+                string propertyName = propertyInfo.Name;
+                if (ignoreList.Contains(propertyName)) continue;
+                propertyInfo.SetValue(obj, propertyValue);
+            }
+        }
         /// <summary>
         /// 获取指定类对象中所有public的属性信息，返回Dict[key属性名，Value[属性类型，属性值]]
         /// </summary>
