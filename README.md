@@ -5,14 +5,101 @@
 里面有部分方法使用了ReSharper的特性，使用ReSharper的插件可以获得良好的提示：
 
 ```C#
-[ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)https://www.jetbrains.com/help/resharper/Contract_Annotations.html#syntax
+		[ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)https://www.jetbrains.com/help/resharper/Contract_Annotations.html#syntax
         public static bool IsNullOrEmpty([CanBeNull] this string s)
-        {
-            return string.IsNullOrEmpty(s);
-        }
+            => string.IsNullOrEmpty(s);
+        
 ```
 
 
+
+## 工具类
+
+### KouWatch 单元测试计时器/效率比较器
+
+比如测试GetCustomAttributeCached与自带方法的效率比较：
+
+```c#
+			KouWatch.Start("cache", () =>
+            {
+                userBlacklist.FieldInfo(p => p.Reason);//二次封装GetCustomAttributeCached
+            }, "default", () =>
+            {
+                property.GetCustomAttribute<KouAutoModelField>(); ;
+            }, 100000);
+```
+
+```
+//输出结果：
+“cache”动作执行100000次中...
+管道运行时间：0ms 通过中间件数：7
+cache执行时间：253ms
+“default”动作执行100000中...
+default执行时间：596ms
+效率比较：“cache”动作比default快135.573%倍
+```
+
+
+
+### SortTool
+
+其中的扩展方法能够快速完成Comparison、Compare等相关方法的实现，且支持链式（实现权重排序）、null。
+
+```c#
+		public int CompareTo(SystemAliasList? other)
+        {
+            return this.CompareToObjAsc(IsGlobalAlias, other?.IsGlobalAlias, out int result)
+                ?.CompareToObjAsc(IsGroupAlias, other?.IsGroupAlias, out result)
+                ?.CompareToObjAsc(Advanced, other?.Advanced, out result)
+                ?.CompareToObjAsc(AliasId, other?.AliasId, out result) == null ? result : 0;
+        }
+```
+
+比如实现一个比较alias列表的比较器，该效果是空的都会放在最后（支持null），且先按照IsGlobalAlias字段升序、再按照IsGroupAlias字段升序、再按照Advanced字段升序、最后按照AliasID字段升序。
+
+
+
+
+
+
+
+## 服务类
+
+#### 漏桶算法限流器LeakyBucketRateLimiter
+
+专门用于客户端调用API的漏桶算法限流器，一般的漏桶算法实现不会计算请求到达服务器所需时间，造成超过服务器所规定的QPS。该限流器实现是请求完毕之后才会从桶中取出。
+
+QPS支持浮点数，比如0.5，即2秒钟才可调用一次（另外QPS很大的话测试出来最多间隔50ms调用一次，因此目前最大有效支持的QPS为20左右，后期再进行优化）误差在0.5ms-3ms左右
+
+另外限流器支持多种API同时限流，不会开启新线程用于自动漏桶，是用使用的线程来自动控制桶中的请求（但这也造成了对大QPS支持不好的缺点）
+
+支持设定超时时间
+
+使用示例：
+
+```c#
+using (var limiter = new LeakyBucketRateLimiter("test", TestQPS, TestLimitedSize))//利用了IDisposable机制，当出using范围，即自动认为请求结束，可以从桶中取出元素
+{
+    if (!limiter.CanRequest())
+    {
+        Console.WriteLine($"请求失败：{limiter.ErrorMsg}");
+        return;
+    }
+    Console.WriteLine($"发出了一个API请求");
+}
+```
+
+
+
+## 接口类
+
+#### IKouErrorMsg
+
+某些服务类中若实现该接口，可以获取返回错误的原因。
+
+
+
+## 其他扩展方法
 
 #### Reflection 方法
 
@@ -40,7 +127,9 @@ double.ProbablyTrue：有x%可能性返回true
 
 #### Attribute类
 
-CustomAttributeExtensions中封装一些关于CustomAttribute的扩展方法，使用了Dict做cache，能够高效的得到用户对类上使用的自定义标签（Attribute特性）中的值
+CustomAttributeExtensions中封装一些关于CustomAttribute的扩展方法，使用了Dict做cache，能够高效的得到用户对类上使用的自定义标签（Attribute特性）中的值。
+
+其中GetCustomAttributeCached方法能够快速获取对应类或指定属性或方法上的自定义标签，较自带的GetCustomAttribute而言，不需要反射得到类中指定属性、或方法的Type即可得到自定义标签，且效率高2倍左右。
 
 #### String 类
 
@@ -69,10 +158,10 @@ TimeSpan：支持明天早上八点过五分、5:00、一炷香、一个月等�
   使用BeNullOr（如果给定object为null则返回null，否则返回给定字符串）快速格式化：
 
   ```C#
-  var result = $"{Group.Name.BeNullOr($"{Group.Name}")}[组 {Group.PlatformGroupId}]" +
-                  $"{Plugin.BeNullOr($"【{Plugin?.PluginZhName}】")}" +
-                  $" {(IsGlobal ? "【全局】" : null)} 结束于 {EndAt}" +
-                  $"{Reason.BeNullOr($"\n原因：{Reason}")}",
+  var result = $"{Group.Name?.BeNullOr(Group.Name)}")}" +
+      			$"[组 {Group.PlatformGroupId}]" +
+                  $"{Plugin?.BeNullOr(Plugin.PluginZhName)}")}" +
+                  $"{Reason?.BeNullOr($"\n原因：{Reason}")}",
   ```
 
   EqualsAny、EqualsAll（比较多个的时候很好用，比如Blog.Post.Name == "a" || Blog.Post.Name == "b" || Blog.Post.Name == "c"， 可以写成 Blog.Post.Name.EqualsAny("a","b","c")）
@@ -86,4 +175,5 @@ TimeSpan：支持明天早上八点过五分、5:00、一炷香、一个月等�
   ...
 
   
-
+  
+  

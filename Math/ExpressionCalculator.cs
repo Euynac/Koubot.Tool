@@ -103,15 +103,17 @@ namespace Koubot.Tool.Math
                     }
                     else
                     {
-                        operandStack.Push(0);
-                        break;
+                        return null;
+                        //operandStack.Push(0);
+                        //break;
                     }
                     if (operandStack.Count > 0)
                         x = (double)operandStack.Pop();
                     else
                     {
-                        operandStack.Push(y);
-                        break;
+                        return null;//双目运算如果运算数不够说明语法有误。
+                        //operandStack.Push(y);
+                        //break;
                     }
                     switch (nowChar)
                     {
@@ -212,8 +214,9 @@ namespace Koubot.Tool.Math
                     }
                     else
                     {
-                        operandStack.Push(0);
-                        break;
+                        return null;//语法有误
+                        //operandStack.Push(0);
+                        //break;
                     }
                 }
             }

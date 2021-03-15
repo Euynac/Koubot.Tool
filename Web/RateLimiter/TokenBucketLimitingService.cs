@@ -1,9 +1,9 @@
-﻿using System;
-
+﻿using Koubot.Tool.Expand;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Koubot.Tool.Web.APILimiting
+namespace Koubot.Tool.Web.RateLimiter
 {
     /// <summary>
     /// 令牌桶算法限流服务。优点：控制调用的平均速率，可以处理突发高数量请求
@@ -13,7 +13,7 @@ namespace Koubot.Tool.Web.APILimiting
         /// <summary>
         /// 每秒最大访问量/请求量
         /// </summary>
-        public int MaxQPS { get; private set; }
+        public double MaxQPS { get; private set; }
         /// <summary>
         /// 最大并发限制数量，多余请求会被丢弃。若是平台API，这里就是能同时处理的最大数量，默认是QPS。若是并发服务则是最大并发数量
         /// </summary>
@@ -33,7 +33,7 @@ namespace Koubot.Tool.Web.APILimiting
         /// </summary>
         /// <param name="maxQPS">最大QPS</param>
         /// <param name="limitSize">最大限制同时并发数</param>
-        public TokenBucketLimitingService(int maxQPS, int limitSize)
+        public TokenBucketLimitingService(double maxQPS, int limitSize)
         {
             MaxQPS = maxQPS;
             LimitSize = limitSize;
@@ -52,9 +52,8 @@ namespace Koubot.Tool.Web.APILimiting
         /// </summary>
         private void TokenProcess()
         {
-            int sleep = 1000 / MaxQPS;
+            int sleep = (1000 / MaxQPS).Ceiling();
             if (sleep == 0) sleep = 1; //测试过只要不是while(true)且不sleep，就算sleep(1)CPU也没什么开销
-            sleep += 1;//不能卡那么准
             DateTime start = DateTime.Now;
             while (cancellationToken.Token.IsCancellationRequested == false)
             {
@@ -105,8 +104,10 @@ namespace Koubot.Tool.Web.APILimiting
                         }
                     }
                 }
-                if (limitedQueue.Count == 1) Thread.Sleep(1000 / MaxQPS - 1);
-                else Thread.Sleep(System.Math.Max(0, (limitedQueue.Count - 1) * 1000 / MaxQPS));
+
+                Thread.Sleep(limitedQueue.Count == 1
+                    ? (1000 / MaxQPS - 1).Ceiling()
+                    : System.Math.Max(0, ((limitedQueue.Count - 1) * 1000 / MaxQPS).Ceiling()));
                 retryCount--;
             }
             return false;

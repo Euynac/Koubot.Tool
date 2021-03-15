@@ -18,7 +18,7 @@ namespace Koubot.Tool.String
         /// <returns></returns>
         public static bool WebUnitDouble(string str, out string parsedStr)
         {
- 
+
             parsedStr = str;
             if (str.IsNullOrWhiteSpace()) return false;
             List<string> patternList = new List<string>()
@@ -28,7 +28,7 @@ namespace Koubot.Tool.String
                 @"(?<kw>\d+(\.\d+)?)(?:kw)((?<w>\d+(?:\.\d+)?)(?:w))?((?<k>\d+(\.\d+)?)(?:k(?!w)))?(?<tail>\d+)?",//2 匹配6kw6w
             };
             bool success = false;//指示是否成功转换过一次
-            
+
             for (int i = patternList.Count - 1; i >= 0; i--)
             {
                 Regex regex = new Regex(patternList[i]);

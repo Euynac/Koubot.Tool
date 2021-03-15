@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Koubot.Tool.Expand
 {
@@ -112,36 +111,41 @@ namespace Koubot.Tool.Expand
         #endregion
 
         #region Enum类拓展
+
         /// <summary>
         /// 读取 <see cref="System.Enum"/> 标记 <see cref="System.ComponentModel.DescriptionAttribute"/> 的值
         /// </summary>
         /// <param name="value">原始 <see cref="System.Enum"/> 值</param>
+        /// <param name="notReturnDefaultEnum">找不到标签值时不返回给定的枚举的<seealso cref="string"/>形式，直接返回null</param>
         /// <returns>如果成功获取返回特性标记的值，否则返回给定的枚举的<seealso cref="string"/>形式，或 null</returns>
-        public static string GetDescription(this Enum value)
+        public static string GetDescription(this Enum value, bool notReturnDefaultEnum = false)
         {
             DescriptionAttribute attribute = value?.GetType().GetField(value.ToString())?.GetCustomAttribute<DescriptionAttribute>(false);
-            return attribute?.Description ?? value?.ToString();
+            return attribute?.Description ?? (notReturnDefaultEnum ? null : value?.ToString());
         }
 
         /// <summary>
-        /// 读取按位枚举<see cref="System.Enum"/> 标记 <see cref="System.ComponentModel.DescriptionAttribute"/>中所有含有的枚举值
+        /// 使用指定分割符批量格式化按位枚举<see cref="System.Enum"/> 中含有的枚举值。格式化方式是使用 <see cref="System.ComponentModel.DescriptionAttribute"/>标记的值或string类型枚举
         /// </summary>
         /// <param name="flags"></param>
         /// <param name="separator">分隔符</param>
-        /// <param name="ignoreEnums"></param>
+        /// <param name="ignoreNoDesc">忽略没有Description特性的字段</param>
+        /// <param name="ignoreEnums">忽略格式化的Enum值</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static string GetFlagsDescription<T>(this T flags, char separator = '、', params T[] ignoreEnums) where T : Enum
+        public static string GetFlagsDescription<T>(this T flags, char separator = '、', bool ignoreNoDesc = false, params T[] ignoreEnums) where T : Enum
         {
             var enumValues = Enum.GetValues(typeof(T));
             StringBuilder stringBuilder = new StringBuilder();
             List<T> ignoreList = ignoreEnums.ToList();
             foreach (var value in enumValues)
             {
-                if (ignoreList.Contains((T) value)) continue;
-                if (flags.HasFlag((T) value))
+                if (ignoreList.Contains((T)value)) continue;
+                if (flags.HasFlag((T)value))
                 {
-                    stringBuilder.Append(((T) value).GetDescription());
+                    var tmp = ((T)value).GetDescription(ignoreNoDesc);
+                    if (tmp == null) continue;
+                    stringBuilder.Append(tmp);
                     stringBuilder.Append(separator);
                 }
             }
@@ -219,14 +223,14 @@ namespace Koubot.Tool.Expand
 
         #region Object类拓展
         /// <summary>
-        /// 如果引用类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
+        /// （使用时请obj?.BeNullOr()这样使用，可快速截断变为null）如果引用类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="be"></param>
         /// <param name="useSmartConcat">是否启用自动拼接obj.ToString()，使用 $0 指定自动位置，有冲突时注意关闭</param>
         /// <returns></returns>
         [ContractAnnotation("obj:null => null")]
-        public static string BeNullOr<T>([CanBeNull] this T obj, string be, bool useSmartConcat = false) where T : class //引用类型约束
+        public static string BeNullOr<T>([CanBeNull] this T obj, [CanBeNull] string be, bool useSmartConcat = false) where T : class //引用类型约束
         {
             return obj == null ? null : !useSmartConcat ? be : be?.Replace("$0", obj.ToString());
         }
@@ -244,7 +248,7 @@ namespace Koubot.Tool.Expand
         }
 
         /// <summary>
-        /// 如果可空值类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
+        /// （使用时请obj?.BeNullOr()这样使用，可快速截断变为null）如果可空值类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="be"></param>
@@ -301,6 +305,28 @@ namespace Koubot.Tool.Expand
             return predicates != null && predicates.Any(p => p.Invoke(obj));
         }
         /// <summary>
+        /// 判断一个方法是否有任意一个元素满足
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <param name="objects">当元素有为null时，必不满足</param>
+        /// <returns></returns>
+        public static bool SatisfyAny<T>(Func<T, bool> predicate, params T[] objects)
+        {
+            return predicate != null && objects.Any(o => o != null && predicate.Invoke(o));
+        }
+        /// <summary>
+        /// 判断一个方法是否所有元素都满足
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <param name="objects">当元素有为null时，必不满足</param>
+        /// <returns></returns>
+        public static bool SatisfyAll<T>(Func<T, bool> predicate, params T[] objects)
+        {
+            return predicate != null && objects.All(o => o != null && predicate.Invoke(o));
+        }
+        /// <summary>
         /// 判断元素是否满足所有方法
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -345,123 +371,23 @@ namespace Koubot.Tool.Expand
         /// <param name="s">要测试的字符串</param>
         /// <returns></returns>
         [ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)https://www.jetbrains.com/help/resharper/Contract_Annotations.html#syntax
-        public static bool IsNullOrEmpty([CanBeNull] this string s)
-        {
-            return string.IsNullOrEmpty(s);
-        }
+        public static bool IsNullOrEmpty([CanBeNull] this string s) => string.IsNullOrEmpty(s);
+
         /// <summary>
         /// 指示指定的字符串是 null 还是空字符串("")还是仅由空白字符组成
         /// </summary>
         /// <param name="s">要测试的字符串</param>
         /// <returns></returns>
         [ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)
-        public static bool IsNullOrWhiteSpace([CanBeNull] this string s)
-        {
-            return string.IsNullOrWhiteSpace(s);
-        }
+        public static bool IsNullOrWhiteSpace([CanBeNull] this string s) => string.IsNullOrWhiteSpace(s);
+
         /// <summary>
         /// 判断是否能够被转换为int型
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsInt([CanBeNull] this string s)
-        {
-            return int.TryParse(s, out _);
-        }
-        /// <summary>
-        /// 判断字符串是否能够匹配正则表达式
-        /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <returns></returns>
-        public static bool IsMatch([CanBeNull] this string s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None)
-        {
-            return s != null && Regex.IsMatch(s, pattern, regexOptions);
-        }
+        public static bool IsInt([CanBeNull] this string s) => int.TryParse(s, out _);
 
-        /// <summary>
-        /// 搜索指定正则表达式的第一个匹配项并得到捕获的子字符串，不存在的默认返回("")
-        /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <param name="ifNotExistReturnNull">如果不存在返回 null，而不是("")</param>
-        /// <returns></returns>
-        public static string Match([CanBeNull] this string s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None, bool ifNotExistReturnNull = false)
-        {
-            if (s == null) return ifNotExistReturnNull ? null : "";
-            var result = Regex.Match(s, pattern, regexOptions);
-            return result.Success ? result.Value : ifNotExistReturnNull ? null : "";
-        }
-        /// <summary>
-        /// 使用指定的替换字符串替换与正则表达式匹配的指定数量的字符串
-        /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <param name="replacement">指定的替换字符串</param>
-        /// <param name="count">为0默认全部替换</param>
-        /// <returns></returns>
-        public static string RegexReplace([CanBeNull] this string s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None, string replacement = "", int count = 0)
-        {
-            if (string.IsNullOrEmpty(s)) return s;
-            Regex regex = new Regex(pattern, regexOptions);
-            return count > 0 ? regex.Replace(s, replacement, count) : regex.Replace(s, replacement);
-        }
-        /// <summary>
-        /// 搜索指定正则表达式的所有匹配项并返回捕获到的所有子字符串，不存在的将返回count=0的list
-        /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <returns></returns>
-        public static List<string> Matches([CanBeNull] this string s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None)
-        {
-            List<string> list = new List<string>();
-            if (string.IsNullOrEmpty(s)) return list;
-            list.AddRange(from Match item in Regex.Matches(s, pattern, regexOptions) select item.Value);
-            return list;
-        }
-        /// <summary>
-        /// 正则表达式替换
-        /// </summary>
-        /// <param name="s">要被替换的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="replacement">匹配的字符串被替换为</param>
-        /// <param name="count">为null全部替换，否则替换指定次数</param>
-        /// <returns></returns>
-        public static string RegexReplace([CanBeNull] this string s, [RegexPattern] string pattern,
-            string replacement, int? count = null)
-        {
-            if (s == null) return null;
-            Regex regex = new Regex(pattern);
-            return count != null ? regex.Replace(s, replacement, count.Value) : regex.Replace(s, replacement);
-        }
-
-        /// <summary>
-        /// 找到字符串中符合正则表达式的给定命名捕获组名的所有匹配项
-        /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="groupName">正则表达式中的命名捕获组中的名字</param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <returns></returns>
-        public static List<string> MatchedGroupValues([CanBeNull] this string s,
-            [RegexPattern] string pattern, string groupName,
-            RegexOptions regexOptions = RegexOptions.None)
-        {
-            List<string> itemList = new List<string>();
-            if (s == null || groupName.IsNullOrEmpty()) return itemList;
-            Regex regex = new Regex(pattern);
-            foreach (Match match in regex.Matches(s))
-            {
-                var matched = match.Groups[groupName].Value;
-                if(!matched.IsNullOrEmpty()) itemList.Add(matched);
-            }
-
-            return itemList;
-        }
 
         /// <summary>
         /// 将某段字符串按照某指定字符串分割成数组后，查找一个字符串是否在数组中
@@ -509,10 +435,8 @@ namespace Koubot.Tool.Expand
         /// <param name="value">要搜寻的字符串。</param>
         /// <param name="comparisonType">指定搜索规则的枚举值之一</param>
         /// <returns>如果 true 参数出现在此字符串中，或者 value 为空字符串 ("")，则为 value；否则为 false。</returns>
-        public static bool Contains(this string source, string value, StringComparison comparisonType)
-        {
-            return source.IndexOf(value, comparisonType) >= 0;
-        }
+        public static bool Contains(this string source, string value, StringComparison comparisonType) => source.IndexOf(value, comparisonType) >= 0;
+
         /// <summary>
         /// 检测一个字符串集合中是否存在string的子字符串
         /// </summary>
@@ -548,14 +472,21 @@ namespace Koubot.Tool.Expand
 
         #region 数字类拓展
         /// <summary>
-        /// 保留指定位数的小数（四舍五入）
+        /// 将指定数字限定在特定范围内
         /// </summary>
-        /// <param name="number"></param>
-        /// <param name="digits">保留位数</param>
+        /// <param name="num"></param>
+        /// <param name="max">最大值，超过则取这个最大值</param>
         /// <returns></returns>
-        public static double RetainDecimal(this double number, int digits = 2)
-            =>   System.Math.Round(number, digits, MidpointRounding.AwayFromZero);
-        
+        public static int LimitInRange(this int num, int max) => num > max ? max : num;
+
+        /// <summary>
+        /// 将指定数字限定在特定范围内
+        /// </summary>
+        /// <param name="num"></param>
+        /// <param name="min">最小值，小于则取这个最小值</param>
+        /// <param name="max">最大值，大于则取这个最大值</param>
+        /// <returns></returns>
+        public static int LimitInRange(this int num, int min, int max) => (num > max) ? max : (num < min) ? min : num;
 
         /// <summary>
         /// 将指定数字限定在特定范围内
@@ -563,9 +494,32 @@ namespace Koubot.Tool.Expand
         /// <param name="num"></param>
         /// <param name="max">最大值，超过则取这个最大值</param>
         /// <returns></returns>
-        public static int LimitInRange(this int num, int max)
+        public static long LimitInRange(this long num, long max) => num > max ? max : num;
+
+        /// <summary>
+        /// 将指定数字限定在特定范围内
+        /// </summary>
+        /// <param name="num"></param>
+        /// <param name="min">最小值，小于则取这个最小值</param>
+        /// <param name="max">最大值，大于则取这个最大值</param>
+        /// <returns></returns>
+        public static long LimitInRange(this long num, long min, long max) => num > max ? max : num < min ? min : num;
+
+        /// <summary>
+        /// 将指定数字限定在特定范围内
+        /// </summary>
+        /// <param name="num"></param>
+        /// <param name="min">最小值，小于则取这个最小值</param>
+        /// <param name="max">最大值，大于则取这个最大值</param>
+        /// <returns></returns>
+        public static long LimitInRange(this long num, long? min, long? max)
         {
-            return num > max ? max : num;
+            if (min == null)
+            {
+                return max == null ? num : num.LimitInRange(max.Value);
+            }
+
+            return max == null ? num < min ? min.Value : num : num.LimitInRange(min.Value, max.Value);
         }
         /// <summary>
         /// 将指定数字限定在特定范围内
@@ -574,21 +528,8 @@ namespace Koubot.Tool.Expand
         /// <param name="min">最小值，小于则取这个最小值</param>
         /// <param name="max">最大值，大于则取这个最大值</param>
         /// <returns></returns>
-        public static int LimitInRange(this int num, int min, int max)
-        {
-            return (num > max) ? max : (num < min) ? min : num;
-        }
-        /// <summary>
-        /// 将指定数字限定在特定范围内
-        /// </summary>
-        /// <param name="num"></param>
-        /// <param name="min">最小值，小于则取这个最小值</param>
-        /// <param name="max">最大值，大于则取这个最大值</param>
-        /// <returns></returns>
-        public static double LimitInRange(this double num, double min, double max)
-        {
-            return (num > max) ? max : (num < min) ? min : num;
-        }
+        public static double LimitInRange(this double num, double min, double max) => (num > max) ? max : (num < min) ? min : num;
+
         /// <summary>
         /// 将指定数字限定在特定范围内
         /// </summary>
@@ -627,17 +568,21 @@ namespace Koubot.Tool.Expand
         /// <param name="num"></param>
         /// <param name="max">最大值，超过则取这个最大值</param>
         /// <returns></returns>
-        public static double LimitInRange(this double num, double max)
-        {
-            return num > max ? max : num;
-        }
+        public static double LimitInRange(this double num, double max) => num > max ? max : num;
+
+        /// <summary>
+        /// 返回大于或等于指定double的最小整数值。
+        /// </summary>
+        /// <param name="num"></param>
+        /// <returns></returns>
+        public static int Ceiling(this double num) => (int)System.Math.Ceiling(num);
         #endregion
 
         #region IDictionary类的拓展
         /// <summary>
         /// 尝试将键和值添加到字典中，如果不存在才添加，存在则不添加且不抛异常
         /// </summary>
-        public static IDictionary<TKey, TValue> TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
+        public static IDictionary<TKey, TValue> AddOrIgnore<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
         {
             if (!dict.ContainsKey(key)) dict.Add(key, value);
             return dict;
@@ -709,97 +654,17 @@ namespace Koubot.Tool.Expand
         }
         #endregion
 
-        #region IEnumerable类拓展
-        /// <summary>
-        /// 判断一个集合是否是 null 或空集合
-        /// </summary>
-        /// <param name="collection">指定的集合</param>
-        /// <returns></returns>
-        [ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)
-        public static bool IsNullOrEmptySet<T>([CanBeNull][NoEnumeration] this IEnumerable<T> collection) //指示不会对collection进行读写操作，但这里读了?
-        {
-            return collection == null || !collection.Any();
-        }
-
+        #region Type拓展
 
         /// <summary>
-        /// 尝试获取与指定的键相关联的值
+        /// 判断是否是可空值类型
         /// </summary>
-        /// <param name="dict">可为空</param>
-        /// <param name="value">当本方法返回时，如果找到了指定的键，则返回与该键相关联的值；否则，返回值参数类型的默认值或设定的值。这个参数是在未初始化的情况下传递的。</param>
-        /// <param name="key">要获取值的键</param>
-        /// <param name="defaultValue">失败时返回的默认值或设定的值</param>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
+        /// <param name="type"></param>
         /// <returns></returns>
-        [ContractAnnotation("dict:null => false")]
-        public static bool TryGetValueOrDefault<TKey, TValue>([CanBeNull] this IDictionary<TKey, TValue> dict, TKey key, out TValue value, TValue defaultValue = default)
-        {
-            if (dict.IsNullOrEmptySet())
-            {
-                value = defaultValue;
-                return false;
-            }
-            if (dict.TryGetValue(key, out value)) return true;
-            value = defaultValue;
-            return false;
-        }
-        
-        /// <summary>
-        /// 尝试通过Value获取Key的值（多个value相同仅获取一个key，所以一般用于value和key一对一）
-        /// </summary>
-        /// <param name="dict"></param>
-        /// <param name="value">预测Dictionary中会有的值</param>
-        /// <param name="key">若是存在value将返回key</param>
-        /// <returns>成功返回true且返回key，不成功则返回false</returns>
-        public static bool TryGetKey<TKey, TValue>([CanBeNull] this IEnumerable<KeyValuePair<TKey, TValue>> dict, TValue value, out TKey key)
-        {
-            key = default;
-            if (dict.IsNullOrEmptySet()) return false;
-            foreach (var pair in dict)
-            {
-                if (pair.Value.Equals(value))
-                {
-                    key = pair.Key;
-                    return true;
-                }
-            }
-            return false;
-        }
-        /// <summary>
-        /// 尝试获取所有指定Value对应的Key值
-        /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="dict"></param>
-        /// <param name="value">预测集合中会有的值</param>
-        /// <param name="key">value对应的所有Key</param>
-        /// <returns>成功返回true且返回key的List，不成功则返回false</returns>
-        public static bool TryGetAllKey<TKey, TValue>([CanBeNull] this IEnumerable<KeyValuePair<TKey, TValue>> dict, TValue value, out List<TKey> key)
-        {
-            key = new List<TKey>();
-            if (dict.IsNullOrEmptySet()) return false;
-            foreach (var keyValuePair in dict)
-            {
-                if (keyValuePair.Value.Equals(value))
-                {
-                    key.Add(keyValuePair.Key);
-                }
-            }
-            if (key.Count != 0)
-                return true;
-            return false;
-        }
-        /// <summary>
-        /// 将可空类型的集合转换为不可空的<seealso cref="IEnumerable{T}"/>
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static IEnumerable<T> ConvertToNotNullable<T>(this IEnumerable<T?> list) where T : struct
-        {
-            return list.Where(i => i != null).Select(i => i.Value).ToList();
-        }
+        public static bool IsNullableValueType(this Type type) => type.GetTypeInfo().IsGenericType &&
+                                                             type.GetGenericTypeDefinition() == typeof(Nullable<>);
+
         #endregion
+
     }
 }

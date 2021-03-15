@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Koubot.Tool.General
 {
@@ -8,24 +9,11 @@ namespace Koubot.Tool.General
     public static class EscapeTool
     {
         /// <summary>
-        /// 正则表达式模式字符串转义 (不支持\的转义)
+        /// 正则表达式模式字符串转义
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns>
-        public static string ToRegexPattern(this string pattern)
-        {
-            char[] escapeList = { '(', ')', '[', ']', '{', '}', '!', '?', '^', '|', '.', '+', '*', '$', '#' };//Regular Expression中的特殊字符转义
-            foreach (char chr in escapeList)
-            {
-                if (pattern.Contains(chr.ToString()))
-                {
-                    pattern = pattern.Replace(chr.ToString(), $"\\{chr}");
-                }
-            }
-            return pattern;
-        }
-
-        //'(', ')', '[', ']', '{', '}', '!', '?', '^', '|', ',', ':','.', '+', '*', '=', '$', '#', '<', '>', '@', '%', '&', '-', '_', '\'', '"'
+        public static string ToRegexEscaped(this string pattern) => Regex.Escape(pattern);
 
         private enum RemoveEscapeCharsStates
         {

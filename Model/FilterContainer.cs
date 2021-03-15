@@ -87,6 +87,7 @@ namespace Koubot.Tool.Model
     /// 针对一个Model类的搜索过滤器容器，能够提高效率，并提供自动化的泛型Filter
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [Obsolete("效率过低，已废弃")]
     public class FilterContainer<T> where T : class
     {
         /// <summary>

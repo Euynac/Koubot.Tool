@@ -1,13 +1,14 @@
-﻿using System;
-
+﻿using Koubot.Tool.Expand;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Koubot.Tool.Web.APILimiting
+namespace Koubot.Tool.Web.RateLimiter
 {
     /// <summary>
     /// 漏桶算法限流服务，按照平均速率进行处理请求，不适合突发高数量请求
     /// </summary>
+    [Obsolete("请使用LeakyBucketRateLimiter")]
     public class LeakyBucketLimitingService : ILimitingService
     {
         /// <summary>
@@ -20,9 +21,9 @@ namespace Koubot.Tool.Web.APILimiting
         /// <summary>
         /// 每秒最大访问量，也是用于求漏桶的速率
         /// </summary>
-        public int MaxQPS { get; }
+        public double MaxQPS { get; }
         /// <summary>
-        /// 桶最大容量，多余的请求会被丢弃或挂起。也是能进行最大并行数量，但是在突发高流除了第一次能瞬间装满水桶（瞬间并发所有桶容量），以后再来的请求会按照速率进行处理
+        /// 桶最大容量，多余的请求会被丢弃或挂起。
         /// </summary>
         public int LimitSize { get; }
         /// <summary>
@@ -37,9 +38,14 @@ namespace Koubot.Tool.Web.APILimiting
         /// <summary>
         /// 用于加锁
         /// </summary>
-        private readonly object lockObject = new object();
+        private readonly object _lockObject = new object();
 
-        public LeakyBucketLimitingService(int maxQPS, int limitSize)
+        /// <summary>
+        /// 创建漏桶算法的限流服务
+        /// </summary>
+        /// <param name="maxQPS"></param>
+        /// <param name="limitSize"></param>
+        public LeakyBucketLimitingService(double maxQPS, int limitSize)
         {
             LimitSize = limitSize;
             MaxQPS = maxQPS;
@@ -47,16 +53,16 @@ namespace Koubot.Tool.Web.APILimiting
             cancellationToken = new CancellationTokenSource();
             task = Task.Factory.StartNew(TokenProcess, cancellationToken.Token);
         }
-
+        //匀速排队模式暂时不支持 QPS > 1000 的场景。
         private void TokenProcess()
         {
-            int sleep = 1000 / MaxQPS;
+            int sleep = (1000 / MaxQPS).Ceiling();
             if (sleep == 0) sleep = 1;
             sleep += 1;//不能卡那么准
-            DateTime start = DateTime.Now;
             while (cancellationToken.Token.IsCancellationRequested == false)
             {
-                lock (lockObject)
+                var start = DateTime.Now;
+                lock (_lockObject)
                 {
                     if (limitedQueue.Count > 0)
                     {
@@ -65,12 +71,11 @@ namespace Koubot.Tool.Web.APILimiting
                     }
                 }
 
-                if (DateTime.Now - start < TimeSpan.FromMilliseconds(sleep))
+                if (DateTime.Now - start < TimeSpan.FromMilliseconds(sleep))//如果还未到一个sleep间隔，修正到一个sleep间隔
                 {
                     int newSleep = sleep - (int)(DateTime.Now - start).TotalMilliseconds;
                     if (newSleep >= 0) Thread.Sleep(newSleep);
                 }
-                start = DateTime.Now;
             }
         }
 
@@ -91,7 +96,7 @@ namespace Koubot.Tool.Web.APILimiting
             //        }
             //    }
             //}
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (limitedQueue.Count == 0) return true;
             }
@@ -107,14 +112,14 @@ namespace Koubot.Tool.Web.APILimiting
         public bool RequestWithRetry(int retryCount)
         {
             if (retryCount < 0) return false;
-            RequestObject requestObject = new RequestObject();
+            RequestObject requestObject = new();
             bool isInBucket = false;
             while (retryCount != 0)
             {
 
                 if (limitedQueue.Count < LimitSize && !isInBucket)
                 {
-                    lock (lockObject)
+                    lock (_lockObject)
                     {
                         if (limitedQueue.Count < LimitSize)
                         {
@@ -124,7 +129,7 @@ namespace Koubot.Tool.Web.APILimiting
                     }
                 }
                 if (requestObject.HasHandle) return true;
-                Thread.Sleep(System.Math.Max(0, limitedQueue.Count * 1000 / MaxQPS));
+                Thread.Sleep(System.Math.Max(0, (limitedQueue.Count * (1000 / MaxQPS)).Ceiling()));
                 retryCount--;
             }
             return false;

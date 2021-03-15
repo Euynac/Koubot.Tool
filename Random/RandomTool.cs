@@ -1,10 +1,9 @@
 ﻿using Koubot.Tool.Expand;
+using Koubot.Tool.Math;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Text;
-using Koubot.Tool.Math;
 
 namespace Koubot.Tool.Random
 {
@@ -80,18 +79,19 @@ namespace Koubot.Tool.Random
         public static T RandomGetOne<T>(this IList<T> list)
         {
             if (list == null || !list.Any()) return default;
-            return list[_randomSeed.Next(list.Count)];
+            return list.Count == 1 ? list[0] : list[_randomSeed.Next(list.Count)];
         }
         /// <summary>
-        /// 从<see cref="IList&lt;T&gt;"/>中随机获取规定数量的items（不会重复），返回list，失败返回null
+        /// 从<see cref="IList&lt;T&gt;"/>中随机获取规定数量的items（不会重复），返回list，当集合为null时返回null
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
-        /// <param name="count"></param>
+        /// <param name="count">实现已经自动限制count在1-list.Count之间了</param>
         /// <returns></returns>
         public static IList<T> RandomGetItems<T>(this IList<T> list, int count)
         {
             if (list == null || !list.Any()) return null;
+            if (count <= 1) return new List<T> { RandomGetOne(list) };
             if (count > list.Count())
             {
                 return RandomList(list);
@@ -148,6 +148,12 @@ namespace Koubot.Tool.Random
             return _randomSeed.NextDouble() * (maxValue - minValue) + minValue;
         }
         /// <summary>
+        /// 产生区间范围中的随机浮点数
+        /// </summary>
+        /// <returns></returns>
+        public static double GenerateRandomDouble(double minValue, double maxValue) => _randomSeed.NextDouble() * (maxValue - minValue) + minValue;
+
+        /// <summary>
         /// 产生区间范围中的随机整数
         /// </summary>
         /// <param name="intervalDoublePair">区间</param>
@@ -160,7 +166,16 @@ namespace Koubot.Tool.Random
             if (maxValue == int.MaxValue) maxValue--;
             return _randomSeed.Next(minValue, maxValue + 1);
         }
-
+        /// <summary>
+        /// 产生区间范围中的随机整数
+        /// </summary>
+        /// <returns></returns>
+        public static int GenerateRandomInt(int minValue, int maxValue)
+        {
+            if (minValue > maxValue) return minValue;
+            if (maxValue == int.MaxValue) maxValue--;
+            return _randomSeed.Next(minValue, maxValue + 1);
+        }
         #endregion
 
         #region object类拓展
@@ -174,7 +189,7 @@ namespace Koubot.Tool.Random
         /// <param name="maxProbability">最大可能性，影响值+基础值的最大值</param>
         /// <param name="minProbability">最小可能性，影响值+基础值的最小值</param>
         /// <returns></returns>
-        public static T ProbablyDo<T>(this T obj, double probability , double influenceValue = 0, double maxProbability = 1, double minProbability = 0) where T : class
+        public static T ProbablyDo<T>(this T obj, double probability, double influenceValue = 0, double maxProbability = 1, double minProbability = 0) where T : class
             => ProbablyTrue(probability, influenceValue, maxProbability, minProbability) ? obj : null;
 
         /// <summary>
@@ -187,7 +202,7 @@ namespace Koubot.Tool.Random
         /// <param name="maxProbability">最大可能性，影响值+基础值的最大值</param>
         /// <param name="minProbability">最小可能性，影响值+基础值的最小值</param>
         /// <returns></returns>
-        public static T ProbablyBe<T>(this T obj, T become, double probability , double influenceValue = 0, double maxProbability = 1, double minProbability = 0)
+        public static T ProbablyBe<T>(this T obj, T become, double probability, double influenceValue = 0, double maxProbability = 1, double minProbability = 0)
             => ProbablyTrue(probability, influenceValue, maxProbability, minProbability) ? become : obj;
 
         /// <summary>

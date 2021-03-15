@@ -29,7 +29,7 @@ namespace Koubot.Tool.Expand
         }
 
         /// <summary>
-        /// 获取指定类的指定属性或方法的CustomAttribute
+        /// 获取指定类或指定属性或方法的CustomAttribute
         /// </summary>
         /// <typeparam name="TAttribute">要获取的Attribute</typeparam>
         /// <typeparam name="TClass"></typeparam>
@@ -44,7 +44,7 @@ namespace Koubot.Tool.Expand
         }
 
         /// <summary>
-        /// 获取指定类的指定属性或方法的CustomAttribute
+        /// 获取指定类或指定属性或方法的CustomAttribute
         /// </summary>
         /// <typeparam name="TClass"></typeparam>
         /// <typeparam name="TProperty"></typeparam>
@@ -55,8 +55,6 @@ namespace Koubot.Tool.Expand
         {
             var name = ((MemberExpression)property.Body).Member.Name;
             var type = typeof(TClass);
-            //var method = typeof(CustomAttributeExtensions).GetMethod(nameof(_getAttributeValue));
-            //return method?.MakeGenericMethod(type).Invoke(null, new object[] { type, name });
             return GetCustomAttributeCached<TAttribute>(type, name);
         }
 
@@ -66,7 +64,7 @@ namespace Koubot.Tool.Expand
         /// <typeparam name="TAttribute"></typeparam>
         /// <param name="sourceType">指定的类</param>
         /// <param name="name">指定属性或方法名</param>
-        /// <returns></returns>
+        /// <returns>返回Attribute的值，没有则返回null</returns>
         public static TAttribute GetCustomAttributeCached<TAttribute>(this Type sourceType, string name)
             where TAttribute : Attribute
         {
@@ -81,33 +79,33 @@ namespace Koubot.Tool.Expand
         /// <typeparam name="TAttribute"></typeparam>
         /// <param name="type"></param>
         /// <param name="name"></param>
-        /// <returns></returns>
-        private static TAttribute GetValue<TAttribute>(this Type type, string name)
+        /// <returns>返回Attribute的值，没有则返回null</returns>
+        private static TAttribute GetValue<TAttribute>(Type type, string name)
             where TAttribute : Attribute
         {
-            TAttribute attribute = default;
             if (string.IsNullOrEmpty(name))
             {
-                attribute = type.GetCustomAttribute<TAttribute>(false);
-            }
-            else
-            {
-                var propertyInfo = type.GetProperty(name);
-                if (propertyInfo != null)
-                {
-                    attribute = propertyInfo.GetCustomAttribute<TAttribute>(false);
-                }
-                else
-                {
-                    var fieldInfo = type.GetField(name);
-                    if (fieldInfo != null)
-                    {
-                        attribute = fieldInfo.GetCustomAttribute<TAttribute>(false);
-                    }
-                }
+                return type.GetCustomAttribute<TAttribute>(false);
             }
 
-            return attribute;
+            var methodInfo = type.GetMethod(name);
+            if (methodInfo != null)
+            {
+                return methodInfo.GetCustomAttribute<TAttribute>(false);
+            }
+            var propertyInfo = type.GetProperty(name);
+            if (propertyInfo != null)
+            {
+                return propertyInfo.GetCustomAttribute<TAttribute>(false);
+            }
+
+            var fieldInfo = type.GetField(name);
+            if (fieldInfo != null)
+            {
+                return fieldInfo.GetCustomAttribute<TAttribute>(false);
+            }
+
+            return default;
         }
 
         #endregion

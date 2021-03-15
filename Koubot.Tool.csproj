@@ -6,22 +6,25 @@
     <Product>Koubot.Tool</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>There are some tools for helping to develop projects of Koubot related, but it also can be used to develop other project because it contains a host of useful and frequently-used  tools such as System related expand methods, helper of web,  file, etc. Actually it can be regarded as my self-use library of tools.</Description>
-    <PackageReleaseNotes>增加一些方法
-【Reflection】增加自动深克隆Clone某个对象中属性的值，可以指定忽略；
-【Random】增加ProbablyBe和ProbablyTrue，引进概率系统
-【String】增加智能拼接
-【Enum】增加获取所有按位枚举的描述</PackageReleaseNotes>
+    <PackageReleaseNotes>1.0.4更新
+【SortTool】新增SortTool，能够快速完成Comparison、Compare等相关方法的实现
+【KouWatch】新增用于单元测试效率测试的计时器工具
+【CustomAttributeExtensions】优化自定义标签实现与描述
+【SystemExpand】独立出IEnumerableExpand、RegexExpand
+【EscapeTool】正则模式转义效率提升10倍（换用自带Regex.Escape）
+【Obsolete】废弃中文繁简转换（已失效），请使用nuget ToolGood.Words；废弃FilterContainer（效率过低）
+【Other】优化了部分实现与描述、修复部分bug</PackageReleaseNotes>
     <PackageTags>Koubot</PackageTags>
     <RepositoryUrl>https://github.com/Euynac/Koubot.Tool</RepositoryUrl>
     <PackageProjectUrl></PackageProjectUrl>
     <NeutralLanguage>(None)</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <AssemblyVersion>1.0.*</AssemblyVersion>
+    <AssemblyVersion>1.0.4</AssemblyVersion>
         <Deterministic>false</Deterministic>
-        <Version>1.0.3</Version>
+        <Version>1.0.4</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Copyright>Copyright (c) 2020 7zou</Copyright>
-        <FileVersion>1.0.3.0</FileVersion>
+        <FileVersion>1.0.4.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

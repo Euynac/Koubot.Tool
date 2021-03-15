@@ -91,8 +91,8 @@ namespace Koubot.Tool.Math
         /// <returns></returns>
         public int GetIntervalLength()
         {
-            int left = LeftInterval.Value < int.MinValue ? int.MinValue : (int) LeftInterval.Value;
-            int right = RightInterval.Value > int.MaxValue ? int.MaxValue : (int) RightInterval.Value;
+            int left = LeftInterval.Value < int.MinValue ? int.MinValue : (int)LeftInterval.Value;
+            int right = RightInterval.Value > int.MaxValue ? int.MaxValue : (int)RightInterval.Value;
             if (SubOk(right, left)) return right - left;
             return int.MaxValue;
         }
@@ -122,12 +122,27 @@ namespace Koubot.Tool.Math
                     return true;
             }
         }
+
         /// <summary>
-        /// 判断一个数是否在区间中
+        /// 判断一个数是否在本区间中
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public bool IsInInterval(double? number) => number != null && IsInInterval(number.Value);
+        /// <summary>
+        /// 判断一个数是否在本区间中
         /// </summary>
         /// <param name="number"></param>
         /// <returns></returns>
         public bool IsInInterval(double number) => number <= RightInterval && number >= LeftInterval;
+
+        /// <summary>
+        /// 判断给定区间是否在本区间中（包含）
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public bool IsInInterval(IntervalDoublePair interval) =>
+            LeftInterval <= interval.LeftInterval && RightInterval >= interval.RightInterval;
         /// <summary>
         /// 获取在区间内左边最近整数，无穷小则返回int.MinValue
         /// </summary>

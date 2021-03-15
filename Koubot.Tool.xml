@@ -749,7 +749,7 @@
         </member>
         <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``3(System.Type,System.Linq.Expressions.Expression{System.Func{``1,``2}})">
             <summary>
-            获取指定类的指定属性或方法的CustomAttribute
+            获取指定类或指定属性或方法的CustomAttribute
             </summary>
             <typeparam name="TAttribute">要获取的Attribute</typeparam>
             <typeparam name="TClass"></typeparam>
@@ -758,7 +758,7 @@
         </member>
         <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``3(``1,``0,System.Linq.Expressions.Expression{System.Func{``1,``2}})">
             <summary>
-            获取指定类的指定属性或方法的CustomAttribute
+            获取指定类或指定属性或方法的CustomAttribute
             </summary>
             <typeparam name="TClass"></typeparam>
             <typeparam name="TProperty"></typeparam>
@@ -772,7 +772,7 @@
             <typeparam name="TAttribute"></typeparam>
             <param name="sourceType">指定的类</param>
             <param name="name">指定属性或方法名</param>
-            <returns></returns>
+            <returns>返回Attribute的值，没有则返回null</returns>
         </member>
         <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetValue``1(System.Type,System.String)">
             <summary>
@@ -781,6 +781,145 @@
             <typeparam name="TAttribute"></typeparam>
             <param name="type"></param>
             <param name="name"></param>
+            <returns>返回Attribute的值，没有则返回null</returns>
+        </member>
+        <member name="T:Koubot.Tool.Expand.IEnumerableExpand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.IsNullOrEmptySet``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            判断一个集合是否是 null 或空集合
+            </summary>
+            <param name="collection">指定的集合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.IsNullOrEmptySet(System.Collections.IEnumerable)">
+            <summary>
+            判断一个集合是否是 null 或空集合
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.TryGetValueOrDefault``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1@,``1)">
+            <summary>
+            尝试获取与指定的键相关联的值
+            </summary>
+            <param name="dict">可为空</param>
+            <param name="value">当本方法返回时，如果找到了指定的键，则返回与该键相关联的值；否则，返回值参数类型的默认值或设定的值。这个参数是在未初始化的情况下传递的。</param>
+            <param name="key">要获取值的键，可为空，为空必返回false</param>
+            <param name="defaultValue">失败时返回的默认值或设定的值</param>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TValue"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.TryGetKey``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},``1,``0@)">
+            <summary>
+            尝试通过Value获取Key的值（多个value相同仅获取一个key，所以一般用于value和key一对一）
+            </summary>
+            <param name="dict"></param>
+            <param name="value">预测Dictionary中会有的值</param>
+            <param name="key">若是存在value将返回key</param>
+            <returns>成功返回true且返回key，不成功则返回false</returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.TryGetAllKey``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},``1,System.Collections.Generic.List{``0}@)">
+            <summary>
+            尝试获取所有指定Value对应的Key值
+            </summary>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TValue"></typeparam>
+            <param name="dict"></param>
+            <param name="value">预测集合中会有的值</param>
+            <param name="key">value对应的所有Key</param>
+            <returns>成功返回true且返回key的List，不成功则返回false</returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.ConvertToNotNullable``1(System.Collections.Generic.IEnumerable{System.Nullable{``0}})">
+            <summary>
+            将可空类型的集合转换为不可空的<seealso cref="T:System.Collections.Generic.IEnumerable`1"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.Add``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>
+            往IEnumerable中增加元素（调用的是中之类型的方法，不同于Append）
+            注意不可使用IEnumerable&lt;dynamic&gt;然后调用，dynamic无法正确解析到T，会被当做object，需要使用反射自己做出泛型T
+            </summary>
+            <param name="enumerable"></param>
+            <param name="item">要加入的元素</param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Expand.RegexExpand">
+            <summary>
+            正则表达式类扩展方法
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Expand.RegexExpand.IsMatch(System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
+            <summary>
+            判断字符串是否能够匹配正则表达式
+            </summary>
+            <param name="s">要测试的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.RegexExpand.Match(System.String,System.String,System.Text.RegularExpressions.RegexOptions,System.Boolean)">
+            <summary>
+            搜索指定正则表达式的第一个匹配项并得到捕获的子字符串，不存在的默认返回("")
+            </summary>
+            <param name="s">要测试的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
+            <param name="ifNotExistReturnNull">如果不存在返回 null，而不是("")</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.RegexExpand.RegexReplace(System.String,System.String,System.Text.RegularExpressions.RegexOptions,System.String,System.Int32)">
+            <summary>
+            使用指定的替换字符串替换与正则表达式匹配的指定数量的字符串
+            </summary>
+            <param name="s">要测试的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
+            <param name="replacement">指定的替换字符串</param>
+            <param name="count">为0默认全部替换</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.RegexExpand.Matches(System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
+            <summary>
+            搜索指定正则表达式的所有匹配项并返回捕获到的所有子字符串，不存在的将返回count=0的list
+            </summary>
+            <param name="s">要测试的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.RegexExpand.RegexReplace(System.String,System.String,System.String,System.Nullable{System.Int32})">
+            <summary>
+            正则表达式替换
+            </summary>
+            <param name="s">要被替换的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="replacement">匹配的字符串被替换为</param>
+            <param name="count">为null全部替换，否则替换指定次数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.RegexExpand.MatchedGroupValues(System.String,System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
+            <summary>
+            找到字符串中符合正则表达式的给定命名捕获组名的所有匹配项。未找到返回Count=0的List
+            </summary>
+            <param name="s">要测试的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="groupName">正则表达式中的命名捕获组中的名字</param>
+            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.RegexExpand.IsValidRegexPattern(System.String,System.String@)">
+            <summary>
+            判断是否是有效的正则表达式模式
+            </summary>
+            <param name="s"></param>
+            <param name="error">如果是无效正则表达式，输出错误原因</param>
             <returns></returns>
         </member>
         <member name="T:Koubot.Tool.Expand.TimeStampType">
@@ -841,20 +980,22 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.GetDescription(System.Enum)">
+        <member name="M:Koubot.Tool.Expand.SystemExpand.GetDescription(System.Enum,System.Boolean)">
             <summary>
             读取 <see cref="T:System.Enum"/> 标记 <see cref="T:System.ComponentModel.DescriptionAttribute"/> 的值
             </summary>
             <param name="value">原始 <see cref="T:System.Enum"/> 值</param>
+            <param name="notReturnDefaultEnum">找不到标签值时不返回给定的枚举的<seealso cref="T:System.String"/>形式，直接返回null</param>
             <returns>如果成功获取返回特性标记的值，否则返回给定的枚举的<seealso cref="T:System.String"/>形式，或 null</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.GetFlagsDescription``1(``0,System.Char,``0[])">
+        <member name="M:Koubot.Tool.Expand.SystemExpand.GetFlagsDescription``1(``0,System.Char,System.Boolean,``0[])">
             <summary>
-            读取按位枚举<see cref="T:System.Enum"/> 标记 <see cref="T:System.ComponentModel.DescriptionAttribute"/>中所有含有的枚举值
+            使用指定分割符批量格式化按位枚举<see cref="T:System.Enum"/> 中含有的枚举值。格式化方式是使用 <see cref="T:System.ComponentModel.DescriptionAttribute"/>标记的值或string类型枚举
             </summary>
             <param name="flags"></param>
             <param name="separator">分隔符</param>
-            <param name="ignoreEnums"></param>
+            <param name="ignoreNoDesc">忽略没有Description特性的字段</param>
+            <param name="ignoreEnums">忽略格式化的Enum值</param>
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
@@ -905,7 +1046,7 @@
         </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.BeNullOr``1(``0,System.String,System.Boolean)">
             <summary>
-            如果引用类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
+            （使用时请obj?.BeNullOr()这样使用，可快速截断变为null）如果引用类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
             </summary>
             <param name="obj"></param>
             <param name="be"></param>
@@ -923,7 +1064,7 @@
         </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.BeNullOr``1(System.Nullable{``0},System.String)">
             <summary>
-            如果可空值类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
+            （使用时请obj?.BeNullOr()这样使用，可快速截断变为null）如果可空值类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
             </summary>
             <param name="obj"></param>
             <param name="be"></param>
@@ -962,6 +1103,24 @@
             判断元素是否满足任意一个方法
             </summary>
             <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.SatisfyAny``1(System.Func{``0,System.Boolean},``0[])">
+            <summary>
+            判断一个方法是否有任意一个元素满足
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="predicate"></param>
+            <param name="objects">当元素有为null时，必不满足</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.SatisfyAll``1(System.Func{``0,System.Boolean},``0[])">
+            <summary>
+            判断一个方法是否所有元素都满足
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="predicate"></param>
+            <param name="objects">当元素有为null时，必不满足</param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.SatisfyAll``1(``0,System.Func{``0,System.Boolean}[])">
@@ -1010,65 +1169,6 @@
             <param name="s"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.IsMatch(System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
-            <summary>
-            判断字符串是否能够匹配正则表达式
-            </summary>
-            <param name="s">要测试的字符串</param>
-            <param name="pattern">要匹配的正则表达式模式</param>
-            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.Match(System.String,System.String,System.Text.RegularExpressions.RegexOptions,System.Boolean)">
-            <summary>
-            搜索指定正则表达式的第一个匹配项并得到捕获的子字符串，不存在的默认返回("")
-            </summary>
-            <param name="s">要测试的字符串</param>
-            <param name="pattern">要匹配的正则表达式模式</param>
-            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-            <param name="ifNotExistReturnNull">如果不存在返回 null，而不是("")</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.RegexReplace(System.String,System.String,System.Text.RegularExpressions.RegexOptions,System.String,System.Int32)">
-            <summary>
-            使用指定的替换字符串替换与正则表达式匹配的指定数量的字符串
-            </summary>
-            <param name="s">要测试的字符串</param>
-            <param name="pattern">要匹配的正则表达式模式</param>
-            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-            <param name="replacement">指定的替换字符串</param>
-            <param name="count">为0默认全部替换</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.Matches(System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
-            <summary>
-            搜索指定正则表达式的所有匹配项并返回捕获到的所有子字符串，不存在的将返回count=0的list
-            </summary>
-            <param name="s">要测试的字符串</param>
-            <param name="pattern">要匹配的正则表达式模式</param>
-            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.RegexReplace(System.String,System.String,System.String,System.Nullable{System.Int32})">
-            <summary>
-            正则表达式替换
-            </summary>
-            <param name="s">要被替换的字符串</param>
-            <param name="pattern">要匹配的正则表达式模式</param>
-            <param name="replacement">匹配的字符串被替换为</param>
-            <param name="count">为null全部替换，否则替换指定次数</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.MatchedGroupValues(System.String,System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
-            <summary>
-            找到字符串中符合正则表达式的给定命名捕获组名的所有匹配项
-            </summary>
-            <param name="s">要测试的字符串</param>
-            <param name="pattern">要匹配的正则表达式模式</param>
-            <param name="groupName">正则表达式中的命名捕获组中的名字</param>
-            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-            <returns></returns>
-        </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.SplitContain(System.String,System.StringComparison,System.String,System.String[])">
             <summary>
             将某段字符串按照某指定字符串分割成数组后，查找一个字符串是否在数组中
@@ -1115,14 +1215,6 @@
             <param name="reverse">默认正向Key替换为Value，为true则Value替换Key</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.RetainDecimal(System.Double,System.Int32)">
-            <summary>
-            保留指定位数的小数（四舍五入）
-            </summary>
-            <param name="number"></param>
-            <param name="digits">保留位数</param>
-            <returns></returns>
-        </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int32,System.Int32)">
             <summary>
             将指定数字限定在特定范围内
@@ -1132,6 +1224,32 @@
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int64,System.Int64)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="max">最大值，超过则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int64,System.Int64,System.Int64)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int64,System.Nullable{System.Int64},System.Nullable{System.Int64})">
             <summary>
             将指定数字限定在特定范围内
             </summary>
@@ -1175,7 +1293,14 @@
             <param name="max">最大值，超过则取这个最大值</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.TryAdd``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
+        <member name="M:Koubot.Tool.Expand.SystemExpand.Ceiling(System.Double)">
+            <summary>
+            返回大于或等于指定double的最小整数值。
+            </summary>
+            <param name="num"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.AddOrIgnore``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
             <summary>
             尝试将键和值添加到字典中，如果不存在才添加，存在则不添加且不抛异常
             </summary>
@@ -1218,51 +1343,11 @@
             <param name="keys"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.IsNullOrEmptySet``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:Koubot.Tool.Expand.SystemExpand.IsNullableValueType(System.Type)">
             <summary>
-            判断一个集合是否是 null 或空集合
+            判断是否是可空值类型
             </summary>
-            <param name="collection">指定的集合</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.TryGetValueOrDefault``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1@,``1)">
-            <summary>
-            尝试获取与指定的键相关联的值
-            </summary>
-            <param name="dict">可为空</param>
-            <param name="value">当本方法返回时，如果找到了指定的键，则返回与该键相关联的值；否则，返回值参数类型的默认值或设定的值。这个参数是在未初始化的情况下传递的。</param>
-            <param name="key">要获取值的键</param>
-            <param name="defaultValue">失败时返回的默认值或设定的值</param>
-            <typeparam name="TKey"></typeparam>
-            <typeparam name="TValue"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.TryGetKey``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},``1,``0@)">
-            <summary>
-            尝试通过Value获取Key的值（多个value相同仅获取一个key，所以一般用于value和key一对一）
-            </summary>
-            <param name="dict"></param>
-            <param name="value">预测Dictionary中会有的值</param>
-            <param name="key">若是存在value将返回key</param>
-            <returns>成功返回true且返回key，不成功则返回false</returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.TryGetAllKey``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},``1,System.Collections.Generic.List{``0}@)">
-            <summary>
-            尝试获取所有指定Value对应的Key值
-            </summary>
-            <typeparam name="TKey"></typeparam>
-            <typeparam name="TValue"></typeparam>
-            <param name="dict"></param>
-            <param name="value">预测集合中会有的值</param>
-            <param name="key">value对应的所有Key</param>
-            <returns>成功返回true且返回key的List，不成功则返回false</returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.ConvertToNotNullable``1(System.Collections.Generic.IEnumerable{System.Nullable{``0}})">
-            <summary>
-            将可空类型的集合转换为不可空的<seealso cref="T:System.Collections.Generic.IEnumerable`1"/>
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="list"></param>
+            <param name="type"></param>
             <returns></returns>
         </member>
         <member name="T:Koubot.Tool.General.EscapeTool">
@@ -1270,11 +1355,19 @@
             转义工具类 用于转义一些在某些场合可能引发问题的字符串
             </summary>
         </member>
-        <member name="M:Koubot.Tool.General.EscapeTool.ToRegexPattern(System.String)">
+        <member name="M:Koubot.Tool.General.EscapeTool.ToRegexEscaped(System.String)">
             <summary>
-            正则表达式模式字符串转义 (不支持\的转义)
+            正则表达式模式字符串转义
             </summary>
             <param name="pattern"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.General.EscapeTool.RemoveEscapeChars(System.String,System.Char)">
+            <summary>
+            Remove escape chars from text.
+            </summary>
+            <param name="originalText"></param>
+            <param name="escapeChar"></param>
             <returns></returns>
         </member>
         <member name="T:Koubot.Tool.General.FileTool">
@@ -1381,6 +1474,14 @@
             泛型工具类
             </summary>
         </member>
+        <member name="M:Koubot.Tool.General.GenericsTool.ImplementsGenericType(System.Type,System.Type)">
+            <summary>
+            判断当前类型是否实现了给定的泛型类型（比如IList&lt;&gt;之类）
+            </summary>
+            <param name="type"></param>
+            <param name="genericType">需要使用typeof(IList&lt;&gt;)</param>
+            <returns></returns>
+        </member>
         <member name="M:Koubot.Tool.General.GenericsTool.PredicateConvertToFunc``1(System.Predicate{``0})">
             <summary>
             将Predicate转化为对应的Func
@@ -1410,6 +1511,28 @@
             <param name="func"></param>
             <returns></returns>
         </member>
+        <member name="T:Koubot.Tool.General.KouWatch">
+            <summary>
+            Kou计时表类，方便测试效率
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.KouWatch.Start(System.String,System.Action)">
+            <summary>
+            开始计时，并自动结束，输出执行时间
+            </summary>
+            <param name="action"></param>
+            <param name="actionName">动作名字，区分执行时间</param>
+        </member>
+        <member name="M:Koubot.Tool.General.KouWatch.Start(System.String,System.Action,System.String,System.Action,System.Int32)">
+            <summary>
+            两个动作测试优劣。自动开始计时、结束，输出执行时间、两者比较的结果
+            </summary>
+            <param name="action1Name"></param>
+            <param name="action1"></param>
+            <param name="action2Name"></param>
+            <param name="action2"></param>
+            <param name="testTimes">执行次数</param>
+        </member>
         <member name="T:Koubot.Tool.General.ReflectionTool">
             <summary>
             反射工具类
@@ -1417,7 +1540,7 @@
         </member>
         <member name="M:Koubot.Tool.General.ReflectionTool.CloneParameters``1(``0,``0,System.String[])">
             <summary>
-            克隆某个对象中所有属性值（EFCore会追踪修改）
+            克隆某个对象中所有属性值到对象（引用类型依然是同个引用，值类型则是复制）（EFCore会追踪修改，因为做的是Action操作）
             </summary>
             <typeparam name="T"></typeparam>
             <param name="obj"></param>
@@ -1442,6 +1565,55 @@
             <param name="propertyName">要赋值的model属性</param>
             <param name="value">要赋值的model值</param>
         </member>
+        <member name="T:Koubot.Tool.General.SortTool">
+            <summary>
+            排序工具
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.SortTool.CompareToObjDesc(System.Object,System.Object,System.Object,System.Int32@,System.Boolean)">
+            <summary>
+            两个对象进行降序比较，用于Compare相关方法的快捷实现，支持null比较，支持链式比较
+            （如果不相等返回null（判断返回为null才返回比较值），截断方法调用，返回值为比较结果。否则可以链式执行直到两者不相等后进行下一个权重的比较）（需要实现IComparable接口）
+            </summary>
+            <param name="obj">占位符，没什么用</param>
+            <param name="obj1">比较的第一个元素</param>
+            <param name="obj2">比较的第二个元素</param>
+            <param name="result">如果返回值为null，则证明两个obj不相等，需要返回out int结果，链式方法调用被截断。</param>
+            <param name="nullIsLast">自动将null放到最后一位</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.General.SortTool.CompareToObjAsc(System.Object,System.Object,System.Object,System.Int32@,System.Boolean)">
+            <summary>
+            两个对象进行升序比较，用于Compare相关方法的快捷实现，支持null比较，支持链式比较
+            （如果不相等返回null（判断返回为null才返回比较值），截断方法调用，返回值为比较结果。否则可以链式执行直到两者不相等后进行下一个权重的比较）（需要实现IComparable接口）
+            </summary>
+            <param name="obj">占位符，没什么用</param>
+            <param name="obj1">比较的第一个元素</param>
+            <param name="obj2">比较的第二个元素</param>
+            <param name="result">如果返回值为null，则证明两个obj不相等，需要返回out int结果，链式方法调用被截断。</param>
+            <param name="nullIsLast">自动将null放到最后一位</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.General.SortTool.CompareToObj(System.Object,System.Object,System.Boolean,System.Boolean)">
+            <summary>
+            实现比较器Comparison的快捷方法，支持null比较（需要实现IComparable接口）
+            </summary>
+            <param name="obj1"></param>
+            <param name="obj2"></param>
+            <param name="isDesc">是否是降序</param>
+            <param name="nullIsLast">自动将null放到最后一位</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.General.SortTool.CompareToNullObj(System.Object,System.Object,System.Int32@,System.Boolean)">
+            <summary>
+            Sort比较器中Comparison比较null的快捷方法。如果任意一个为null，返回true，此时需要返回out int为Compare结果
+            </summary>
+            <param name="obj1"></param>
+            <param name="obj2"></param>
+            <param name="nullIsLast">默认将null放到后一位</param>
+            <param name="returnValue"></param>
+            <returns></returns>
+        </member>
         <member name="T:Koubot.Tool.General.StringTool">
             <summary>
             通用字符串工具类
@@ -1461,19 +1633,35 @@
             <param name="input"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.General.StringTool.ToSimplified(System.String)">
+        <member name="T:Koubot.Tool.Interfaces.IKouErrorMsg">
             <summary>
-            将字符转换成简体中文
+            Kou环境下的错误信息接口（指示该类具有错误信息提供）
             </summary>
-            <param name="source">输入要转换的字符串</param>
-            <returns>转换完成后的字符串</returns>
         </member>
-        <member name="M:Koubot.Tool.General.StringTool.ToTraditional(System.String)">
+        <member name="P:Koubot.Tool.Interfaces.IKouErrorMsg.ErrorMsg">
             <summary>
-            将字符转换为繁体中文
+            错误信息
             </summary>
-            <param name="source">输入要转换的字符串</param>
-            <returns>转换完成后的字符串</returns>
+        </member>
+        <member name="T:Koubot.Tool.Interfaces.IKouErrorMsgExtension">
+            <summary>
+            IKouErrorMsg接口的拓展方法（当升级到.net standard 2.1后可迁移到接口默认实现）
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Interfaces.IKouErrorMsgExtension.ReturnError(Koubot.Tool.Interfaces.IKouErrorMsg,System.String)">
+            <summary>
+            快速打包错误（需要实现<see cref="T:Koubot.Tool.Interfaces.IKouErrorMsg"/>接口）
+            </summary>
+            <param name="obj"></param>
+            <param name="errorMsg">错误内容</param>
+            <returns>必定返回false用于快速return</returns>
+        </member>
+        <member name="M:Koubot.Tool.Interfaces.IKouErrorMsgExtension.HasError(Koubot.Tool.Interfaces.IKouErrorMsg)">
+            <summary>
+            检查是否有错误
+            </summary>
+            <param name="errorObject"></param>
+            <returns></returns>
         </member>
         <member name="T:Koubot.Tool.KouData.KouStaticData">
             <summary>
@@ -1629,11 +1817,25 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Math.IntervalDoublePair.IsInInterval(System.Double)">
+        <member name="M:Koubot.Tool.Math.IntervalDoublePair.IsInInterval(System.Nullable{System.Double})">
             <summary>
-            判断一个数是否在区间中
+            判断一个数是否在本区间中
             </summary>
             <param name="number"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Math.IntervalDoublePair.IsInInterval(System.Double)">
+            <summary>
+            判断一个数是否在本区间中
+            </summary>
+            <param name="number"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Math.IntervalDoublePair.IsInInterval(Koubot.Tool.Math.IntervalDoublePair)">
+            <summary>
+            判断给定区间是否在本区间中（包含）
+            </summary>
+            <param name="interval"></param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Math.IntervalDoublePair.GetLeftIntervalNearestNumber">
@@ -1952,11 +2154,11 @@
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.RandomGetItems``1(System.Collections.Generic.IList{``0},System.Int32)">
             <summary>
-            从<see cref="T:System.Collections.Generic.IList`1"/>中随机获取规定数量的items（不会重复），返回list，失败返回null
+            从<see cref="T:System.Collections.Generic.IList`1"/>中随机获取规定数量的items（不会重复），返回list，当集合为null时返回null
             </summary>
             <typeparam name="T"></typeparam>
             <param name="list"></param>
-            <param name="count"></param>
+            <param name="count">实现已经自动限制count在1-list.Count之间了</param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.RandomList``1(System.Collections.Generic.IList{``0})">
@@ -1980,11 +2182,23 @@
             <param name="intervalDoublePair">区间</param>
             <returns></returns>
         </member>
+        <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomDouble(System.Double,System.Double)">
+            <summary>
+            产生区间范围中的随机浮点数
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomInt(Koubot.Tool.Math.IntervalDoublePair)">
             <summary>
             产生区间范围中的随机整数
             </summary>
             <param name="intervalDoublePair">区间</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomInt(System.Int32,System.Int32)">
+            <summary>
+            产生区间范围中的随机整数
+            </summary>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.ProbablyDo``1(``0,System.Double,System.Double,System.Double,System.Double)">
@@ -2020,19 +2234,93 @@
             <param name="minProbability">0-1之间 最小可能性，影响值+基础值的最小值</param>
             <returns></returns>
         </member>
+        <member name="T:Koubot.Tool.String.CharsetTool">
+            <summary>
+            字符集工具
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.String.CharsetTool.String2Unicode(System.String)">
+            <summary>
+            字符串转Unicode
+            </summary>
+            <param name="source">源字符串</param>
+            <returns>Unicode编码后的字符串</returns>
+        </member>
+        <member name="M:Koubot.Tool.String.CharsetTool.Unicode2String(System.String)">
+            <summary>
+            Unicode转字符串
+            </summary>
+            <param name="source">经过Unicode编码的字符串</param>
+            <returns>正常字符串</returns>
+        </member>
+        <member name="T:Koubot.Tool.String.KouEnumName">
+            <summary>
+            指定某枚举是KouEnum的Name，可以设定该Enum的转换名
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.String.KouEnumName.Names">
+            <summary>
+            使用此类字符串来转换成该Enum，默认都是toLower后对比的
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.String.KouEnumName.#ctor(System.String[])">
+            <summary>
+            指示该枚举拥有的名字
+            </summary>
+            <param name="names"></param>
+        </member>
+        <member name="T:Koubot.Tool.String.KouEnumTool">
+            <summary>
+            KouEnum工具，可将string转换为对应的Enum
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.String.KouEnumTool.TryGetKouEnum``1(System.String,``0@)">
+            <summary>
+            尝试通过字符串获取对应KouEnum标签枚举
+            </summary>
+            <param name="str"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouEnumTool.TryGetKouEnum(System.Type,System.String,System.Object@)">
+            <summary>
+            尝试通过字符串获取对应KouEnum标签枚举
+            </summary>
+            <param name="enumType">枚举的类型</param>
+            <param name="str"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouEnumTool.CreateCache(System.Type)">
+            <summary>
+            创建该enum的枚举name缓存
+            </summary>
+            <param name="enumType"></param>
+        </member>
         <member name="T:Koubot.Tool.String.KouStringTool">
             <summary>
             Kou开发常用字符串工具类
             </summary>
         </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryParsePage(System.Int32,System.String,System.Int32@)">
+        <member name="M:Koubot.Tool.String.KouStringTool.TryParsePage(System.Int32,System.String,System.Int32@,System.Boolean)">
             <summary>
             根据用户的输入处理页数
             </summary>
             <param name="currentPage">当前页面</param>
             <param name="userInput">用户输入处理为页数</param>
             <param name="parsedPage">处理后的页数</param>
+            <param name="parseInt">处理Int型页数</param>
             <returns>错误输入返回false，能够处理页数返回true</returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouStringTool.ContainsReturnCustomOrNull``1(System.Collections.Generic.IEnumerable{``0},``0,System.String)">
+            <summary>
+            如果列表中含有指定的元素时则返回给定的customFormat否则返回null。
+            </summary>
+            <param name="list"></param>
+            <param name="item"></param>
+            <param name="customFormat"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.ToIListString``1(System.Collections.Generic.IEnumerable{``0},System.String)">
             <summary>
@@ -2060,18 +2348,6 @@
             <param name="numStr">要拼接到主字符串中$num的字符串，按顺序，最多9个</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryToIList``1(System.String,System.Collections.Generic.List{``0}@,System.String,System.Int32,System.Boolean,System.String,System.Text.RegularExpressions.RegexOptions)">
-            <summary>
-            转换为指定类型的List
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryToIList(System.String,System.Collections.IList@,System.Type,System.String,System.Int32,System.Boolean,System.String,System.Text.RegularExpressions.RegexOptions,System.Boolean,System.Boolean,System.Nullable{System.Double},System.Nullable{System.Double})">
-            <summary>
-            尝试将string转换为指定类型的IList
-            </summary>
-        </member>
         <member name="M:Koubot.Tool.String.KouStringTool.TryToBool(System.String,System.Boolean@,System.Boolean)">
             <summary>
             将字符串类型的数字转换为bool类型，支持中文以及英文、数字
@@ -2097,6 +2373,25 @@
             <param name="str"></param>
             <param name="intResult"></param>
             <param name="kouType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouStringTool.TryToEnum``1(System.String,``0@)">
+            <summary>
+            将字符串类型的数字转换为enum类型，支持KouEnumName标签特性别名枚举
+            </summary>
+            <param name="str"></param>
+            <param name="enumResult"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouStringTool.TryToEnum(System.String,System.Type,System.Object@)">
+            <summary>
+            将字符串类型的数字转换为enum类型，支持KouEnumName标签特性别名枚举
+            </summary>
+            <param name="str"></param>
+            <param name="enumType"></param>
+            <param name="enumResult"></param>
+            <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.ToEnPunctuation(System.String)">
@@ -2286,138 +2581,259 @@
             <param name="str"></param>
             <returns></returns>
         </member>
-        <member name="T:Koubot.Tool.Web.APILimiting.ILimitingService">
+        <member name="T:Koubot.Tool.Web.RateLimiter.ILimitingService">
             <summary>
             限流服务接口
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Web.APILimiting.ILimitingService.Request">
+        <member name="M:Koubot.Tool.Web.RateLimiter.ILimitingService.Request">
             <summary>
             发送请求，检测是否能够调用
             </summary>
             <returns>true：能够调用，false：不能调用</returns>
         </member>
-        <member name="M:Koubot.Tool.Web.APILimiting.ILimitingService.RequestWithRetryAsync(System.Int32)">
+        <member name="M:Koubot.Tool.Web.RateLimiter.ILimitingService.RequestWithRetryAsync(System.Int32)">
             <summary>
             带重试的异步请求（用于UI），当准许请求后返回true，失败返回false
             </summary>
             <param name="retryCount">最大重试次数，直到请求成功前，默认为10次</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Web.APILimiting.ILimitingService.RequestWithRetry(System.Int32)">
+        <member name="M:Koubot.Tool.Web.RateLimiter.ILimitingService.RequestWithRetry(System.Int32)">
             <summary>
             带重试的请求，当准许请求后返回true，失败返回false（线程会被阻塞用于不断重试）
             </summary>
             <param name="retryCount">最大重试次数，直到请求成功前，默认为10次</param>
             <returns></returns>
         </member>
-        <member name="T:Koubot.Tool.Web.APILimiting.LeakyBucketLimitingService">
+        <member name="T:Koubot.Tool.Web.RateLimiter.LeakyBucketLimitingService">
             <summary>
             漏桶算法限流服务，按照平均速率进行处理请求，不适合突发高数量请求
             </summary>
         </member>
-        <member name="T:Koubot.Tool.Web.APILimiting.LeakyBucketLimitingService.RequestObject">
+        <member name="T:Koubot.Tool.Web.RateLimiter.LeakyBucketLimitingService.RequestObject">
             <summary>
             请求类，放入桶中等待被处理
             </summary>
         </member>
-        <member name="P:Koubot.Tool.Web.APILimiting.LeakyBucketLimitingService.MaxQPS">
+        <member name="P:Koubot.Tool.Web.RateLimiter.LeakyBucketLimitingService.MaxQPS">
             <summary>
             每秒最大访问量，也是用于求漏桶的速率
             </summary>
         </member>
-        <member name="P:Koubot.Tool.Web.APILimiting.LeakyBucketLimitingService.LimitSize">
+        <member name="P:Koubot.Tool.Web.RateLimiter.LeakyBucketLimitingService.LimitSize">
             <summary>
-            桶最大容量，多余的请求会被丢弃或挂起。也是能进行最大并行数量，但是在突发高流除了第一次能瞬间装满水桶（瞬间并发所有桶容量），以后再来的请求会按照速率进行处理
+            桶最大容量，多余的请求会被丢弃或挂起。
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Web.APILimiting.LeakyBucketLimitingService.limitedQueue">
+        <member name="F:Koubot.Tool.Web.RateLimiter.LeakyBucketLimitingService.limitedQueue">
             <summary>
             固定容量的桶
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Web.APILimiting.LeakyBucketLimitingService.cancellationToken">
+        <member name="F:Koubot.Tool.Web.RateLimiter.LeakyBucketLimitingService.cancellationToken">
             <summary>
             用于指示漏桶什么时候停止
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Web.APILimiting.LeakyBucketLimitingService.lockObject">
+        <member name="F:Koubot.Tool.Web.RateLimiter.LeakyBucketLimitingService._lockObject">
             <summary>
             用于加锁
             </summary>
         </member>
-        <member name="T:Koubot.Tool.Web.APILimiting.LimitingType">
+        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketLimitingService.#ctor(System.Double,System.Int32)">
+            <summary>
+            创建漏桶算法的限流服务
+            </summary>
+            <param name="maxQPS"></param>
+            <param name="limitSize"></param>
+        </member>
+        <member name="T:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter">
+            <summary>
+            漏桶算法限流器
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter._limiterDictionary">
+            <summary>
+            同一个api请求在同一个限速器队列中
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter._hasHandled">
+            <summary>
+            该限速器上绑定的任务是否被处理，完成才可取出队列
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter._handledTime">
+            <summary>
+            完成任务的时间。当从队列移除时，会根据此时间+漏桶平均速率时间（根据QPS计算）来判断是否可移除
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.CanBeRemoved">
+            <summary>
+            判断是否可以从队列中移除
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter._sleepTime">
+            <summary>
+            每次请求间隔时间（漏桶速率）
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.MaxQPS">
+            <summary>
+            每秒最大访问量，也是用于求漏桶的速率（漏桶仅支持QPS&lt;=1000）
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.LimitSize">
+            <summary>
+            桶最大容量，多余的请求会被丢弃。0为不限制，会按照设置排队下去
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.MaxOptimisticEstimatedTime">
+            <summary>
+            最大乐观估计时间（即与存粹按照漏桶内的请求数目、QPS计算的时间比较，真实可调用时间一般会大于此时间）（为空则不限制）
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.MaxWaitUntilTime">
+            <summary>
+            最大可能等待时间（超过此时间就放弃掉此次请求，该次请求被标记为完成）（为null则不限制）
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.#ctor(System.String,System.Double,System.Int32,System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan})">
+            <summary>
+            创建一个限流器
+            </summary>
+            <param name="limiterID">同一个API应该使用同一个限速器队列</param>
+            <param name="maxQPS">每秒最大访问量，也是用于求漏桶的速率（漏桶仅支持QPS&lt;=1000）</param>
+            <param name="limitSize">桶最大容量，多余的请求会被丢弃。0为不限制，会按照设置排队下去</param>
+            <param name="maxWaitTimeSpan">超时时间（超过此时间就放弃掉此次请求）（为null则不限制）</param>
+            <param name="maxOptimisticEstimatedTime">最大乐观估计时间（即与存粹按照漏桶内的请求数目、QPS计算的时间比较，真实可调用时间一般会大于此时间）（为空则不限制）</param>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.RemoveHandled(Koubot.Tool.Web.RateLimiter.LimitedQueue{Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter})">
+            <summary>
+            将队列中已完成的任务去除
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.InitializeLimiterQueue">
+            <summary>
+            初始化ID对应的限速器队列，无则添加进去
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.TryRequestOnce">
+            <summary>
+            尝试请求一次，若失败则直接返回false
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.CanRequest">
+            <summary>
+            开始排队请求，根据设置进行排队，超时则返回false
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.CanRequestAsync">
+            <summary>
+            （异步请求）开始排队请求，根据设置进行排队，超时则返回false
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.Dispose">
+            <summary>
+            指示该任务已经结束
+            </summary>
+        </member>
+        <member name="T:Koubot.Tool.Web.RateLimiter.LimitingType">
             <summary>
             限流模式
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Web.APILimiting.LimitingType.TokenBucket">
+        <member name="F:Koubot.Tool.Web.RateLimiter.LimitingType.TokenBucket">
             <summary>
             令牌桶模式，适用于常有高数量突发请求的，即可能会有达到最大QPS的情况
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Web.APILimiting.LimitingType.LeakyBucket">
+        <member name="F:Koubot.Tool.Web.RateLimiter.LimitingType.LeakyBucket">
             <summary>
             漏桶模式，不管多少请求处理速度都一定，比较平滑，不会达到最大QPS，但平均处理速率是基于QPS的
             </summary>
         </member>
-        <member name="T:Koubot.Tool.Web.APILimiting.LimitedQueue`1">
+        <member name="T:Koubot.Tool.Web.RateLimiter.LimitedQueue`1">
             <summary>
-            限制了长度的队列，多了则无法添加，且会返回false的加入队列错误的返回值
+            限制了长度的限速器专用请求队列，多了则无法添加，且会返回false的加入队列错误的返回值。
             </summary>
         </member>
-        <member name="T:Koubot.Tool.Web.APILimiting.LimitingFactory">
+        <member name="F:Koubot.Tool.Web.RateLimiter.LimitedQueue`1.QueueLock">
             <summary>
-            创建指定限流服务的工厂
+            可以对队列进行加锁
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Web.APILimiting.LimitingFactory.Build(Koubot.Tool.Web.APILimiting.LimitingType,System.Int32,System.Int32)">
+        <member name="P:Koubot.Tool.Web.RateLimiter.LimitedQueue`1.DequeueTimes">
             <summary>
-            创建限流服务对象
+            出队次数（可用于判断距离队头长度）
             </summary>
-            <param name="limitingType">限流服务类型</param>
-            <param name="maxQPS">最大QPS 每秒查询率/访问量（QPS，Queries-per-second）是对一个特定的查询服务器在规定时间内所处理流量多少的衡量标准。</param>
-            <param name="limitSize">桶最大同时请求容量 默认是每秒最大请求容量，即QPS</param>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LimitedQueue`1.#ctor(System.Int32)">
+            <summary>
+            创建一个限制长度的队列
+            </summary>
+            <param name="limit">0为不限制</param>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LimitedQueue`1.#ctor">
+            <summary>
+            创建一个不限制长度的队列（实际上就是Queue）
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LimitedQueue`1.Enqueue(`0)">
+            <summary>
+            入队
+            </summary>
+            <param name="item"></param>
+            <returns>如果超过队列限制数则返回false</returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.RateLimiter.LimitedQueue`1.Dequeue">
+            <summary>
+            元素出队
+            </summary>
             <returns></returns>
         </member>
-        <member name="T:Koubot.Tool.Web.APILimiting.TokenBucketLimitingService">
+        <member name="T:Koubot.Tool.Web.RateLimiter.TokenBucketLimitingService">
             <summary>
             令牌桶算法限流服务。优点：控制调用的平均速率，可以处理突发高数量请求
             </summary>
         </member>
-        <member name="P:Koubot.Tool.Web.APILimiting.TokenBucketLimitingService.MaxQPS">
+        <member name="P:Koubot.Tool.Web.RateLimiter.TokenBucketLimitingService.MaxQPS">
             <summary>
             每秒最大访问量/请求量
             </summary>
         </member>
-        <member name="P:Koubot.Tool.Web.APILimiting.TokenBucketLimitingService.LimitSize">
+        <member name="P:Koubot.Tool.Web.RateLimiter.TokenBucketLimitingService.LimitSize">
             <summary>
             最大并发限制数量，多余请求会被丢弃。若是平台API，这里就是能同时处理的最大数量，默认是QPS。若是并发服务则是最大并发数量
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Web.APILimiting.TokenBucketLimitingService.limitedQueue">
+        <member name="F:Koubot.Tool.Web.RateLimiter.TokenBucketLimitingService.limitedQueue">
             <summary>
             固定容量的桶，里面装令牌
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Web.APILimiting.TokenBucketLimitingService.cancellationToken">
+        <member name="F:Koubot.Tool.Web.RateLimiter.TokenBucketLimitingService.cancellationToken">
             <summary>
             用于指示添加令牌的线程什么时候停止
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Web.APILimiting.TokenBucketLimitingService.#ctor(System.Int32,System.Int32)">
+        <member name="M:Koubot.Tool.Web.RateLimiter.TokenBucketLimitingService.#ctor(System.Double,System.Int32)">
             <summary>
             构造方法
             </summary>
             <param name="maxQPS">最大QPS</param>
             <param name="limitSize">最大限制同时并发数</param>
         </member>
-        <member name="M:Koubot.Tool.Web.APILimiting.TokenBucketLimitingService.TokenProcess">
+        <member name="M:Koubot.Tool.Web.RateLimiter.TokenBucketLimitingService.TokenProcess">
             <summary>
             定时添加令牌
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Web.APILimiting.TokenBucketLimitingService.Request">
+        <member name="M:Koubot.Tool.Web.RateLimiter.TokenBucketLimitingService.Request">
             <summary>
             请求令牌
             </summary>

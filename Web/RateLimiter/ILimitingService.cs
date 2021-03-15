@@ -1,8 +1,7 @@
 ﻿using System;
-
 using System.Threading.Tasks;
 
-namespace Koubot.Tool.Web.APILimiting
+namespace Koubot.Tool.Web.RateLimiter
 {
     /// <summary>
     /// 限流服务接口

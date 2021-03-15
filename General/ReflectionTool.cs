@@ -12,7 +12,7 @@ namespace Koubot.Tool.General
     public static class ReflectionTool
     {
         /// <summary>
-        /// 克隆某个对象中所有属性值到对象（EFCore会追踪修改，因为做的是Action操作）
+        /// 克隆某个对象中所有属性值到对象（引用类型依然是同个引用，值类型则是复制）（EFCore会追踪修改，因为做的是Action操作）
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
@@ -22,7 +22,7 @@ namespace Koubot.Tool.General
         public static void CloneParameters<T>(this T obj, T copyObj, params string[] ignoreParameterNames)
         {
             var ignoreList = ignoreParameterNames.ToList();
-            foreach (PropertyInfo propertyInfo in typeof(T).GetProperties())
+            foreach (PropertyInfo propertyInfo in typeof(T).GetProperties().Where(p => p.CanWrite))
             {
                 //获取属性值：
                 object propertyValue = propertyInfo.GetValue(copyObj);

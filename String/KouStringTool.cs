@@ -1,14 +1,12 @@
 ﻿using JetBrains.Annotations;
 using Koubot.Tool.Expand;
 using Koubot.Tool.KouData;
+using Koubot.Tool.Math;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using Koubot.Tool.Math;
 
 namespace Koubot.Tool.String
 {
@@ -26,8 +24,9 @@ namespace Koubot.Tool.String
         /// <param name="currentPage">当前页面</param>
         /// <param name="userInput">用户输入处理为页数</param>
         /// <param name="parsedPage">处理后的页数</param>
+        /// <param name="parseInt">处理Int型页数</param>
         /// <returns>错误输入返回false，能够处理页数返回true</returns>
-        public static bool TryParsePage(int currentPage, string userInput, out int parsedPage)
+        public static bool TryParsePage(int currentPage, string userInput, out int parsedPage, bool parseInt = true)
         {
             parsedPage = 0;
             if (userInput.IsNullOrWhiteSpace()) return false;
@@ -43,12 +42,24 @@ namespace Koubot.Tool.String
                 return true;
             }
 
-            return TryToInt(userInput, out parsedPage);
+            return parseInt && TryToInt(userInput, out parsedPage);
         }
 
         #endregion
 
         #region 格式化
+        /// <summary>
+        /// 如果列表中含有指定的元素时则返回给定的customFormat否则返回null。
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="item"></param>
+        /// <param name="customFormat"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string ContainsReturnCustomOrNull<T>(this IEnumerable<T> list, T item,
+            string customFormat)
+            => list != null && list.Contains(item) ? customFormat : null;
+
         /// <summary>
         /// 使用特定的分割字符串合并一个Enumerable中的所有元素的字符串形式
         /// （本质是string.Join方法）
@@ -56,7 +67,7 @@ namespace Koubot.Tool.String
         /// <param name="values"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        public static string ToIListString<T>([CanBeNull]this IEnumerable<T> values, string separator) => 
+        public static string ToIListString<T>([CanBeNull] this IEnumerable<T> values, string separator) =>
             values == null ? string.Empty : string.Join(separator, values);
         /// <summary>
         /// 智能拼接
@@ -87,7 +98,7 @@ namespace Koubot.Tool.String
                 int secondStrCount = numStr.Length;
                 if (int.TryParse(match.Groups["index"].Value, out int index))
                 {
-                    if(index == notParse) continue;
+                    if (index == notParse) continue;
                     switch (index)
                     {
                         case < 0:
@@ -96,14 +107,14 @@ namespace Koubot.Tool.String
                             replaceStr = numStr.ToIListString("");
                             break;
                         default:
-                        {
-                            if (index <= secondStrCount)
                             {
-                                replaceStr = numStr[index - 1];
-                            }
+                                if (index <= secondStrCount)
+                                {
+                                    replaceStr = numStr[index - 1];
+                                }
 
-                            break;
-                        }
+                                break;
+                            }
                     }
                 }
 
@@ -115,162 +126,6 @@ namespace Koubot.Tool.String
         #endregion
 
         #region KouType类型适配
-        /// <summary>
-        /// 转换为指定类型的List
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static bool TryToIList<T>(string str, out List<T> resultList,
-            string constraintPattern = @"[\s\S]+", int countConstraint = 0, bool allowDuplicate = false,
-            string splitStr = ",;；，、\\\\", RegexOptions regexOptions = RegexOptions.IgnoreCase)
-        {
-            resultList = null;
-            if (TryToIList(str, out IList list, typeof(T), constraintPattern, countConstraint, allowDuplicate,
-                splitStr, regexOptions))
-            {
-                resultList = (List<T>)list;
-                return true;
-            }
-
-            return false;
-        }
-        /// <summary>
-        /// 尝试将string转换为指定类型的IList
-        /// </summary>
-        public static bool TryToIList(string str, out IList resultList, Type listType,
-            string constraintPattern = @"[\s\S]+", int countConstraint = 0, bool allowDuplicate = false,
-            string splitStr = ",;；，、\\\\", RegexOptions regexOptions = RegexOptions.IgnoreCase, bool useKouType = true,
-            bool onceFailReplyError = false, double? numberMin = null, double? numberMax = null)
-        {
-            resultList = null;
-            IList<IntervalDoublePair> intervalDoublePairList = null;
-            if (typeof(IList<IntervalDoublePair>).IsAssignableFrom(listType)) //特别处理它的constraintPattern，因为不能为,
-            {
-                splitStr = splitStr.Replace(",", "");
-                intervalDoublePairList = new List<IntervalDoublePair>();
-            }
-            if (!MultiSelectionHelper.TryGetMultiSelections(str, out List<string> list, constraintPattern,
-                countConstraint,
-                allowDuplicate
-                , splitStr, regexOptions))
-            {
-                return false;
-            }
-
-            //是字符串类型的
-            if (typeof(IList<string>).IsAssignableFrom(listType))
-            {
-                resultList = list;
-                return true;
-            }
-
-            IList<int?> intList = null;
-            IList<double?> doubleList = null;
-            IList<bool?> boolList = null;
-            IList<TimeSpan?> timeSpanList = null;
-            
-            bool nullable = false;
-            //判断是哪个类型列表
-            if (listType.SatisfyAny(typeof(IList<int>).IsAssignableFrom
-                , typeof(IList<int?>).IsAssignableFrom))
-                intList = new List<int?>();
-            else if (listType.SatisfyAny(typeof(IList<double>).IsAssignableFrom
-                , typeof(IList<double>).IsAssignableFrom))
-                doubleList = new List<double?>();
-            else if (listType.SatisfyAny(typeof(IList<bool>).IsAssignableFrom
-                , typeof(IList<bool?>).IsAssignableFrom))
-                boolList = new List<bool?>();
-            else if (listType.SatisfyAny(typeof(IList<TimeSpan>).IsAssignableFrom
-                , typeof(IList<TimeSpan?>).IsAssignableFrom))
-                timeSpanList = new List<TimeSpan?>();
-            //如果是可空类型
-            if (listType.SatisfyAny(typeof(IList<int?>).IsAssignableFrom,
-                typeof(IList<double?>).IsAssignableFrom, typeof(IList<bool?>).IsAssignableFrom,
-                typeof(IList<TimeSpan?>).IsAssignableFrom))
-                nullable = true;
-            //进行转换
-            foreach (var item in list)
-            {
-                if (intList != null)
-                {
-                    if (TryToInt(item, out int intResult,
-                        useKouType))
-                    {
-                        intResult = intResult.LimitInRange(numberMin, numberMax);
-                        intList.Add(intResult);
-                    }
-                    continue;
-                }
-
-                if (doubleList != null)
-                {
-                    if (TryToDouble(item, out double doubleResult,
-                        useKouType))
-                    {
-                        doubleResult = doubleResult.LimitInRange(numberMin, numberMax);
-                        doubleList.Add(doubleResult);
-                    }
-
-                    continue;
-                }
-
-                if (boolList != null)
-                {
-                    if (TryToBool(item, out bool boolResult,
-                        useKouType))
-                        boolList.Add(boolResult);
-                    continue;
-                }
-
-                if (timeSpanList != null)
-                {
-                    if (TryToTimeSpan(item, out TimeSpan timeSpanResult,
-                        useKouType))
-                        timeSpanList.Add(timeSpanResult);
-                    continue;
-                }
-
-                if (intervalDoublePairList != null)
-                {
-                    if (IntervalDoublePair.TryGetIntervalDoublePair(item, out IntervalDoublePair interval))
-                        intervalDoublePairList.Add(interval);
-                    continue;
-                }
-            }
-
-            if (intList != null)
-            {
-                resultList = nullable ? (IList)intList : intList.ConvertToNotNullable().ToList();
-                return true;
-            }
-
-            if (doubleList != null)
-            {
-                resultList = nullable ? (IList)doubleList : doubleList.ConvertToNotNullable().ToList();
-                return true;
-            }
-
-            if (boolList != null)
-            {
-                resultList = nullable ? (IList)boolList : boolList.ConvertToNotNullable().ToList();
-                return true;
-            }
-
-            if (timeSpanList != null)
-            {
-                resultList = nullable ? (IList)timeSpanList : timeSpanList.ConvertToNotNullable().ToList();
-                return true;
-            }
-
-            if (intervalDoublePairList != null)
-            {
-                resultList = (IList)intervalDoublePairList;
-                return true;
-            }
-            return false;
-        }
-
-
         /// <summary>
         /// 将字符串类型的数字转换为bool类型，支持中文以及英文、数字
         /// </summary>
@@ -307,7 +162,7 @@ namespace Koubot.Tool.String
                     str = parsedStr;
                 }
 
-                ExpressionCalculator calculator = new ExpressionCalculator();
+                ExpressionCalculator calculator = new ExpressionCalculator();//BUG 没有处理abc等非表达式情况，仍然会认为输入了正确的表达式
                 if (str.Contains("上")) str = str.Replace("上", "");//乘上、加上等
                 if (str.Contains("去")) str = str.Replace("去", "");
                 str = str.ReplaceAllFromPairSet(KouStaticData.ZhMathToSymbolMath);
@@ -335,7 +190,40 @@ namespace Koubot.Tool.String
             return result;
         }
 
+        /// <summary>
+        /// 将字符串类型的数字转换为enum类型，支持KouEnumName标签特性别名枚举
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="enumResult"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool TryToEnum<T>(string str, out T enumResult) where T : struct, Enum
+        {
+            return KouEnumTool.TryGetKouEnum(str, out enumResult) ||
+                   Enum.TryParse(str, true, out enumResult);
+        }
+        /// <summary>
+        /// 将字符串类型的数字转换为enum类型，支持KouEnumName标签特性别名枚举
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="enumType"></param>
+        /// <param name="enumResult"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool TryToEnum(string str, Type enumType, out object enumResult)
+        {
+            if (KouEnumTool.TryGetKouEnum(enumType, str, out enumResult)) return true;
+            try
+            {
+                enumResult = Enum.Parse(enumType, str, true);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
+        }
         #endregion
 
         #region 插件参数处理常用
@@ -428,33 +316,31 @@ namespace Koubot.Tool.String
             if (str.IsNullOrWhiteSpace()) return false;
             if (!kouType) return TimeSpan.TryParse(str, out timeSpan);
             if (ZhNumber.IsContainZhNumber(str)) str = ZhNumber.ToArabicNumber(str);
-            if(TryGetTimeSpanFromZhDescription(str, out timeSpan)) return true;
-            if (DateTime.TryParse(str, out DateTime dateTime)) //使用日期格式尝试转换
+            if (str.TryGetTimeSpan(out TimeSpan timeSpanFormal, false))//2:00这种是指2分钟
+            {
+                timeSpan += timeSpanFormal;
+                return true;
+            }
+            if (TryGetTimeSpanFromZhDescription(str, out timeSpan)) return true;
+            if (DateTime.TryParse(str, out DateTime dateTime)) //使用日期格式尝试转换，相对于当前日期
             {
                 timeSpan = dateTime - DateTime.Now;
                 return true;
             }
-
             if (str.IsMatch(@"^\d+$") && int.TryParse(str, out int second))
             {
                 timeSpan = new TimeSpan(0, 0, second);
                 return true;
             }
-            if (str.TryGetTimeSpan(out TimeSpan timeSpanFormal, false))
-            {
-                timeSpan += timeSpanFormal;
-                return true;
-            }
-
             if (TryGetTimeSpanFromStr(str, out TimeSpan timeSpanModern))
             {
-                timeSpan += timeSpanModern; 
+                timeSpan += timeSpanModern;
                 success = true;
             }
 
             if (TryGetTimeSpanFromAncientStr(str, out TimeSpan timeSpanAncient))
             {
-                timeSpan += timeSpanAncient; 
+                timeSpan += timeSpanAncient;
                 success = true;
             }
             return success;
@@ -470,7 +356,7 @@ namespace Koubot.Tool.String
         {
             if (str.IsNullOrWhiteSpace()) return false;
             Regex regex = new Regex(@"(?:(?<day>大前|前|昨|今|当|明|后|大后)(?:日|天))?(?<period>早上|上午|下午|晚上)?(?<hour>\d{1,2})[:点]过?(?<minute>\d{1,2})?[:分]?(?:(?<second>\d{1,7})秒?)?(?<period2>[pa]\.?m\.?)?");
-            if(!regex.IsMatch(str)) return false;
+            if (!regex.IsMatch(str)) return false;
             var match = regex.Match(str);
             bool? isAM = null;//为null是24小时制，否则true为AM，false为PM
             int dayAwayFromNow = 0;//距离今天的天数
@@ -529,7 +415,7 @@ namespace Koubot.Tool.String
             timeSpan = after - DateTime.Now;
             return true;
         }
-        
+
         /// <summary>
         /// 使用古代格式的字符尝试转换为TimeSpan格式的时间间隔
         /// </summary>
@@ -605,7 +491,7 @@ namespace Koubot.Tool.String
                 }
             }
             if (!success) return false;
-            
+
             try
             {
                 timeSpan = new TimeSpan((int)day, (int)hour, (int)minute, (int)second, (int)millisecond);
@@ -786,5 +672,6 @@ namespace Koubot.Tool.String
         }
 
         #endregion
+
     }
 }
