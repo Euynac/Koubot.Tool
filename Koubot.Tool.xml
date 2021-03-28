@@ -1046,26 +1046,59 @@
         </member>
         <member name="M:Koubot.Tool.Expand.SystemExpand.BeNullOr``1(``0,System.String,System.Boolean)">
             <summary>
-            （使用时请obj?.BeNullOr()这样使用，可快速截断变为null）如果引用类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
+            （使用时请obj?.Be()这样使用，可快速截断变为null）如果引用类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
             </summary>
             <param name="obj"></param>
             <param name="be"></param>
             <param name="useSmartConcat">是否启用自动拼接obj.ToString()，使用 $0 指定自动位置，有冲突时注意关闭</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.BeDefaultOr``1(``0,System.String)">
+        <member name="M:Koubot.Tool.Expand.SystemExpand.Be(System.Object,System.String,System.Boolean)">
             <summary>
-            如果值类型为初始默认值则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用）（注意特殊情况比如int=0若也有效的话）
+            直接返回给定的字符串。使用时必须obj?.Be()这样使用，可快速截断变为null。
             </summary>
-            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <param name="useSmartConcat">是否启用自动拼接obj.ToString()，使用 $0 指定自动位置，有冲突时注意关闭</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.BeIfNotEmpty(System.String,System.String)">
+            <summary>
+            如果字符串不为null或Empty，直接返回给定的字符串。使用时obj?.Be()这样使用，可快速截断变为null。
+            </summary>
             <param name="obj"></param>
             <param name="be"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.BeNullOr``1(System.Nullable{``0},System.String)">
+        <member name="M:Koubot.Tool.Expand.SystemExpand.BeIfNotWhiteSpace(System.String,System.String)">
             <summary>
-            （使用时请obj?.BeNullOr()这样使用，可快速截断变为null）如果可空值类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
+            如果字符串不为null或WhiteSpace，直接返回给定的字符串。使用时obj?.Be()这样使用，可快速截断变为null。
             </summary>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.Be(System.Object,System.String)">
+            <summary>
+            直接返回给定的字符串。使用时必须obj?.Be()这样使用，可快速截断变为null。
+            </summary>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.BeIfTrue(System.Boolean,System.String)">
+            <summary>
+            如果布尔值是false则返回null字符串，否则返回要成为的那个字符串
+            </summary>
+            <param name="isTrue"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Expand.SystemExpand.BeIfNotDefault``1(``0,System.String)">
+            <summary>
+            如果值类型为初始默认值则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用）（注意特殊情况比如int=0若也有效的话）
+            </summary>
+            <typeparam name="T"></typeparam>
             <param name="obj"></param>
             <param name="be"></param>
             <returns></returns>
@@ -1434,6 +1467,12 @@
             <param name="path"></param>
             <returns></returns>
         </member>
+        <member name="M:Koubot.Tool.General.FileTool.CombineDirectoryWithFileName(System.String,System.String)">
+            <summary>
+            合并目录路径与文件名（即自动处理是否末尾有\的情况）或使用Path.Combine
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Koubot.Tool.General.FileTool.AppendFile(System.String,System.Text.StringBuilder)">
             <summary>
             向文件末尾追加写入
@@ -1510,6 +1549,35 @@
             <typeparam name="TR"></typeparam>
             <param name="func"></param>
             <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.General.KouTaskDelayer">
+            <summary>
+            Kou定时、延时器
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.General.KouTaskDelayer._sleepTime">
+            <summary>
+            单次线程等待时间（ms）
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.KouTaskDelayer.StartTick">
+            <summary>
+            开启定时器
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.KouTaskDelayer.AddTask(System.DateTime,System.Threading.Tasks.Task)">
+            <summary>
+            向定时池增加需要执行的任务
+            </summary>
+            <param name="executeTime"></param>
+            <param name="task">要执行的任务</param>
+        </member>
+        <member name="T:Koubot.Tool.General.DuplicateKeyComparer`1">
+            <summary>
+            Comparer for comparing two keys, handling equality as beeing greater
+            Use this Comparer e.g. with SortedLists or SortedDictionaries, that don't allow duplicate keys
+            </summary>
+            <typeparam name="TKey"></typeparam>
         </member>
         <member name="T:Koubot.Tool.General.KouWatch">
             <summary>
@@ -2581,6 +2649,19 @@
             <param name="str"></param>
             <returns></returns>
         </member>
+        <member name="T:Koubot.Tool.Web.ImageTool">
+            <summary>
+            图片工具
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Web.ImageTool.DownloadImageAsync(System.String,System.String,System.Uri)">
+            <summary>
+            异步下载图片文件
+            </summary>
+            <param name="directoryPath"></param>
+            <param name="fileName"></param>
+            <param name="uri"></param>
+        </member>
         <member name="T:Koubot.Tool.Web.RateLimiter.ILimitingService">
             <summary>
             限流服务接口
@@ -2930,7 +3011,7 @@
             Base64加密，出错将返回原文，默认按UTF8加密
             </summary>
             <param name="source">原文</param>
-            <param name="code_type">编码类型</param>
+            <param name="codeType">编码类型</param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Web.WebTool.DecodeBase64(System.String,System.Text.Encoding)">
@@ -2938,7 +3019,7 @@
             Base64解密，出错将返回原文，默认按UTF8解密
             </summary>
             <param name="source">原文</param>
-            <param name="code_type">编码类型，为空默认是UTF8</param>
+            <param name="codeType">编码类型，为空默认是UTF8</param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Web.WebTool.EncryptStringMD5(System.String)">

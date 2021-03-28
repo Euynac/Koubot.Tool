@@ -30,7 +30,7 @@ namespace Koubot.Tool.General
             result = ((IComparable)obj1).CompareTo(obj2) * result;
             return result != 0 ? null : new object();
         }
-
+        
         /// <summary>
         /// 两个对象进行升序比较，用于Compare相关方法的快捷实现，支持null比较，支持链式比较
         /// （如果不相等返回null（判断返回为null才返回比较值），截断方法调用，返回值为比较结果。否则可以链式执行直到两者不相等后进行下一个权重的比较）（需要实现IComparable接口）
@@ -69,6 +69,7 @@ namespace Koubot.Tool.General
             return ((IComparable)obj1).CompareTo(obj2) * result;
         }
 
+
         /// <summary>
         /// Sort比较器中Comparison比较null的快捷方法。如果任意一个为null，返回true，此时需要返回out int为Compare结果
         /// </summary>
@@ -78,7 +79,7 @@ namespace Koubot.Tool.General
         /// <param name="returnValue"></param>
         /// <returns></returns>
         [ContractAnnotation("obj1:null => true; obj2:null => true")]
-        public static bool CompareToNullObj([CanBeNull] this object obj1, [CanBeNull] object obj2, out int returnValue, bool nullIsLast = true)
+        private static bool CompareToNullObj([CanBeNull] object obj1, [CanBeNull] object obj2, out int returnValue, bool nullIsLast = true)
         {
             returnValue = nullIsLast ? 1 : -1;
             if (obj1 == null && obj2 != null)

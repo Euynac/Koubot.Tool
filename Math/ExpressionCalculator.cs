@@ -208,6 +208,12 @@ namespace Koubot.Tool.Math
                             case 'l':
                                 operandStack.Push(System.Math.Log10(y));
                                 break;
+                            case 'm':
+                                operandStack.Push(System.Math.Ceiling(y));
+                                break;
+                            case 'n':
+                                operandStack.Push(System.Math.Log(y, System.Math.E));
+                                break;
                             default:
                                 break;
                         }
@@ -234,7 +240,7 @@ namespace Koubot.Tool.Math
 
         private static Boolean isInSupportedArray(char testChar)
         {
-            char[] supportedArr = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l' };
+            char[] supportedArr = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l','m','n'};
             foreach (char chr in supportedArr)
             {
                 if (chr == testChar) return true;
@@ -251,6 +257,7 @@ namespace Koubot.Tool.Math
             {"asin", "c"},
             {"arctan", "d"},
             {"atan", "d"},
+            {"floor", "e"},
             {"sqrt", "f"},
             {"log", "g"},
             {"sin", "h"},
@@ -263,7 +270,8 @@ namespace Koubot.Tool.Math
             {"tangent", "k"},
             {"tg", "k"},
             {"lg", "l"},
-            {"floor", "m"},
+            {"ceiling", "m"},
+            {"ln","n" },
             {"pi", System.Math.PI.ToString(CultureInfo.InvariantCulture)},
             {"e", System.Math.E.ToString(CultureInfo.InvariantCulture)}
         };

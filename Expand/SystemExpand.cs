@@ -223,18 +223,56 @@ namespace Koubot.Tool.Expand
 
         #region Object类拓展
         /// <summary>
-        /// （使用时请obj?.BeNullOr()这样使用，可快速截断变为null）如果引用类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
+        /// （使用时请obj?.Be()这样使用，可快速截断变为null）如果引用类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="be"></param>
         /// <param name="useSmartConcat">是否启用自动拼接obj.ToString()，使用 $0 指定自动位置，有冲突时注意关闭</param>
         /// <returns></returns>
         [ContractAnnotation("obj:null => null")]
+        [Obsolete("已废弃，请使用obj.?Be()")]
         public static string BeNullOr<T>([CanBeNull] this T obj, [CanBeNull] string be, bool useSmartConcat = false) where T : class //引用类型约束
         {
             return obj == null ? null : !useSmartConcat ? be : be?.Replace("$0", obj.ToString());
         }
+        /// <summary>
+        /// 直接返回给定的字符串。使用时必须obj?.Be()这样使用，可快速截断变为null。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="be"></param>
+        /// <param name="useSmartConcat">是否启用自动拼接obj.ToString()，使用 $0 指定自动位置，有冲突时注意关闭</param>
+        /// <returns></returns>
+        public static string Be([NotNull]this object obj, [CanBeNull] string be, bool useSmartConcat) => !useSmartConcat ? be : be?.Replace("$0", obj.ToString());
+        /// <summary>
+        /// 如果字符串不为null或Empty，直接返回给定的字符串。使用时obj?.Be()这样使用，可快速截断变为null。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="be"></param>
+        /// <returns></returns>
+        public static string BeIfNotEmpty([CanBeNull] this string obj, [CanBeNull] string be) => string.IsNullOrEmpty(obj) ? null : be;
 
+        /// <summary>
+        /// 如果字符串不为null或WhiteSpace，直接返回给定的字符串。使用时obj?.Be()这样使用，可快速截断变为null。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="be"></param>
+        /// <returns></returns>
+        public static string BeIfNotWhiteSpace([CanBeNull] this string obj, [CanBeNull] string be) => string.IsNullOrWhiteSpace(obj) ? null : be;
+
+        /// <summary>
+        /// 直接返回给定的字符串。使用时必须obj?.Be()这样使用，可快速截断变为null。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="be"></param>
+        /// <returns></returns>
+        public static string Be([NotNull]this object obj, [CanBeNull] string be) => be;
+        /// <summary>
+        /// 如果布尔值是false则返回null字符串，否则返回要成为的那个字符串
+        /// </summary>
+        /// <param name="isTrue"></param>
+        /// <param name="be"></param>
+        /// <returns></returns>
+        public static string BeIfTrue(this bool isTrue, [CanBeNull] string be) => isTrue ? be : null;
         /// <summary>
         /// 如果值类型为初始默认值则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用）（注意特殊情况比如int=0若也有效的话）
         /// </summary>
@@ -242,20 +280,9 @@ namespace Koubot.Tool.Expand
         /// <param name="obj"></param>
         /// <param name="be"></param>
         /// <returns></returns>
-        public static string BeDefaultOr<T>(this T obj, string be) where T : struct //值类型约束
+        public static string BeIfNotDefault<T>(this T obj, string be) where T : struct //值类型约束
         {
             return obj.Equals(default(T)) ? null : be;
-        }
-
-        /// <summary>
-        /// （使用时请obj?.BeNullOr()这样使用，可快速截断变为null）如果可空值类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="be"></param>
-        /// <returns></returns>
-        public static string BeNullOr<T>(this T? obj, string be) where T : struct //可空值类型
-        {
-            return obj == null ? null : be;
         }
         /// <summary>
         /// 判断是否存在一个元素给定的元素与之相等

@@ -14,19 +14,19 @@ namespace Koubot.Tool.Web
         /// Base64加密，出错将返回原文，默认按UTF8加密
         /// </summary>
         /// <param name="source">原文</param>
-        /// <param name="code_type">编码类型</param>
+        /// <param name="codeType">编码类型</param>
         /// <returns></returns>
-        public static string EncodeBase64(string source, Encoding code_type = null)
+        public static string EncodeBase64(string source, Encoding codeType = null)
         {
             if (string.IsNullOrEmpty(source)) return "";
-            if (code_type == null)
+            if (codeType == null)
             {
-                code_type = Encoding.UTF8;
+                codeType = Encoding.UTF8;
             }
             string encode;
             try
             {
-                byte[] bytes = code_type.GetBytes(source);
+                byte[] bytes = codeType.GetBytes(source);
                 encode = Convert.ToBase64String(bytes);
             }
             catch
@@ -40,20 +40,20 @@ namespace Koubot.Tool.Web
         /// Base64解密，出错将返回原文，默认按UTF8解密
         /// </summary>
         /// <param name="source">原文</param>
-        /// <param name="code_type">编码类型，为空默认是UTF8</param>
+        /// <param name="codeType">编码类型，为空默认是UTF8</param>
         /// <returns></returns>
-        public static string DecodeBase64(string source, Encoding code_type = null)
+        public static string DecodeBase64(string source, Encoding codeType = null)
         {
             if (string.IsNullOrEmpty(source)) return "";
-            if (code_type == null)
+            if (codeType == null)
             {
-                code_type = Encoding.UTF8;
+                codeType = Encoding.UTF8;
             }
             string decode;
             try
             {
                 byte[] bytes = Convert.FromBase64String(source);
-                decode = code_type.GetString(bytes);
+                decode = codeType.GetString(bytes);
             }
             catch
             {

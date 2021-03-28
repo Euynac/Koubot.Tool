@@ -107,6 +107,14 @@ namespace Koubot.Tool.General
             }
         }
         /// <summary>
+        /// 合并目录路径与文件名（即自动处理是否末尾有\的情况）或使用Path.Combine
+        /// </summary>
+        /// <returns></returns>
+        public static string CombineDirectoryWithFileName(string directory, string fileName)
+        {
+            return directory.EndsWith("\\") ? directory + fileName : directory + '\\' + fileName;
+        }
+        /// <summary>
         /// 向文件末尾追加写入
         /// </summary>
         /// <param name="path"></param>

@@ -295,10 +295,10 @@ namespace Koubot.Tool.String
             int minutes = timeSpan.Minutes;
             int seconds = timeSpan.Seconds;
             int milliseconds = timeSpan.Milliseconds;
-            return days.BeDefaultOr($"{days}天")
-                   + hours.BeDefaultOr($"{hours}小时")
-                   + minutes.BeDefaultOr($"{minutes}分钟")
-                   + (milliseconds.BeDefaultOr($"{seconds + milliseconds / 1000.0}秒") ?? seconds.BeDefaultOr($"{seconds}秒"));
+            return days.BeIfNotDefault($"{days}天")
+                   + hours.BeIfNotDefault($"{hours}小时")
+                   + minutes.BeIfNotDefault($"{minutes}分钟")
+                   + (milliseconds.BeIfNotDefault($"{seconds + milliseconds / 1000.0}秒") ?? seconds.BeIfNotDefault($"{seconds}秒"));
         }
 
         /// <summary>

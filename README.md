@@ -1,23 +1,92 @@
-# Koubot.Tool
+## Language
 
-辅助开发Koubot项目相关的工具包。也可以用于开发其他项目，封装了一些常用的小工具。
+English | [简体中文](README.zh_CN.md)
 
-里面有部分方法使用了ReSharper的特性，使用ReSharper的插件可以获得良好的提示：
 
-```C#
-		[ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)https://www.jetbrains.com/help/resharper/Contract_Annotations.html#syntax
-        public static bool IsNullOrEmpty([CanBeNull] this string s)
-            => string.IsNullOrEmpty(s);
-        
+
+
+
+## Koubot.Tool
+
+A toolkit to assist in the development of Koubot related projects, providing a large number of extension methods, as well as some tool classes, can also be used to develop other projects (for lazy people lol), has also been uploaded to Nuget, you can use Nuget search Koubot to reference. The toolkit project does not have and will not have other project dependencies. 
+
+bases on .NET Standard 2.0
+
+
+
+> Some of the methods inside use features of  VS plug-in ReSharper, and good hints and code checking are available when using ReSharper
+>
+> ```C#
+> 		//Ability to teach ReSharper null judgment (passed in null, returns true)		
+> 		[ContractAnnotation("null => true")] 
+>         public static bool IsNullOrEmpty([CanBeNull] this string s)
+>             => string.IsNullOrEmpty(s);
+> //https://www.jetbrains.com/help/resharper/Contract_Annotations.html#syntax
+> ```
+>
+
+
+
+
+
+## General
+
+### KouTaskDelayer
+
+Timer that executes a task at particular time. if used it, it will takes a long-running thread to determine whether there is a task in the task list that needs to be executed. Supports same execution times.
+
+```c#
+KouTaskDelayer.AddTask(executeDate, new Task(() => { ... }));
 ```
 
 
 
-## 工具类
 
-### KouWatch 单元测试计时器/效率比较器
 
-比如测试GetCustomAttributeCached与自带方法的效率比较：
+### SortTool
+
+Extension methods in it can help to quickly complete the implementation of Comparison, Compare and other related methods, and it support chaining (to achieve weight sorting) and compare with null.
+
+```c#
+		public int CompareTo(SystemAliasList? other)
+        {
+            return this.CompareToObjAsc(IsGlobalAlias, other?.IsGlobalAlias, out int result)
+                ?.CompareToObjAsc(IsGroupAlias, other?.IsGroupAlias, out result)
+                ?.CompareToObjAsc(Advanced, other?.Advanced, out result)
+                ?.CompareToObjAsc(AliasId, other?.AliasId, out result) == null ? result : 0;
+        }
+```
+
+For example, to implement a CompareTo method for alias list, the effect is that the list will first sorted by the IsGlobalAlias field in ascending order, then by the IsGroupAlias field ascending, then by the Advanced field ascending , and finally by the AliasID field ascending, and the empty ones will be placed at the end (represent the null comparison support)
+
+
+
+
+
+### KouWatch
+
+Unit test timer/efficiency comparator
+
+When you need to time the execution time, you always need to write：
+
+```
+Stopwatch watch = new Stopwatch();
+watch.Start();
+...
+watch.Stop();
+Debug.WriteLine(watch.ElapsedMilliseconds);
+```
+
+Obviously very tedious, if you use KouWatch, you can use the following instead, and it will automatically output the time when the execution is finished.
+
+```
+			KouWatch.Start("testName", () =>
+            {
+                ...
+            });
+```
+
+In addition, if you want to compare the execution time, there are methods for comparing, such as testing the efficiency of GetCustomAttributeCached compared to the system method.
 
 ```c#
 			KouWatch.Start("cache", () =>
@@ -30,7 +99,7 @@
 ```
 
 ```
-//输出结果：
+//Output results.
 “cache”动作执行100000次中...
 cache执行时间：253ms
 “default”动作执行100000中...
@@ -40,44 +109,28 @@ default执行时间：596ms
 
 
 
-### SortTool
-
-其中的扩展方法能够快速完成Comparison、Compare等相关方法的实现，且支持链式（实现权重排序）、null。
-
-```c#
-		public int CompareTo(SystemAliasList? other)
-        {
-            return this.CompareToObjAsc(IsGlobalAlias, other?.IsGlobalAlias, out int result)
-                ?.CompareToObjAsc(IsGroupAlias, other?.IsGroupAlias, out result)
-                ?.CompareToObjAsc(Advanced, other?.Advanced, out result)
-                ?.CompareToObjAsc(AliasId, other?.AliasId, out result) == null ? result : 0;
-        }
-```
-
-比如实现一个比较alias列表的比较器，该效果是空的都会放在最后（支持null），且先按照IsGlobalAlias字段升序、再按照IsGroupAlias字段升序、再按照Advanced字段升序、最后按照AliasID字段升序。
 
 
 
 
 
 
+## Web
 
-## 服务类
+#### LeakyBucketRateLimiter
 
-#### 漏桶算法限流器LeakyBucketRateLimiter
+A leaky bucket algorithm flow limiter specifically for **client-side** API calls. The common implementation of the Leaky Bucket algorithm on the web does not calculate the time it takes for a request to reach the server, causing it easily to exceed the QPS specified by the server. This flow limiter implementation takes the request out of the bucket only after it is complete.
 
-专门用于客户端调用API的漏桶算法限流器，一般的漏桶算法实现不会计算请求到达服务器所需时间，造成超过服务器所规定的QPS。该限流器实现是请求完毕之后才会从桶中取出。
+QPS support floating point number, such as 0.5, that is, 2 seconds before a call (in addition, if the QPS is very large, the interval call once will be at most 50ms , so the current maximum effective support for QPS for about 20 (later to optimize)) error in 0.5ms - 3ms or so
 
-QPS支持浮点数，比如0.5，即2秒钟才可调用一次（另外QPS很大的话测试出来最多间隔50ms调用一次，因此目前最大有效支持的QPS为20左右，后期再进行优化）误差在0.5ms-3ms左右
+In addition, the flow limiter supports multiple APIs to limit the flow simultaneously and does not open new threads for automatic bucket leakage, but uses these threads to automatically control the requests in the bucket (but this also creates the disadvantage of poor support for large QPS)
 
-另外限流器支持多种API同时限流，不会开启新线程用于自动漏桶，是用使用的线程来自动控制桶中的请求（但这也造成了对大QPS支持不好的缺点）
+support setting timeout time
 
-支持设定超时时间
-
-使用示例：
+Usage example:
 
 ```c#
-using (var limiter = new LeakyBucketRateLimiter("test", TestQPS, TestLimitedSize))//利用了IDisposable机制，当出using范围，即自动认为请求结束，可以从桶中取出元素
+using (var limiter = new LeakyBucketRateLimiter("test", TestQPS, TestLimitedSize))
 {
     if (!limiter.CanRequest())
     {
@@ -88,91 +141,161 @@ using (var limiter = new LeakyBucketRateLimiter("test", TestQPS, TestLimitedSize
 }
 ```
 
+> The IDisposable feature is utilized so that when the request is out of the using range, the request is automatically considered finished and the request can be removed from the bucket
+>
 
 
-## 接口类
+
+#### Encoder/Decoder
+
+Currently provides base64 encryption and decryption (`WebTool.EncodeBase64`), and MD5 encryption (`WebTool.EncryptStringMD5`).
+
+
+
+## Random
+
+### RandomTool
+
+> Initialize only once and always use the same random number seed.
+>
+> Those starting with `XXX.` are extension methods of the corresponding type
+
+| Method                                  | Description                                                  |
+| --------------------------------------- | ------------------------------------------------------------ |
+| IList.RandomGetOne                      | Get a random item from IList and return default(T) if it fails |
+| Array.RandomGetOne                      | Get a random item from the Array and return default(T) if it fails |
+| IList.RandomGetItems                    | Randomly get a specified number of items (will not repeat), return list, failure returns null |
+| IList.RandomList                        | Disrupt the IList order and return it, or return the original list if it fails |
+| IList.EnumRandomGetOne                  | Randomly select one from Enum (need Enum class to be 0-n continuous) |
+| IntervalDoublePair.GenerateRandomDouble | Generate random double in an interval range (used with the IntervalDoublePair class in Tool) |
+| GenerateRandomDouble                    | Generate random double in an interval range                  |
+| T.ProbablyDo                            | There is an x% probability of not returning null, that is, there is an x% probability that it will do it (use `?` on the chain truncation, for probabilistic execution) |
+| T.ProbablyBe                            | There is x% chance that the given object will be giving T    |
+| double.ProbablyTrue                     | Returns true with x% probability                             |
+| GetSecurityRandomByte                   | Get a strong random byte array                               |
+| GetRandomString                         | Generate a random string                                     |
+| ...                                     | ...                                                          |
+
+
+
+## Math
+
+### ExpressionCalculator
+
+Expression calculator that can be used to calculate expressions like `sin(pi/2)^e-1*floor(3.5)`.
+
+### IntervalDoublePair
+
+Based on the IntervalDouble class, it can convert strings such as `(1,3]`, `(-1,)` into intervals and determine the inclusion relationship between intervals.
+
+
+
+## Interfaces
 
 #### IKouErrorMsg
 
-某些服务类中若实现该接口，可以获取返回错误的原因。
+Some service classes that implement this interface can get the reason for the error returned.
 
 
 
-## 其他扩展方法
+## String
 
-#### Reflection 方法
+### KouStringTool
 
-T.CloneParameters(T copyObj)：克隆某个对象中所有属性值到对象（EFCore会追踪修改，因为做的是Action操作）（可设定忽略克隆的属性名）
+string into the corresponding type , mostly based on the regular implementation . (actually a partial open source implementation of the KouType type system)
 
+Hope to evolve to use NLP (?)
 
-
-#### Random 方法
-
-IList.RandomGetOne：从IList中随机获取一个item，失败返回default(T)
-
-IList.RandomGetItems：随机获取规定数量的items（不会重复），返回list，失败返回null
-
-IList.RandomList：打乱IList顺序返回，失败则返回原来的list
-
-IList.EnumRandomGetOne：从Enum中随机选取一个（需要Enum类是0-n连续的）
-
-IntervalDoublePair.GenerateRandomDouble：产生区间范围中的随机浮点数（与Tool中的IntervalDoublePair类连用）
-
-T.ProbablyDo：有x%可能性不返回null，就是有x%可能性会做（链式上?截断用于概率执行）
-
-T.ProbablyBe：有x%可能性会成为给定的对象
-
-double.ProbablyTrue：有x%可能性返回true
-
-#### Attribute类
-
-CustomAttributeExtensions中封装一些关于CustomAttribute的扩展方法，使用了Dict做cache，能够高效的得到用户对类上使用的自定义标签（Attribute特性）中的值。
-
-其中GetCustomAttributeCached方法能够快速获取对应类或指定属性或方法上的自定义标签，较自带的GetCustomAttribute而言，不需要反射得到类中指定属性、或方法的Type即可得到自定义标签，且效率高2倍左右。
-
-#### String 类
-
-支持string转int、double、TimeSpan、bool等（和Koubot中的支持类型一致，其实就是KouType类型转换的实现开源）
-
-int以及double：支持sin(pi/2)*(壹佰+14)\*1000+五百一十四等字符串变成114514
-
-TimeSpan：支持明天早上八点过五分、5:00、一炷香、一个月等转化为对应当前时间的TimeSpan
-
-支持string转以上对应的IList\<\>类，比如List\<int\>：19，19，810等输入可以获得{19,19,810}这样的int List。
+| Method Or Class                      | Description                                                  |
+| ------------------------------------ | ------------------------------------------------------------ |
+| ZhNumber                             | Tools related to the conversion of Chinese numeric strings to Arabic numbers, such as the ability to replace all Chinese numbers in a string with Arabic numbers |
+| KouStringTool.TryToBool              | Support all kinds of words that express affirmative or negative to bool |
+| KouStringTool.TryToDouble            | Support Chinese as well as units and even expressions, such as: 壹佰；500；1k、1w；一万；(sin(pi/2)^e\*100+14)*1000+五百一十肆, etc. |
+| KouStringTool.TryToInt               | Similar to Double, but truncates the decimal part            |
+| KouStringTool.TryToEnum              | Converts a string to its corresponding enum type. Use with the KouEnumName feature tag for best results. |
+| KouStringTool.TryGetTimeSpanInterval | String to time interval, for example 13:41-18:07:22, you can get TimeSpan of 13:41 and TimeSpan of 18:07:22 |
+| KouStringTool.TryToTimeSpan          | 一炷香(30 minutes)，一小时，1h5m(one hour and five minutes)，1:00(one minute),50(50 seconds)，后天早上八点(automatically calculates the current distance to 8:00 a.m. the day after), DateTime format, etc. |
 
 
 
-#### System 相关拓展方法
+### Format
 
-扩展一些常用的方法，加速开发，缩减代码
+Use
 
-- 时间相关扩展：字符串、DateTime格式转特定类型（Unix、Javascript）时间戳
+```c#
+var result = $"{Reason?.Be($"\nReason:{Reason}")}";
+```
 
-- 特性相关扩展：获取一个类所实现的Interface类上的Custom Attribute（暂不支持接口方法和属性）
+instead of
 
-- Enum类扩展：读取Enum枚举元素上标记了DescriptionAttribute特性的值；判断任一、全部给定的枚举是否满足...
+```
+var result = $"{(Reason == null ? null : $"\nReason:{Reason}" )}";
+```
 
-- Object类扩展
+There are also `obj.BeIfNotEmpty`，`obj.BeIfNotWhiteSpace`，`obj.BeIfTrue`，`obj.BeIfNotDefault`
 
-  使用BeNullOr（如果给定object为null则返回null，否则返回给定字符串）快速格式化：
 
-  ```C#
-  var result = $"{Group.Name?.BeNullOr(Group.Name)}")}" +
-      			$"[组 {Group.PlatformGroupId}]" +
-                  $"{Plugin?.BeNullOr(Plugin.PluginZhName)}")}" +
-                  $"{Reason?.BeNullOr($"\n原因：{Reason}")}",
-  ```
 
-  EqualsAny、EqualsAll（比较多个的时候很好用，比如Blog.Post.Name == "a" || Blog.Post.Name == "b" || Blog.Post.Name == "c"， 可以写成 Blog.Post.Name.EqualsAny("a","b","c")）
+## SystemExpand
 
-  等等
+### GenericExpand
 
-- IDictionary类扩展：ContainsAny、ContainsAll、GetValueOrCustom（自带的GetValueOrDefault不好用，不能传null）...
+| Method       | Help                                                         |
+| ------------ | ------------------------------------------------------------ |
+| T.EqualsAny  | Determines if there exists an element given as equal to it.  |
+| T.EqualsAll  | Those two work well when comparing more than one. <br>for example, `Blog.Post.Name == "a" || Blog.Post.Name == "b" || Blog.Post.Name == "c"` can be replaced by `Blog.Post.Name.EqualsAny("a","b","c")` |
+| T.SatisfyAny | delegate version                                             |
+| ...          | ...                                                          |
 
-- int类扩展：LimitInRange...
+### IDictionary Expand
 
-  ...
+ContainsAny、ContainsAll、GetValueOrCustom... (The official GetValueOrDefault isn't convenient, because it cannot pass null)...
 
-  
-  
-  
+
+
+
+
+### Reflection
+
+T.CloneParameters(T copyObj)：Clone all property values in an object to the object (EFCore will track the changes because the Action operation is done) (can be set to ignore the cloned property names)
+
+
+
+
+
+### Attribute类
+
+CustomAttributeExtensions encapsulates some extension methods about CustomAttribute, using Dictionary as cache, to efficiently get the value of the custom tag (Attribute) used by the user on the class.
+
+The GetCustomAttributeCached method can quickly get the custom attribute on the corresponding class or the specified attribute or method, compared with the self-contained GetCustomAttribute, no need to use reflection to get the Type of the specified attribute or method in the class to get the custom attribute, and about two times more efficient.
+
+
+
+### Enum
+
+GetDescription
+
+GetFlagsDescription
+
+Remove
+
+Add
+
+HasAnyFlag
+
+HasTheFlag (make good use of IDE hint)
+
+HasAllFlag
+
+### Int/Double
+
+LimitInRange
+
+
+
+### Type
+
+Type.IsNullableValueType...
+
+
+
