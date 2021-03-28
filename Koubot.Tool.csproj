@@ -5,15 +5,13 @@
     <Authors>7zou</Authors>
     <Product>Koubot.Tool</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>There are some tools for helping to develop projects of Koubot related, but it also can be used to develop other project because it contains a host of useful and frequently-used  tools such as System related expand methods, helper of web,  file, etc. Actually it can be regarded as my self-use library of tools.</Description>
-    <PackageReleaseNotes>1.0.4更新
-【SortTool】新增SortTool，能够快速完成Comparison、Compare等相关方法的实现
-【KouWatch】新增用于单元测试效率测试的计时器工具
-【CustomAttributeExtensions】优化自定义标签实现与描述
-【SystemExpand】独立出IEnumerableExpand、RegexExpand
-【EscapeTool】正则模式转义效率提升10倍（换用自带Regex.Escape）
-【Obsolete】废弃中文繁简转换（已失效），请使用nuget ToolGood.Words；废弃FilterContainer（效率过低）
-【Other】优化了部分实现与描述、修复部分bug</PackageReleaseNotes>
+    <Description>A toolkit to assist in the development of Koubot related projects, providing a large number of extension methods, as well as some tool classes, can also be used to develop other projects (for lazy people lol).
+PS: IDE hint language is Chinese, but there is a compendious english document on Nuget and Github.</Description>
+    <PackageReleaseNotes>v1.0.5 update
+【document】 add english version document.
+【format】BeNullOr is obsolete, use obj?.Be instead; add more methods like 'Be'
+【KouTaskDelayer】 add Timer that executes a task at particular time.
+【ExpressionCalculator】add ln、ceiling、floor support</PackageReleaseNotes>
     <PackageTags>Koubot</PackageTags>
     <RepositoryUrl>https://github.com/Euynac/Koubot.Tool</RepositoryUrl>
     <PackageProjectUrl></PackageProjectUrl>
@@ -21,7 +19,7 @@
     <LangVersion>latest</LangVersion>
     <AssemblyVersion>1.0.5</AssemblyVersion>
         <Deterministic>false</Deterministic>
-        <Version>1.0.4</Version>
+        <Version>1.0.5</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Copyright>Copyright (c) 2021 7zou</Copyright>
         <FileVersion>1.0.5.0</FileVersion>
