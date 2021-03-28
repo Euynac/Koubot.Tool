@@ -134,10 +134,10 @@ using (var limiter = new LeakyBucketRateLimiter("test", TestQPS, TestLimitedSize
 {
     if (!limiter.CanRequest())
     {
-        Console.WriteLine($"请求失败：{limiter.ErrorMsg}");
+        Console.WriteLine($"Request Failed: {limiter.ErrorMsg}");
         return;
     }
-    Console.WriteLine($"发出了一个API请求");
+    Console.WriteLine($"An API request is sent");
 }
 ```
 
@@ -263,7 +263,7 @@ T.CloneParameters(T copyObj)：Clone all property values in an object to the obj
 
 
 
-### Attribute类
+### Attribute
 
 CustomAttributeExtensions encapsulates some extension methods about CustomAttribute, using Dictionary as cache, to efficiently get the value of the custom tag (Attribute) used by the user on the class.
 

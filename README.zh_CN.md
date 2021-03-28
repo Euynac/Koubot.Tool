@@ -74,7 +74,7 @@ Debug.WriteLine(watch.ElapsedMilliseconds);
 显然十分繁琐，如果使用KouWatch，则可以使用以下代替，且会自动输出执行完毕的时间。
 
 ```
-			KouWatch.Start("testName", () =>
+		KouWatch.Start("testName", () =>
             {
                 ...
             });
@@ -83,7 +83,7 @@ Debug.WriteLine(watch.ElapsedMilliseconds);
 另外如果要比较优劣，还有比较的方法，比如测试GetCustomAttributeCached与自带方法的效率比较：
 
 ```c#
-			KouWatch.Start("cache", () =>
+		KouWatch.Start("cache", () =>
             {
                 userBlacklist.FieldInfo(p => p.Reason);//二次封装GetCustomAttributeCached
             }, "default", () =>
