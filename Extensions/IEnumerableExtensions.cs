@@ -2,30 +2,68 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace Koubot.Tool.Expand
+namespace Koubot.Tool.Extensions
 {
     /// <summary>
-    /// 
+    /// Extension methods of IEnumerable type
     /// </summary>
-    public static class IEnumerableExpand
+    public static class IEnumerableExtensions
     {
+        /// <summary>
+        /// Concatenates the members of a collection, using the specified separator between each member.
+        /// </summary>
+        /// <param name="separator">The string to use as a separator.separator is included in the returned string only if values has more than one element.</param>
+        /// <param name="values">A collection that contains the objects to concatenate.</param>
+        /// <typeparam name="T">The type of the members of values.</typeparam>
+        /// <returns>A string that consists of the members of <paramref name="values">values</paramref> delimited by the <paramref name="separator">separator</paramref> string. If <paramref name="values">values</paramref> has no members, the method returns <see cref="F:System.String.Empty"></see>.</returns>
+        public static string ToStringJoin<T>(this IEnumerable<T>? values, string separator) =>
+            values == null ? string.Empty : string.Join(separator, values);
+        /// <summary>
+        /// Concatenates the members of a collection, using the specified separator between each member.
+        /// </summary>
+        /// <param name="separator">The char to use as a separator.separator is included in the returned string only if values has more than one element.</param>
+        /// <param name="values">A collection that contains the objects to concatenate.</param>
+        /// <typeparam name="T">The type of the members of values.</typeparam>
+        /// <returns>A string that consists of the members of <paramref name="values">values</paramref> delimited by the <paramref name="separator">separator</paramref> string. If <paramref name="values">values</paramref> has no members, the method returns <see cref="F:System.String.Empty"></see>.</returns>
+        public static string ToStringJoin<T>(this IEnumerable<T>? values, char separator) =>
+            values == null ? string.Empty : string.Join(separator.ToString(), values);
+
         /// <summary>
         /// 判断一个集合是否是 null 或空集合
         /// </summary>
         /// <param name="collection">指定的集合</param>
         /// <returns></returns>
         [ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)
-        public static bool IsNullOrEmptySet<T>([CanBeNull][NoEnumeration] this IEnumerable<T> collection) //指示不会对collection进行读写操作，但这里读了?
+        public static bool IsNullOrEmptySet<T>([NotNullWhen(false)] [NoEnumeration] this IEnumerable<T>? collection) //指示不会对collection进行读写操作，但这里读了?
             => collection == null || !collection.Any();
 
         /// <summary>
         /// 判断一个集合是否是 null 或空集合
         /// </summary>
+        /// https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/nullable-analysis
         [ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)
-        public static bool IsNullOrEmptySet([CanBeNull][NoEnumeration] this IEnumerable @this) => @this == null || !@this.GetEnumerator().MoveNext();
+        public static bool IsNullOrEmptySet([NotNullWhen(false)] [NoEnumeration] this IEnumerable? @this) => @this == null || !@this.GetEnumerator().MoveNext();
 
+        /// <summary>
+        /// Add into list for specific count custom value (usually use in initialize list with default value). 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="customValue">e.g. default(T)</param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static List<T> AddRepeatValue<T>(this List<T> list, T customValue, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(customValue);
+            }
+
+            return list;
+        }
         /// <summary>
         /// 尝试获取与指定的键相关联的值
         /// </summary>
@@ -37,7 +75,7 @@ namespace Koubot.Tool.Expand
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
         [ContractAnnotation("dict:null => false; key:null => false")]
-        public static bool TryGetValueOrDefault<TKey, TValue>([CanBeNull] this IDictionary<TKey, TValue> dict, [CanBeNull] TKey key, out TValue value, TValue defaultValue = default)
+        public static bool TryGetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue>? dict, TKey? key, out TValue value, TValue defaultValue = default)
         {
             if (dict.IsNullOrEmptySet() || key == null)
             {
@@ -56,7 +94,7 @@ namespace Koubot.Tool.Expand
         /// <param name="value">预测Dictionary中会有的值</param>
         /// <param name="key">若是存在value将返回key</param>
         /// <returns>成功返回true且返回key，不成功则返回false</returns>
-        public static bool TryGetKey<TKey, TValue>([CanBeNull] this IEnumerable<KeyValuePair<TKey, TValue>> dict, TValue value, out TKey key)
+        public static bool TryGetKey<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>>? dict, TValue value, out TKey key)
         {
             key = default;
             if (dict.IsNullOrEmptySet()) return false;
@@ -79,7 +117,7 @@ namespace Koubot.Tool.Expand
         /// <param name="value">预测集合中会有的值</param>
         /// <param name="key">value对应的所有Key</param>
         /// <returns>成功返回true且返回key的List，不成功则返回false</returns>
-        public static bool TryGetAllKey<TKey, TValue>([CanBeNull] this IEnumerable<KeyValuePair<TKey, TValue>> dict, TValue value, out List<TKey> key)
+        public static bool TryGetAllKey<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>>? dict, TValue value, out List<TKey> key)
         {
             key = new List<TKey>();
             if (dict.IsNullOrEmptySet()) return false;
@@ -111,7 +149,7 @@ namespace Koubot.Tool.Expand
         /// <param name="item">要加入的元素</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static void Add<T>(this IEnumerable<T> enumerable, T item)
+        public static void KouAdd<T>(this IEnumerable<T> enumerable, T item)
         {
             switch (enumerable)
             {
@@ -127,6 +165,20 @@ namespace Koubot.Tool.Expand
                 default:
                     throw new Exception($"不支持{enumerable.GetType().FullName}类型的Add");
             }
+        }
+
+        /// <summary>
+        /// Cast current IEnumerable item to specific type IList. (Usually used in converting List&lt;object&gt; to List&lt;T&gt;)
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        [Obsolete("Use official Cast<T> instead.")]
+        public static IList<T> CastToList<T>(this IEnumerable source)
+        {
+            var listType = typeof(List<>).MakeGenericType(typeof(T));
+            var list = (IList<T>)Activator.CreateInstance(listType);
+            foreach (var item in source) list.Add((T)item);
+            return list;
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Koubot.Tool.Expand
+namespace Koubot.Tool.Extensions
 {
     /// <summary>
     /// CustomAttribute扩展方法
@@ -65,7 +65,7 @@ namespace Koubot.Tool.Expand
         /// <param name="sourceType">指定的类</param>
         /// <param name="name">指定属性或方法名</param>
         /// <returns>返回Attribute的值，没有则返回null</returns>
-        public static TAttribute GetCustomAttributeCached<TAttribute>(this Type sourceType, string name)
+        public static TAttribute? GetCustomAttributeCached<TAttribute>(this Type sourceType, string name)
             where TAttribute : Attribute
         {
             var cacheKey = sourceType.FullName + "." + name + "." + typeof(TAttribute).FullName;

@@ -26,17 +26,20 @@ namespace Koubot.Tool.General
 
 
         /// <summary>
-        /// (in T, in TIn, out TR)类型 将Func第二个参数类型（TIn）支持协变，即将TIn转换为指定类型TOut（TIn需是TOut的子类）
+        /// 将Func第一个、第二个参数类型（TIn）支持协变，即将TIn转换为指定类型TOut（TIn需是TOut的子类）
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TIn"></typeparam>
-        /// <typeparam name="TOut"></typeparam>
+        /// <typeparam name="TIn1"></typeparam>
+        /// <typeparam name="TOut2"></typeparam>
         /// <typeparam name="TR"></typeparam>
+        /// <typeparam name="TOut1"></typeparam>
+        /// <typeparam name="TIn2"></typeparam>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static Func<T, TOut, TR> ConvertFunc<T, TIn, TOut, TR>(this Func<T, TIn, TR> func) where TIn : TOut
+        public static Func<TOut1, TOut2, TR> ConvertFunc<TIn1, TOut1, TIn2, TOut2, TR>(this Func<TIn1, TIn2, TR> func)
+            where TIn2 : TOut2
+            where TIn1 : TOut1
         {
-            return (t, p) => func(t, (TIn)p);
+            return (t, p) => func((TIn1)t, (TIn2)p);
         }
 
         /// <summary>

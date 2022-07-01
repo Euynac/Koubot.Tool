@@ -1,4 +1,4 @@
-﻿using Koubot.Tool.Expand;
+﻿using Koubot.Tool.Extensions;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -72,10 +72,11 @@ namespace Koubot.Tool.String
         /// <param name="splitStr">自定义分割字符</param>
         /// <param name="countConstraint">个数限制</param>
         /// <param name="regexOptions">正则表达式匹配设置</param>
+        /// <param name="autoTrim">对分割后的先进行Trim</param>
         /// <returns>成功返回true且返回分割完后的list</returns>
         public static bool TryGetMultiSelections(string str, out List<string> multiList,
             string constraintPattern = @"[\s\S]+", int countConstraint = 0, bool allowDuplicate = false,
-            string splitStr = ",;；，、\\\\", RegexOptions regexOptions = RegexOptions.IgnoreCase)
+            string splitStr = ",;；，、\\\\", RegexOptions regexOptions = RegexOptions.IgnoreCase, bool autoTrim = false)
         {
             multiList = new List<string>();
             if (str.IsNullOrEmpty() || constraintPattern.IsNullOrEmpty() || splitStr.IsNullOrEmpty()) return false;
@@ -99,7 +100,7 @@ namespace Koubot.Tool.String
                 if (!item.IsNullOrEmpty() && item.IsMatch(constraintPattern))
                 {
                     if (!allowDuplicate && multiList.Contains(item)) continue;
-                    multiList.Add(item);
+                    multiList.Add(autoTrim ? item.Trim() : item);
                 }
             }
             return multiList.Count > 0;

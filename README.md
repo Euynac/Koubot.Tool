@@ -257,7 +257,7 @@ ContainsAny、ContainsAll、GetValueOrCustom... (The official GetValueOrDefault 
 
 ### Reflection
 
-T.CloneParameters(T copyObj)：Clone all property values in an object to the object (EFCore will track the changes because the Action operation is done) (can be set to ignore the cloned property names)
+T.CloneParameters(T copyObj)：Clone all property values in an object to the object (EFCore will track the changes because this implementation bases on Action) (also provide API to ingore parameter that you donot want clone)
 
 
 
@@ -267,7 +267,7 @@ T.CloneParameters(T copyObj)：Clone all property values in an object to the obj
 
 CustomAttributeExtensions encapsulates some extension methods about CustomAttribute, using Dictionary as cache, to efficiently get the value of the custom tag (Attribute) used by the user on the class.
 
-The GetCustomAttributeCached method can quickly get the custom attribute on the corresponding class or the specified attribute or method, compared with the self-contained GetCustomAttribute, no need to use reflection to get the Type of the specified attribute or method in the class to get the custom attribute, and about two times more efficient.
+The GetCustomAttributeCached method can quickly get the custom attribute on the corresponding class or the specified attribute or method. Compared with the self-contained GetCustomAttribute, it no need to use reflection to get the Type of the specified attribute or method in the class to get the custom attribute, and is about two times more efficient.
 
 
 

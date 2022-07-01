@@ -1,4 +1,4 @@
-﻿using Koubot.Tool.Expand;
+﻿using Koubot.Tool.Extensions;
 using Koubot.Tool.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace Koubot.Tool.Web.RateLimiter
     public class LeakyBucketRateLimiter : IDisposable, IKouErrorMsg
     {
         /// <summary>
-        /// 同一个api请求在同一个限速器队列中
+        /// 同一个api请求在同一个限速器队列中 [API名，请求队列]
         /// </summary>
         private static readonly Dictionary<string, LimitedQueue<LeakyBucketRateLimiter>> _limiterDictionary =
             new();
@@ -69,7 +69,7 @@ namespace Koubot.Tool.Web.RateLimiter
             _sleepTime = (1000 / MaxQPS).Ceiling();
             if (_sleepTime < 0) _sleepTime = 1;
             MaxOptimisticEstimatedTime = maxOptimisticEstimatedTime;
-            if(maxWaitTimeSpan != null) MaxWaitUntilTime = DateTime.Now.Add(maxWaitTimeSpan.Value);
+            if (maxWaitTimeSpan != null) MaxWaitUntilTime = DateTime.Now.Add(maxWaitTimeSpan.Value);
             InitializeLimiterQueue();
         }
         /// <summary>
@@ -95,39 +95,35 @@ namespace Koubot.Tool.Web.RateLimiter
         /// <returns></returns>
         private void InitializeLimiterQueue()
         {
-            if (!_limiterDictionary.ContainsKey(_limiterID))
+            if (_limiterDictionary.ContainsKey(_limiterID)) return;
+            lock (_dictLock)
             {
-                lock (_dictLock)
+                if (!_limiterDictionary.ContainsKey(_limiterID))
                 {
-                    if (!_limiterDictionary.ContainsKey(_limiterID))
-                    {
-                        _limiterDictionary.Add(_limiterID, new LimitedQueue<LeakyBucketRateLimiter>(LimitSize));
-                    }
+                    _limiterDictionary.Add(_limiterID, new LimitedQueue<LeakyBucketRateLimiter>(LimitSize));
                 }
-            }
-        }
-        /// <summary>
-        /// 尝试请求一次，若失败则直接返回false
-        /// </summary>
-        /// <returns></returns>
-        public bool TryRequestOnce()
-        {
-            var limiterQueue = _limiterDictionary[_limiterID];
-            lock (limiterQueue.QueueLock)
-            {
-                RemoveHandled(limiterQueue);
-                if (limiterQueue.Count == 0)
-                {
-                    limiterQueue.Enqueue(this);
-                    return true;
-                }
-                return false;
             }
         }
 
         private int _startNum;
         private int _endNum = -1;
         private bool _hasInQueue;
+
+        /// <summary>
+        /// 令牌桶式请求，桶满直接返回false
+        /// </summary>
+        /// <returns></returns>
+        public bool TokenBucketRequest()
+        {
+            var limiterQueue = _limiterDictionary[_limiterID];
+            lock (limiterQueue.QueueLock)
+            {
+                RemoveHandled(limiterQueue);
+                return limiterQueue.Enqueue(this);
+            }
+        }
+
+
         /// <summary>
         /// 开始排队请求，根据设置进行排队，超时则返回false
         /// </summary>
@@ -146,7 +142,7 @@ namespace Koubot.Tool.Web.RateLimiter
                         _startNum = limiterQueue.DequeueTimes;
                         _endNum = limiterQueue.Count + _startNum;
                         if (MaxOptimisticEstimatedTime != null &&
-                            TimeSpan.FromMilliseconds((_endNum - _startNum) * _sleepTime) > MaxOptimisticEstimatedTime.Value) return this.ReturnError($"前面有{limiterQueue.Count}排队，超过设定乐观预估时间{MaxOptimisticEstimatedTime}");//超过设定的预估时间
+                            TimeSpan.FromMilliseconds((_endNum - _startNum) * _sleepTime) > MaxOptimisticEstimatedTime.Value) return this.ReturnError($"前面有{limiterQueue.Count}个排队，超过设定乐观预估时间{MaxOptimisticEstimatedTime}");//超过设定的预估时间
                         limiterQueue.Enqueue(this);
                         _hasInQueue = true;
                     }
@@ -154,7 +150,7 @@ namespace Koubot.Tool.Web.RateLimiter
                     if (MaxWaitUntilTime != null && DateTime.Now > MaxWaitUntilTime)//当前已经超过预估时间还未成功（一般是前面队列请求失败的情况）
                     {
                         Dispose();
-                        _sleepTime = 0;//快速结束
+                        _sleepTime = 0;//快速结束，因为判断是否可移除的条件还有超过当前时间+平均速率
                         return this.ReturnError("排队超时");
                     }
                 }
@@ -182,6 +178,6 @@ namespace Koubot.Tool.Web.RateLimiter
             _handledTime = DateTime.Now;
         }
 
-        public string ErrorMsg { get; set; }
+        public string? ErrorMsg { get; set; }
     }
 }

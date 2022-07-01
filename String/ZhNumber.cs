@@ -1,4 +1,4 @@
-﻿using Koubot.Tool.Expand;
+﻿using Koubot.Tool.Extensions;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -33,7 +33,7 @@ namespace Koubot.Tool.String
         public static string ToZhUpper(string str)
         {
             if (str.IsNullOrEmpty()) return str;
-            return str.ReplaceAllFromPairSet(ZhUpper2LowerList, true);
+            return str.ReplaceBasedOnDict(ZhUpper2LowerList, true);
         }
         /// <summary>
         /// 数字中文大写转中文小写
@@ -43,7 +43,7 @@ namespace Koubot.Tool.String
         public static string ToZhLower(string str)
         {
             if (str.IsNullOrEmpty()) return str;
-            return str.ReplaceAllFromPairSet(ZhUpper2LowerList, false);
+            return str.ReplaceBasedOnDict(ZhUpper2LowerList, false);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Koubot.Tool.String
         /// 原始来源 https://www.xuebuyuan.com/691129.html 
         public static long ParseZnToInt(string cnum)
         {
-            if (cnum.IsInStringSet(ZhUpper2LowerList.Keys)) cnum = ToZhLower(cnum);//若存在大写则转换为小写
+            if (cnum.ContainsAny(ZhUpper2LowerList.Keys)) cnum = ToZhLower(cnum);//若存在大写则转换为小写
             long firstUnit = 1;//一级单位                
             long secondUnit = 1;//二级单位 
             long result = 0;//结果
@@ -143,7 +143,7 @@ namespace Koubot.Tool.String
         public static bool IsContainZhNumber(string str)
         {
             if (str.IsNullOrWhiteSpace()) return false;
-            return str.IsInStringSet(ZhUpper2LowerList.Keys) || str.IsInStringSet(ZhUpper2LowerList.Values);
+            return str.ContainsAny(ZhUpper2LowerList.Keys) || str.ContainsAny(ZhUpper2LowerList.Values);
         }
     }
 }

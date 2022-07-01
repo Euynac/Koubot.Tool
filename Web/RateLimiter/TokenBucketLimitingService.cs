@@ -1,4 +1,4 @@
-﻿using Koubot.Tool.Expand;
+﻿using Koubot.Tool.Extensions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

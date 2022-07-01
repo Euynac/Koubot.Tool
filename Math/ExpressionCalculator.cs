@@ -1,4 +1,4 @@
-﻿using Koubot.Tool.Expand;
+﻿using Koubot.Tool.Extensions;
 using Koubot.Tool.General;
 using System;
 using System.Collections;
@@ -18,13 +18,13 @@ namespace Koubot.Tool.Math
         /// </summary>
         /// <param name="statement"></param>
         /// <returns></returns>
-        public object Calculate(string statement)
+        public object? Calculate(string statement)
         {
             if (statement != null && statement.Trim() != string.Empty)
             {
                 try
                 {
-                    ExpressionCalculator evaluator = new ExpressionCalculator();
+                    var evaluator = new ExpressionCalculator();
                     return evaluator.GetFormulaResult(statement);
                 }
                 catch (Exception)
@@ -38,217 +38,212 @@ namespace Koubot.Tool.Math
         }
 
 
-        private object GetFormulaResult(string originExpression)
+        private object? GetFormulaResult(string originExpression)
         {
             if (originExpression == "")
             {
                 return null;
             }
-            string postfixExpression = BuildingRPN(originExpression);//转化为后缀表达式
+            var postfixExpression = BuildingRPN(originExpression);//转化为后缀表达式
 
-            string tmp = "";//临时存放转换运算数
-            Stack operandStack = new Stack(); //这个栈只存放运算的数字
+            var tmp = "";//临时存放转换运算数
+            var operandStack = new Stack(); //这个栈只存放运算的数字
 
-            char nowChar = ' ';
-            StringBuilder Operand = new StringBuilder();//运算数 用来转换字符型数字到double型数字
+            var operand = new StringBuilder();//运算数 用来转换字符型数字到double型数字
             double x, y;//两个参与运算的运算数，现在仅支持双目运算或单目运算
-            for (int i = 0;
-                i < postfixExpression.Length;
-                i++)
+            foreach (var nowChar in postfixExpression)
             {
-                nowChar = postfixExpression[i];
                 //added c==',' for germany culture 德国文化？
-                if (char.IsDigit(nowChar) || nowChar == '.' || nowChar == ',')
+                if (char.IsDigit(nowChar) || nowChar is '.' or ',')
                 {
                     //数据值收集.
-                    Operand.Append(nowChar);
+                    operand.Append(nowChar);
                 }
-                else if (nowChar == ' ' && Operand.Length > 0)
+                else switch (nowChar)
                 {
-                    #region 运算数转换 将字符型数字处理成double型可供运算的数字
-                    try
-                    {
-                        //七奏：你都已经处理成！了就不需要了罢
-                        //tmp = Operand.ToErrorString();
-                        //if (tmp.StartsWith("-"))//负数的转换一定要小心...它不被直接支持.
-                        //{
-                        //    //现在我的算法里这个分支可能永远不会被执行.
-                        //    operandStack.Push(-((double)Convert.ToDouble(tmp.Substring(1, tmp.Length - 1))));
-                        //}
-                        //else
-                        //{
-                        //    operandStack.Push(Convert.ToDouble(tmp));
-                        //}
-                        tmp = Operand.ToString();
-                        operandStack.Push(Convert.ToDouble(tmp));
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                    Operand = new StringBuilder();
-                    #endregion
-                }
-                else if (nowChar == '+'//运算符处理.双目运算处理.
-                    || nowChar == '-'
-                    || nowChar == '*'
-                    || nowChar == '/'
-                    || nowChar == '%'
-                    || nowChar == '^')
-                {
-                    #region 双目运算
-                    if (operandStack.Count > 0)/*如果输入的表达式根本没有包含运算符.或是根本就是空串.这里的逻辑就有意义了.    七奏：可是没包含运算符也进不来啊 可能是说运算数*/
-                    {
-                        y = (double)operandStack.Pop();
-                    }
-                    else
-                    {
-                        return null;
-                        //operandStack.Push(0);
-                        //break;
-                    }
-                    if (operandStack.Count > 0)
-                        x = (double)operandStack.Pop();
-                    else
-                    {
-                        return null;//双目运算如果运算数不够说明语法有误。
-                        //operandStack.Push(y);
-                        //break;
-                    }
-                    switch (nowChar)
-                    {
-                        case '+':
-                            operandStack.Push(x + y);
-                            break;
-                        case '-':
-                            operandStack.Push(x - y);
-                            break;
-                        case '*':
-                            //if (y == 0) 
+                    case ' ' when operand.Length > 0:
+
+                        #region 运算数转换 将字符型数字处理成double型可供运算的数字
+                        try
+                        {
+                            //七奏：你都已经处理成！了就不需要了罢
+                            //tmp = Operand.ToErrorString();
+                            //if (tmp.StartsWith("-"))//负数的转换一定要小心...它不被直接支持.
                             //{
-                            //    operandStack.Push(x * 1);
+                            //    //现在我的算法里这个分支可能永远不会被执行.
+                            //    operandStack.Push(-((double)Convert.ToDouble(tmp.Substring(1, tmp.Length - 1))));
                             //}
                             //else
                             //{
-                            //    operandStack.Push(x * y);
+                            //    operandStack.Push(Convert.ToDouble(tmp));
                             //}
-                            operandStack.Push(x * y);
-                            break;
-                        case '/':
-                            operandStack.Push(x / y);
-                            break;
-                        case '%':
-                            operandStack.Push(x % y);
-                            break;
-                        case '^':
-                            if (x > 0)
+                            tmp = operand.ToString();
+                            operandStack.Push(Convert.ToDouble(tmp));
+                        }
+                        catch
+                        {
+                            return null;
+                        }
+                        operand = new StringBuilder();
+                        #endregion
+
+                        break;
+                    case '+' or '-' or '*' or '/' or '%' or '^':
+                    {
+                        #region 双目运算
+                        if (operandStack.Count > 0)/*如果输入的表达式根本没有包含运算符.或是根本就是空串.这里的逻辑就有意义了.    七奏：可是没包含运算符也进不来啊 可能是说运算数*/
+                        {
+                            y = (double)operandStack.Pop();
+                        }
+                        else
+                        {
+                            return null;
+                            //operandStack.Push(0);
+                            //break;
+                        }
+                        if (operandStack.Count > 0)
+                            x = (double)operandStack.Pop();
+                        else
+                        {
+                            return null;//双目运算如果运算数不够说明语法有误。
+                            //operandStack.Push(y);
+                            //break;
+                        }
+                        switch (nowChar)
+                        {
+                            case '+':
+                                operandStack.Push(x + y);
+                                break;
+                            case '-':
+                                operandStack.Push(x - y);
+                                break;
+                            case '*':
+                                //if (y == 0) 
+                                //{
+                                //    operandStack.Push(x * 1);
+                                //}
+                                //else
+                                //{
+                                //    operandStack.Push(x * y);
+                                //}
+                                operandStack.Push(x * y);
+                                break;
+                            case '/':
+                                operandStack.Push(x / y);
+                                break;
+                            case '%':
+                                operandStack.Push(x % y);
+                                break;
+                            case '^':
+                                if (x > 0)
+                                {
+                                    //我原本还想,如果被计算的数是负数,又要开真分数次方时如何处理的问题.后来我想还是算了吧.
+                                    operandStack.Push(System.Math.Pow(x, y));
+                                }
+                                else
+                                {
+                                    var t = y;
+                                    var ts = "";
+                                    t = 1 / (2 * t);
+                                    ts = t.ToString();
+                                    if (ts.ToUpper().LastIndexOf('E') > 0)
+                                    {
+
+                                    }
+                                }
+                                break;
+                        }
+                        #endregion
+
+                        break;
+                    }
+                    //单目取反
+                    case '!':
+                        operandStack.Push(-((double)operandStack.Pop()));
+                        break;
+                    default:
+                    {
+                        if (IsInSupportedArray(nowChar)) //单目函数运算
+                        {
+                            if (operandStack.Count > 0)
                             {
-                                //我原本还想,如果被计算的数是负数,又要开真分数次方时如何处理的问题.后来我想还是算了吧.
-                                operandStack.Push(System.Math.Pow(x, y));
+                                y = (double)operandStack.Pop();
+                                switch (nowChar) //这里改对应函数映射关系
+                                {
+                                    case 'a':
+                                        operandStack.Push(System.Math.Abs(y));
+                                        break;
+                                    case 'b':
+                                        operandStack.Push(System.Math.Acos(y));
+                                        break;
+                                    case 'c':
+                                        operandStack.Push(System.Math.Asin(y));
+                                        break;
+                                    case 'd':
+                                        operandStack.Push(System.Math.Atan(y));
+                                        break;
+                                    case 'e':
+                                        operandStack.Push(System.Math.Floor(y));
+                                        break;
+                                    case 'f':
+                                        operandStack.Push(System.Math.Sqrt(y));
+                                        break;
+                                    case 'g':
+                                        operandStack.Push(System.Math.Log(y));
+                                        break;
+                                    case 'h':
+                                        operandStack.Push(System.Math.Sin(y));
+                                        break;
+                                    case 'i':
+                                        operandStack.Push(System.Math.Cos(y));
+                                        break;
+                                    case 'j':
+                                        operandStack.Push(System.Math.Cos(y) / System.Math.Sin(y));
+                                        break;
+                                    case 'k':
+                                        operandStack.Push(System.Math.Tan(y));
+                                        break;
+                                    case 'l':
+                                        operandStack.Push(System.Math.Log10(y));
+                                        break;
+                                    case 'm':
+                                        operandStack.Push(System.Math.Ceiling(y));
+                                        break;
+                                    case 'n':
+                                        operandStack.Push(System.Math.Log(y, System.Math.E));
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
                             else
                             {
-                                double t = y;
-                                string ts = "";
-                                t = 1 / (2 * t);
-                                ts = t.ToString();
-                                if (ts.ToUpper().LastIndexOf('E') > 0)
-                                {
-
-                                }
+                                return null;//语法有误
+                                //operandStack.Push(0);
+                                //break;
                             }
-                            break;
-                    }
-                    #endregion
-                }
-                else if (nowChar == '!')//单目取反
-                {
-                    operandStack.Push(-((double)operandStack.Pop()));
-                }
-                else if (isInSupportedArray(nowChar)) //单目函数运算
-                {
-                    if (operandStack.Count > 0)
-                    {
-                        y = (double)operandStack.Pop();
-                        switch (nowChar) //这里改对应函数映射关系
-                        {
-                            case 'a':
-                                operandStack.Push(System.Math.Abs(y));
-                                break;
-                            case 'b':
-                                operandStack.Push(System.Math.Acos(y));
-                                break;
-                            case 'c':
-                                operandStack.Push(System.Math.Asin(y));
-                                break;
-                            case 'd':
-                                operandStack.Push(System.Math.Atan(y));
-                                break;
-                            case 'e':
-                                operandStack.Push(System.Math.Floor(y));
-                                break;
-                            case 'f':
-                                operandStack.Push(System.Math.Sqrt(y));
-                                break;
-                            case 'g':
-                                operandStack.Push(System.Math.Log(y));
-                                break;
-                            case 'h':
-                                operandStack.Push(System.Math.Sin(y));
-                                break;
-                            case 'i':
-                                operandStack.Push(System.Math.Cos(y));
-                                break;
-                            case 'j':
-                                operandStack.Push(System.Math.Cos(y) / System.Math.Sin(y));
-                                break;
-                            case 'k':
-                                operandStack.Push(System.Math.Tan(y));
-                                break;
-                            case 'l':
-                                operandStack.Push(System.Math.Log10(y));
-                                break;
-                            case 'm':
-                                operandStack.Push(System.Math.Ceiling(y));
-                                break;
-                            case 'n':
-                                operandStack.Push(System.Math.Log(y, System.Math.E));
-                                break;
-                            default:
-                                break;
                         }
-                    }
-                    else
-                    {
-                        return null;//语法有误
-                        //operandStack.Push(0);
-                        //break;
+
+                        break;
                     }
                 }
             }
-            if (operandStack.Count > 1)
+            switch (operandStack.Count)
             {
-                return null;
+                case > 1:
+                case 0:
+                    return null;
+                default:
+                    return operandStack.Pop();
             }
-            if (operandStack.Count == 0)
-            {
-                return null;
-            }
-            return operandStack.Pop();
         }
 
+        private static readonly HashSet<char> _supportedChars = new()
+            {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n'};
 
-        private static Boolean isInSupportedArray(char testChar)
-        {
-            char[] supportedArr = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l','m','n'};
-            foreach (char chr in supportedArr)
-            {
-                if (chr == testChar) return true;
-            }
-            return false;
-        }
+        private static bool IsInSupportedArray(char testChar) => _supportedChars.Contains(testChar);
 
-        private static readonly Dictionary<string, string> _supportFunction = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> _supportFunction = new()
         {
             {"abs", "a"},
             {"arccos", "b"},
@@ -290,18 +285,18 @@ namespace Koubot.Tool.Math
             originExpression = StringTool.ToHalfWidth(originExpression);
             if (originExpression.IsMatch("[a-z]"))
             {
-                originExpression = originExpression.ReplaceAllFromPairSet(_supportFunction);
+                originExpression = originExpression.ReplaceBasedOnDict(_supportFunction);
             }
             #endregion
 
-            StringBuilder originStr = new StringBuilder(originExpression);//存入要转成的字符串为stringBuilder 
-            Stack operatorStack = new Stack(); //运算符栈
-            StringBuilder parsingStr = new StringBuilder();//存放处理后的结果
+            var originStr = new StringBuilder(originExpression);//存入要转成的字符串为stringBuilder 
+            var operatorStack = new Stack(); //运算符栈
+            var parsingStr = new StringBuilder();//存放处理后的结果
 
-            char nowChar = ' '; //遍历用当前字符
+            var nowChar = ' '; //遍历用当前字符
 
             //这一步遍历是挑出有用的字符，去除一些空格或无用字符等干扰因素
-            for (int i = 0;
+            for (var i = 0;
                 i < originStr.Length;
                 i++)
             {
@@ -342,14 +337,14 @@ namespace Koubot.Tool.Math
             }
             originStr = new StringBuilder(parsingStr.ToString());
             #region 对负号进行预转义处理.负号变单目运算符求反.
-            for (int i = 0; i < originStr.Length - 1; i++)
+            for (var i = 0; i < originStr.Length - 1; i++)
                 if (originStr[i] == '-' && (i == 0 || originStr[i - 1] == '('))//这里是支持开头为负号的数字，但中间有数字负号必须用括号括起来
                     originStr[i] = '!';
             //字符转义.
             #endregion
             #region 将中缀表达式变为后缀表达式.
             parsingStr = new StringBuilder();
-            for (int i = 0; i < originStr.Length; i++)
+            for (var i = 0; i < originStr.Length; i++)
             {
                 if (char.IsDigit(originStr[i]) || originStr[i] == '.')//如果是数值.
                 {
@@ -363,7 +358,7 @@ namespace Koubot.Tool.Math
                     || originStr[i] == '%'
                     || originStr[i] == '^'
                     || originStr[i] == '!'
-                    || isInSupportedArray(originStr[i]))
+                    || IsInSupportedArray(originStr[i]))
                 {
                     #region 运算符处理 主要按照优先级刷新运算顺序
                     while (operatorStack.Count > 0) //栈不为空时
@@ -440,27 +435,25 @@ namespace Koubot.Tool.Math
         /// <returns></returns>  
         private static int Power(char opr)
         {
-            if (isInSupportedArray(opr))
+            if (IsInSupportedArray(opr))
             {
                 return 3;
             }
-            else
+
+            switch (opr)
             {
-                switch (opr)
-                {
-                    case '+':
-                    case '-':
-                        return 1;
-                    case '*':
-                    case '/':
-                        return 2;
-                    case '%':
-                    case '^':
-                    case '!':
-                        return 3;
-                    default:
-                        return 0;
-                }
+                case '+':
+                case '-':
+                    return 1;
+                case '*':
+                case '/':
+                    return 2;
+                case '%':
+                case '^':
+                case '!':
+                    return 3;
+                default:
+                    return 0;
             }
 
         }
@@ -468,8 +461,8 @@ namespace Koubot.Tool.Math
         // 规范化逆波兰表达式.
         private static string FormatSpace(string s) //暂时不知道有啥用
         {
-            StringBuilder ret = new StringBuilder();
-            for (int i = 0;
+            var ret = new StringBuilder();
+            for (var i = 0;
                 i < s.Length;
                 i++)
             {

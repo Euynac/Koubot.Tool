@@ -18,7 +18,7 @@ namespace Koubot.Tool.General
         /// <param name="result">如果返回值为null，则证明两个obj不相等，需要返回out int结果，链式方法调用被截断。</param>
         /// <param name="nullIsLast">自动将null放到最后一位</param>
         /// <returns></returns>
-        public static object CompareToObjDesc(this object obj, [CanBeNull] object obj1, [CanBeNull] object obj2, out int result,
+        public static object? CompareToObjDesc(this object obj, object? obj1, object? obj2, out int result,
             bool nullIsLast = true)
         {
             result = -1;
@@ -30,7 +30,7 @@ namespace Koubot.Tool.General
             result = ((IComparable)obj1).CompareTo(obj2) * result;
             return result != 0 ? null : new object();
         }
-        
+
         /// <summary>
         /// 两个对象进行升序比较，用于Compare相关方法的快捷实现，支持null比较，支持链式比较
         /// （如果不相等返回null（判断返回为null才返回比较值），截断方法调用，返回值为比较结果。否则可以链式执行直到两者不相等后进行下一个权重的比较）（需要实现IComparable接口）
@@ -41,7 +41,7 @@ namespace Koubot.Tool.General
         /// <param name="result">如果返回值为null，则证明两个obj不相等，需要返回out int结果，链式方法调用被截断。</param>
         /// <param name="nullIsLast">自动将null放到最后一位</param>
         /// <returns></returns>
-        public static object CompareToObjAsc(this object obj, [CanBeNull] object obj1, [CanBeNull] object obj2, out int result,
+        public static object? CompareToObjAsc(this object obj, object? obj1, object? obj2, out int result,
             bool nullIsLast = true)
         {
             result = 1;
@@ -61,7 +61,7 @@ namespace Koubot.Tool.General
         /// <param name="isDesc">是否是降序</param>
         /// <param name="nullIsLast">自动将null放到最后一位</param>
         /// <returns></returns>
-        public static int CompareToObj([CanBeNull] this object obj1, [CanBeNull] object obj2, bool isDesc = false,
+        public static int CompareToObj(this object? obj1, object? obj2, bool isDesc = false,
             bool nullIsLast = true)
         {
             int result = isDesc ? -1 : 1;
@@ -79,7 +79,7 @@ namespace Koubot.Tool.General
         /// <param name="returnValue"></param>
         /// <returns></returns>
         [ContractAnnotation("obj1:null => true; obj2:null => true")]
-        private static bool CompareToNullObj([CanBeNull] object obj1, [CanBeNull] object obj2, out int returnValue, bool nullIsLast = true)
+        private static bool CompareToNullObj(object? obj1, object? obj2, out int returnValue, bool nullIsLast = true)
         {
             returnValue = nullIsLast ? 1 : -1;
             if (obj1 == null && obj2 != null)

@@ -1,4 +1,8 @@
-﻿namespace Koubot.Tool.General
+﻿using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace Koubot.Tool.General
 {
     /// <summary>
     /// 通用字符串工具类
@@ -60,6 +64,36 @@
             }
             return new string(array);
         }
+        #endregion
+
+        #region Unicode与Ascii转换
+
+        public static string UnicodeEncode(string value, bool notEncodeAscii = false)
+        {
+            var sb = new StringBuilder();
+            foreach (var c in value)
+            {
+                if (notEncodeAscii && c <= 127)
+                {
+                    sb.Append(c);
+                }
+                else
+                {
+                    var encodedValue = "\\u" + ((int)c).ToString("x4").ToUpperInvariant();
+                    sb.Append(encodedValue);
+                }
+            }
+            return sb.ToString();
+        }
+
+        public static string UnicodeDecode(string value)
+        {
+            return Regex.Replace(
+                value,
+                @"\\u([a-zA-Z0-9]{4})",
+                m => ((char)int.Parse(m.Groups[1].Value, NumberStyles.HexNumber)).ToString());
+        }
+
         #endregion
     }
 }

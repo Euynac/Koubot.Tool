@@ -1,4 +1,4 @@
-﻿using Koubot.Tool.Expand;
+﻿using Koubot.Tool.Extensions;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;

@@ -16,17 +16,14 @@ namespace Koubot.Tool.Web
         /// <param name="source">原文</param>
         /// <param name="codeType">编码类型</param>
         /// <returns></returns>
-        public static string EncodeBase64(string source, Encoding codeType = null)
+        public static string EncodeBase64(string source, Encoding? codeType = null)
         {
             if (string.IsNullOrEmpty(source)) return "";
-            if (codeType == null)
-            {
-                codeType = Encoding.UTF8;
-            }
+            codeType ??= Encoding.UTF8;
             string encode;
             try
             {
-                byte[] bytes = codeType.GetBytes(source);
+                var bytes = codeType.GetBytes(source);
                 encode = Convert.ToBase64String(bytes);
             }
             catch
@@ -42,17 +39,14 @@ namespace Koubot.Tool.Web
         /// <param name="source">原文</param>
         /// <param name="codeType">编码类型，为空默认是UTF8</param>
         /// <returns></returns>
-        public static string DecodeBase64(string source, Encoding codeType = null)
+        public static string DecodeBase64(string source, Encoding? codeType = null)
         {
             if (string.IsNullOrEmpty(source)) return "";
-            if (codeType == null)
-            {
-                codeType = Encoding.UTF8;
-            }
+            codeType ??= Encoding.UTF8;
             string decode;
             try
             {
-                byte[] bytes = Convert.FromBase64String(source);
+                var bytes = Convert.FromBase64String(source);
                 decode = codeType.GetString(bytes);
             }
             catch
@@ -62,28 +56,33 @@ namespace Koubot.Tool.Web
             return decode;
         }
 
+
         /// <summary>
-        /// 计算MD5值
+        /// Compute string hash use specific hash algorithm.
         /// </summary>
         /// <param name="str"></param>
+        /// <param name="hashAlgorithm">Default is use MD5</param>
         /// <returns></returns>
-        public static string EncryptStringMD5(string str)
+        public static string StringHash(string str, HashAlgorithmName? hashAlgorithm = null)
         {
             if (string.IsNullOrEmpty(str)) return "";
-            MD5 md5 = MD5.Create();
-            // 将字符串转换成字节数组
-            byte[] byteOld = Encoding.UTF8.GetBytes(str);
-            // 调用加密方法
-            byte[] byteNew = md5.ComputeHash(byteOld);
-            // 将加密结果转换为字符串
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in byteNew)
-            {
-                // 将字节转换成16进制表示的字符串，
+            hashAlgorithm ??= HashAlgorithmName.MD5;
+            var sb = new StringBuilder();
+            using var hash = HashAlgorithm.Create(hashAlgorithm.ToString())!;
+            var enc = Encoding.UTF8;
+            var result = hash.ComputeHash(enc.GetBytes(str));
+            foreach (var b in result)
                 sb.Append(b.ToString("x2"));
-            }
-            // 返回加密的字符串
             return sb.ToString();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>Advance version in https://github.com/tmenier/Flurl</remarks>
+        /// <param name="urlBase"></param>
+        /// <param name="urlAppend"></param>
+        /// <returns></returns>
+        public static string Combine(string urlBase, string urlAppend) => $"{urlBase.TrimEnd('/')}/{urlAppend.TrimStart('/')}";
     }
 }

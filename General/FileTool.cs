@@ -1,4 +1,5 @@
-﻿using Koubot.Tool.Expand;
+﻿using Koubot.Tool.Extensions;
+using Koubot.Tool.Random;
 using System;
 using System.IO;
 using System.Reflection;
@@ -7,10 +8,39 @@ using System.Text;
 namespace Koubot.Tool.General
 {
     /// <summary>
-    /// 文件操作的工具
+    /// Not recommend to use this directly. This collects many command operation of file,
+    /// and aims to remind you the official implementation 
     /// </summary>
     public static class FileTool
     {
+        /// <summary>
+        /// Rename a file.
+        /// </summary>
+        /// <param name="fileInfo"></param>
+        /// <param name="newName"></param>
+        public static FileInfo? Rename(this FileInfo fileInfo, string newName)
+        {
+            if (!fileInfo.Exists) return null;
+            try
+            {
+                var newPath = Path.Combine(fileInfo.Directory!.FullName, newName);
+                fileInfo.MoveTo(newPath);
+                return new FileInfo(newPath);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// The same as Environment.GetFolderPath();
+        /// </summary>
+        /// <param name="folder">Default is desktop directory</param>
+        /// <returns></returns>
+        public static string GetFolderPath(Environment.SpecialFolder folder = Environment.SpecialFolder.DesktopDirectory)
+        {
+            return Environment.GetFolderPath(folder);
+        }
         /// <summary>
         /// 用不会占用文件的方式读取程序集文件
         /// </summary>
@@ -18,50 +48,53 @@ namespace Koubot.Tool.General
         /// <returns></returns>
         public static Assembly LoadAssembly(string fileUrl)
         {
-            byte[] dllFileData = File.ReadAllBytes(fileUrl);//这样加载之后不会占用dll
+            var dllFileData = File.ReadAllBytes(fileUrl);//这样加载之后不会占用dll
             return Assembly.Load(dllFileData);
         }
         /// <summary>
-        /// 得到调用此方法的程序集的嵌入的资源文件的所有文本（注意需要修改获取的文件为嵌入的资源）
+        /// Get all the content of the embedded resource file of the assembly that calls this method (note that you need to change the file you get to Embedded Resource)
         /// </summary>
-        /// <param name="fileURI">要读取的文件路径。格式：文件夹.文件名.拓展名</param>
+        /// <param name="fileUri">The path of the file to read. Format: folder. File name. Extension name</param>
         /// <returns></returns>
-        public static string ReadEmbeddedResource(string fileURI)
+        public static string? ReadEmbeddedResource(string fileUri)
         {
-            Stream stream = GetEmbeddedResourceStream(fileURI);
+            var assembly = Assembly.GetCallingAssembly();
+            using var stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{fileUri}");
             if (stream == null) return null;
-            StreamReader reader = new StreamReader(stream);
+            using var reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
 
         /// <summary>
-        /// 以Stream形式获取某程序集嵌入的资源文件
+        /// Returns the file name and extension of the specified path string.
         /// </summary>
-        /// <param name="fileURI">命名空间（程序集名）.文件夹名.文件名(包含扩展名) 若不加命名空间默认的是Koubot.SDK这个程序集</param>
-        /// <returns></returns>
-        public static Stream GetEmbeddedResourceStream(string fileURI)
-        {
-            Assembly assembly = Assembly.GetEntryAssembly();
-            var result = assembly?.GetManifestResourceStream(fileURI);
-            if (result != null) return result;
-            result = assembly?.GetManifestResourceStream($"{Assembly.GetExecutingAssembly().GetName().Name}.{fileURI}");
-            if (result != null) return result;
-            Console.WriteLine("找不到嵌入的资源:" + fileURI);
-            return null;
-        }
-
-        /// <summary>
-        /// 根据目录获取文件名
-        /// </summary>
-        /// <param name="path">文件所在目录</param>
-        /// <param name="needExtension">需要文件拓展名</param>
-        /// <returns></returns>
+        /// <param name="path">The path string from which to obtain the file name and extension.</param>
+        /// <param name="needExtension">if to get file name with file extension.</param>
+        /// <returns>The characters after the last directory character in <paramref name="path">path</paramref>. If the last character of <paramref name="path">path</paramref> is a directory or volume separator character, this method returns <see cref="F:System.String.Empty"></see>. If <paramref name="path">path</paramref> is null, this method returns null.</returns>
         public static string GetFileName(string path, bool needExtension = true)
         {
             return needExtension ? Path.GetFileName(path) : Path.GetFileNameWithoutExtension(path);
         }
         /// <summary>
-        /// 检查路径是否是合法路径
+        /// The same as Path.GetRandomFileName();
+        /// </summary>
+        /// <returns></returns>
+        public static string GetRandomFileName()
+        {
+            return Path.GetRandomFileName();
+        }
+        /// <summary>
+        /// Get timestamp of now based random file name.
+        /// </summary>
+        /// <param name="randomDeep">The random number count that will generate after timestamp</param>
+        /// <returns></returns>
+        public static string GetTimestampRandomFileName(int randomDeep = 3)
+        {
+            return DateTime.Now.ToTimeStamp() + RandomTool.GetRandomString(3);
+        }
+
+        /// <summary>
+        /// 检查路径是否是合法路径（Windows）
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -75,59 +108,39 @@ namespace Koubot.Tool.General
         /// 根据文件路径获取当前目录名
         /// </summary>
         /// <param name="path"></param>
-        /// <returns></returns>
-        public static string GetDirectoryName(string path)//当前目录名
+        /// <returns>获取不到返回null</returns>
+        public static string? GetDirectoryName(string path)//当前目录名
         {
-            return Directory.GetParent(path).Name;
+            return Directory.GetParent(path)?.Name;
         }
         /// <summary>
         /// 根据文件路径获取当前目录路径
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string GetDirectoryPath(string path)//目录路径
+        public static string? GetDirectoryPath(string path)//目录路径
         {
             return Path.GetDirectoryName(path);
         }
+
         /// <summary>
-        /// 创建目录
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static bool CreateDirectory(string path)
-        {
-            try
-            {
-                Directory.CreateDirectory(path);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-        /// <summary>
-        /// 合并目录路径与文件名（即自动处理是否末尾有\的情况）或使用Path.Combine
+        /// The same as Path.Combine
         /// </summary>
         /// <returns></returns>
         public static string CombineDirectoryWithFileName(string directory, string fileName)
         {
-            return directory.EndsWith("\\") ? directory + fileName : directory + '\\' + fileName;
+            return Path.Combine(directory, fileName);
         }
+
         /// <summary>
-        /// 向文件末尾追加写入
+        /// 覆盖写入文件
         /// </summary>
         /// <param name="path"></param>
         /// <param name="content"></param>
-        public static void AppendFile(string path, StringBuilder content)
+        public static void WriteFile(string path, string content)
         {
-            using (FileStream fileStream = new FileStream(path, FileMode.Append))
-            {
-                StreamWriter writer = new StreamWriter(fileStream);
-                writer.Write(content);
-                writer.Flush();
-                writer.Close();
-            }
+            var stringBuilder = new StringBuilder(content);
+            WriteFile(path, stringBuilder);
         }
         /// <summary>
         /// 向文件末尾追加写入
@@ -136,8 +149,21 @@ namespace Koubot.Tool.General
         /// <param name="content"></param>
         public static void AppendFile(string path, string content)
         {
-            StringBuilder stringBuilder = new StringBuilder(content);
+            var stringBuilder = new StringBuilder(content);
             AppendFile(path, stringBuilder);
+        }
+        /// <summary>
+        /// 向文件末尾追加写入
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="content"></param>
+        public static void AppendFile(string path, StringBuilder content)
+        {
+            using var fileStream = new FileStream(path, FileMode.Append);
+            var writer = new StreamWriter(fileStream);
+            writer.Write(content);
+            writer.Flush();
+            writer.Close();
         }
         /// <summary>
         /// 覆盖写入文件
@@ -146,40 +172,39 @@ namespace Koubot.Tool.General
         /// <param name="content"></param>
         public static void WriteFile(string path, StringBuilder content)
         {
-            using (FileStream fileStream = new FileStream(path, FileMode.Create))
-            {
-                StreamWriter writer = new StreamWriter(fileStream);
-                writer.Write(content);
-                writer.Flush();
-                writer.Close();
-            }
+            using var fileStream = new FileStream(path, FileMode.Create);
+            var writer = new StreamWriter(fileStream);
+            writer.Write(content);
+            writer.Flush();
+            writer.Close();
         }
         /// <summary>
-        /// 覆盖写入文件
+        /// Delete file at given path.
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="content"></param>
-        public static void WriteFile(string path, string content)
+        /// <returns>If not exist or something wrong, return false.</returns>
+        public static bool Delete(string path)
         {
-            StringBuilder stringBuilder = new StringBuilder(content);
-            AppendFile(path, stringBuilder);
+            if (!File.Exists(path)) return false;
+            File.Delete(path);
+            return true;
         }
+
         /// <summary>
         /// 读取文件信息
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
+        [Obsolete("use File.ReadAllText instead.")]
         public static StringBuilder ReadFile(string path) //读取一般大小文件（未测试多大）
         {
             try
             {
-                using (FileStream fileStream = new FileStream(path, FileMode.Open))
-                {
-                    StreamReader reader = new StreamReader(fileStream);
-                    StringBuilder result = new StringBuilder(reader.ReadToEnd());
-                    reader.Close();
-                    return result;
-                }
+                using var fileStream = new FileStream(path, FileMode.Open);
+                var reader = new StreamReader(fileStream);
+                var result = new StringBuilder(reader.ReadToEnd());
+                reader.Close();
+                return result;
             }
             catch (FileNotFoundException)
             {

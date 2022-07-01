@@ -12,12 +12,13 @@ namespace Koubot.Tool.General
     public static class KouTaskDelayer
     {
         private static readonly SortedList<DateTime, Task> _sleepTaskList = new(new DuplicateKeyComparer<DateTime>());
+        // private static readonly SortedList<Tuple<DateTime, DateTime>, Task> _sleepTaskList = new(new DateTimeTupleComparer());
         private static readonly object _listLock = new();
 
         /// <summary>
         /// 单次线程等待时间（ms）
         /// </summary>
-        private const int _sleepTime = 10;
+        private const int SleepTime = 1000;
 
         static KouTaskDelayer()
         {
@@ -34,6 +35,7 @@ namespace Koubot.Tool.General
                 while (true)
                 {
                     if (_sleepTaskList.Count <= 0) Thread.Sleep(1000);
+                    // KeyValuePair<Tuple<DateTime, DateTime>, Task> pair;
                     KeyValuePair<DateTime, Task> pair;
                     lock (_listLock)
                     {
@@ -45,12 +47,12 @@ namespace Koubot.Tool.General
                             canStartTask = true;
                         }
                     }
-                    if (canStartTask)//任务在当前线程完成
+                    if (canStartTask)//任务使用线程池中的线程完成，除非使用RunSynchronously
                     {
                         pair.Value.Start();
                         canStartTask = false;
                     }
-                    Thread.Sleep(_sleepTime);
+                    Thread.Sleep(SleepTime);
                 }
             }, TaskCreationOptions.LongRunning);
         }
@@ -64,14 +66,48 @@ namespace Koubot.Tool.General
         {
             lock (_listLock)
             {
-                _sleepTaskList.Add(executeTime, task);//允许重复的执行时间，但注意Remove之类的方法失效
+                // _sleepTaskList.Add(new Tuple<DateTime, DateTime>(executeTime, DateTime.Now), task);
+                _sleepTaskList.Add(executeTime, task);
+                //允许重复的执行时间，但注意Remove之类的方法失效
+            }
+        }
+        /// <summary>
+        /// 向定时池增加需要执行的任务
+        /// </summary>
+        /// <param name="executeTime"></param>
+        /// <param name="action">要执行的任务</param>
+        public static void AddTask(DateTime executeTime, Action action)
+        {
+            lock (_listLock)
+            {
+                // _sleepTaskList.Add(new Tuple<DateTime, DateTime>(executeTime, DateTime.Now), new Task(action));
+                _sleepTaskList.Add(executeTime, new Task(action));
+                //允许重复的执行时间，但注意Remove之类的方法失效
             }
         }
 
     }
 
+    // /// <summary>
+    // /// The tuple first datetime means the time the task to start, and the second datetime means the task requirement time.
+    // /// </summary>
+    // internal class DateTimeTupleComparer : IComparer<Tuple<DateTime,DateTime>>
+    // {
+    //     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    //     public int Compare(Tuple<DateTime,DateTime> x, Tuple<DateTime,DateTime> y )
+    //     {
+    //         if (x.Item1 == y.Item1)
+    //         {
+    //             if (x.Item2 == y.Item2) return -1;//won't be the same. for duplicate keys.
+    //             return x.Item2.CompareTo(y.Item2);
+    //         }
+    //         return x.Item1.CompareTo(y.Item1);
+    //     }
+    // }
+
+
     /// <summary>
-    /// Comparer for comparing two keys, handling equality as beeing greater
+    /// Comparer for comparing two keys, handling equality as being lower (first come first out) Note: this will break Remove(key) or IndexOfKey(key) since the comparer never returns 0 to signal key equality
     /// Use this Comparer e.g. with SortedLists or SortedDictionaries, that don't allow duplicate keys
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
@@ -84,11 +120,7 @@ namespace Koubot.Tool.General
         public int Compare(TKey x, TKey y)
         {
             int result = x.CompareTo(y);
-
-            if (result == 0)
-                return 1; // Handle equality as being greater. Note: this will break Remove(key) or
-            else          // IndexOfKey(key) since the comparer never returns 0 to signal key equality
-                return result;
+            return result == 0 ? -1 : result;
         }
 
         #endregion

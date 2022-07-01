@@ -295,7 +295,7 @@ namespace JetBrains.Annotations
             ParameterName = parameterName;
         }
 
-        [CanBeNull] public string ParameterName { get; }
+        public string? ParameterName { get; }
     }
 
     /// <summary>
@@ -536,7 +536,7 @@ namespace JetBrains.Annotations
             Comment = comment;
         }
 
-        [CanBeNull] public string Comment { get; }
+        public string? Comment { get; }
     }
 
     /// <summary>
@@ -582,7 +582,7 @@ namespace JetBrains.Annotations
             Justification = justification;
         }
 
-        [CanBeNull] public string Justification { get; }
+        public string? Justification { get; }
     }
 
     /// <summary>
@@ -619,7 +619,7 @@ namespace JetBrains.Annotations
             BasePath = basePath;
         }
 
-        [CanBeNull] public string BasePath { get; }
+        public string? BasePath { get; }
     }
 
     /// <summary>
@@ -683,7 +683,7 @@ namespace JetBrains.Annotations
         /// Allows specifying a macro that will be executed for a <see cref="SourceTemplateAttribute">source template</see>
         /// parameter when the template is expanded.
         /// </summary>
-        [CanBeNull] public string Expression { get; set; }
+        public string? Expression { get; set; }
 
         /// <summary>
         /// Allows specifying which occurrence of the target parameter becomes editable when the template is deployed.
@@ -699,7 +699,7 @@ namespace JetBrains.Annotations
         /// Identifies the target parameter of a <see cref="SourceTemplateAttribute">source template</see> if the
         /// <see cref="MacroAttribute"/> is applied on a template method.
         /// </summary>
-        [CanBeNull] public string Target { get; set; }
+        public string? Target { get; set; }
     }
 
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
@@ -784,7 +784,7 @@ namespace JetBrains.Annotations
             AnonymousProperty = anonymousProperty;
         }
 
-        [CanBeNull] public string AnonymousProperty { get; }
+        public string? AnonymousProperty { get; }
     }
 
     /// <summary>
@@ -802,7 +802,7 @@ namespace JetBrains.Annotations
             AnonymousProperty = anonymousProperty;
         }
 
-        [CanBeNull] public string AnonymousProperty { get; }
+        public string? AnonymousProperty { get; }
     }
 
     /// <summary>
@@ -821,7 +821,7 @@ namespace JetBrains.Annotations
             AnonymousProperty = anonymousProperty;
         }
 
-        [CanBeNull] public string AnonymousProperty { get; }
+        public string? AnonymousProperty { get; }
     }
 
     /// <summary>
@@ -924,7 +924,7 @@ namespace JetBrains.Annotations
             Name = name;
         }
 
-        [CanBeNull] public string Name { get; }
+        public string? Name { get; }
     }
 
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Field | AttributeTargets.Property)]
@@ -1218,7 +1218,7 @@ namespace JetBrains.Annotations
         }
 
         [NotNull] public string BaseType { get; }
-        [CanBeNull] public string PageName { get; }
+        public string? PageName { get; }
     }
 
     [AttributeUsage(AttributeTargets.Method)]

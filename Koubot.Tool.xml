@@ -730,24 +730,37 @@
             marked with the <see cref="T:JetBrains.Annotations.XamlItemsControlAttribute"/> attribute.
             </remarks>
         </member>
-        <member name="T:Koubot.Tool.Expand.CustomAttributeExtensions">
+        <member name="T:Koubot.Tool.Extensions.AttributeExtensions">
+            <summary>
+            Extension methods of attribute related type.
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.AttributeExtensions.GetCustomAttributesIncludingBaseInterfaces``1(System.Type)">
+            <summary>
+            获取该类型上指定类型的CustomAttribute，包括其接口上的（仅支持类，不支持方法或属性等）
+            </summary>
+            <typeparam name="T">指定的Attribute类型</typeparam>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Extensions.CustomAttributeExtensions">
             <summary>
             CustomAttribute扩展方法
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Expand.CustomAttributeExtensions._cache">
+        <member name="F:Koubot.Tool.Extensions.CustomAttributeExtensions._cache">
             <summary>
             Cache Data [TypeName + AttributeName组成的Key, Attribute对象]
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``1(System.Type)">
+        <member name="M:Koubot.Tool.Extensions.CustomAttributeExtensions.GetCustomAttributeCached``1(System.Type)">
             <summary>
             获取指定类型的CustomAttribute
             </summary>
             <typeparam name="TAttribute">要获取的Attribute</typeparam>
             <returns>返回Attribute的值，没有则返回null</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``3(System.Type,System.Linq.Expressions.Expression{System.Func{``1,``2}})">
+        <member name="M:Koubot.Tool.Extensions.CustomAttributeExtensions.GetCustomAttributeCached``3(System.Type,System.Linq.Expressions.Expression{System.Func{``1,``2}})">
             <summary>
             获取指定类或指定属性或方法的CustomAttribute
             </summary>
@@ -756,7 +769,7 @@
             <typeparam name="TProperty"></typeparam>
             <returns>返回Attribute的值，没有则返回null</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``3(``1,``0,System.Linq.Expressions.Expression{System.Func{``1,``2}})">
+        <member name="M:Koubot.Tool.Extensions.CustomAttributeExtensions.GetCustomAttributeCached``3(``1,``0,System.Linq.Expressions.Expression{System.Func{``1,``2}})">
             <summary>
             获取指定类或指定属性或方法的CustomAttribute
             </summary>
@@ -765,7 +778,7 @@
             <typeparam name="TAttribute"></typeparam>
             <returns>返回Attribute的值，没有则返回null</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetCustomAttributeCached``1(System.Type,System.String)">
+        <member name="M:Koubot.Tool.Extensions.CustomAttributeExtensions.GetCustomAttributeCached``1(System.Type,System.String)">
             <summary>
             获取指定类的指定属性或方法的CustomAttribute
             </summary>
@@ -774,7 +787,7 @@
             <param name="name">指定属性或方法名</param>
             <returns>返回Attribute的值，没有则返回null</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.CustomAttributeExtensions.GetValue``1(System.Type,System.String)">
+        <member name="M:Koubot.Tool.Extensions.CustomAttributeExtensions.GetValue``1(System.Type,System.String)">
             <summary>
             获取指定类或其属性或方法的CustomAttribute
             </summary>
@@ -783,24 +796,261 @@
             <param name="name"></param>
             <returns>返回Attribute的值，没有则返回null</returns>
         </member>
-        <member name="T:Koubot.Tool.Expand.IEnumerableExpand">
+        <member name="T:Koubot.Tool.Extensions.DelegateExtensions">
             <summary>
-            
+            Extension methods of Delegate related type
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.IsNullOrEmptySet``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:Koubot.Tool.Extensions.DelegateExtensions.SatisfyAny``1(System.Func{``0,System.Boolean},``0[])">
+            <summary>
+            判断一个方法是否有任意一个元素满足
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="predicate"></param>
+            <param name="objects">当元素有为null时，必不满足</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.DelegateExtensions.SatisfyAll``1(System.Func{``0,System.Boolean},``0[])">
+            <summary>
+            判断一个方法是否所有元素都满足
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="predicate"></param>
+            <param name="objects">当元素有为null时，必不满足</param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Extensions.EnumExtensions">
+            <summary>
+            Extension method of Enum related type
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.ToEnum``1(System.String,System.Boolean)">
+            <summary>
+            Converts the string representation of the name or numeric value of one or more enumerated constants to an equivalent enumerated object.
+            A parameter specifies whether the operation is case-sensitive.
+            The return value indicates whether the conversion succeeded.
+            </summary>
+            <typeparam name="TEnum">The enumeration type to which to convert <paramref name="value" />.</typeparam>
+            <param name="value">The string representation of the enumeration name or underlying value to convert.</param>
+            <param name="ignoreCase">
+            <see langword="true" /> to ignore case; <see langword="false" /> to consider case.</param>
+            <returns><typeparamref name="TEnum"/> if the <paramref name="value" /> parameter was converted successfully; otherwise, <see langword="null" />.</returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.GetAllAlternativeString``1(``0,System.String)">
+            <summary>
+            Get all alternative values string of specific Enum class.
+            <para>Actually is the method of Enum.GetValues().</para>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="anyEnumValue"></param>
+            <param name="separator"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.GetDescription(System.Enum,System.Boolean)">
+            <summary>
+            读取 <see cref="T:System.Enum"/> 标记 <see cref="T:System.ComponentModel.DescriptionAttribute"/> 的值
+            </summary>
+            <param name="value">原始 <see cref="T:System.Enum"/> 值</param>
+            <param name="notReturnDefaultEnum">找不到标签值时不返回给定的枚举的<seealso cref="T:System.String"/>形式，直接返回null</param>
+            <returns>如果成功获取返回特性标记的值，否则返回给定的枚举的<seealso cref="T:System.String"/>形式，或 null</returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.ToInt(System.Enum)">
+            <summary>
+            Convert the enum value to corresponding int.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.GetFlagsDescription``1(``0,System.Char,System.Boolean,``0[])">
+            <summary>
+            使用指定分割符批量格式化按位枚举<see cref="T:System.Enum"/> 中含有的枚举值。格式化方式是使用 <see cref="T:System.ComponentModel.DescriptionAttribute"/>标记的值或string类型枚举
+            </summary>
+            <param name="flags"></param>
+            <param name="separator">分隔符</param>
+            <param name="ignoreNoDesc">忽略没有Description特性的字段</param>
+            <param name="ignoreEnums">忽略格式化的Enum值</param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.RetrieveFlags``1(System.String,System.Char,System.Boolean)">
+            <summary>
+            将字符串类型的Flags值变为其对应的枚举对象（一般用于GetFlagsString方法转换回去）
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="flagsStr"></param>
+            <param name="separator"></param>
+            <param name="ignoreCase"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.GetFlags``1(``0,``0[])">
+            <summary>
+            一个一个返回给定按位枚举<see cref="T:System.Enum"/> 中含有的枚举值。
+            </summary>
+            <param name="flags"></param>
+            <param name="ignoreEnums">忽略格式化的Enum值</param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.GetFlagsString``1(``0,System.Char,``0[])">
+            <summary>
+            使用指定分割符批量格式化按位枚举<see cref="T:System.Enum"/> 中含有的枚举值。格式化方式是使用string类型枚举
+            </summary>
+            <param name="flags"></param>
+            <param name="separator">分隔符</param>
+            <param name="ignoreEnums">忽略格式化的Enum值</param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.Remove``1(``0,``0[])">
+            <summary>
+            移除按位枚举中的指定枚举
+            </summary>
+            <param name="flags"></param>
+            <param name="removeFlags">要移除的枚举</param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.Add``1(``0,``0[])">
+            <summary>
+            添加指定枚举到指定按位枚举中
+            </summary>
+            <param name="flags"></param>
+            <param name="addFlags">要添加的枚举</param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.AddOrRemove``1(``0,System.Boolean,``0[])">
+            <summary>
+            从指定按位枚举中，添加或删除给定枚举
+            </summary>
+            <param name="flags"></param>
+            <param name="judgeAdd">如果为true，说明要添加，否则要删除</param>
+            <param name="alterFlags">要添加或删除的枚举</param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.HasAnyFlag``1(``0,``0[])">
+            <summary>
+            判断按位枚举是否存在指定的任意一个选项
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <param name="flags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.HasAllFlag``1(``0,``0[])">
+            <summary>
+            判断按位枚举是否存在指定的所有选项
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <param name="flags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.EnumExtensions.HasTheFlag``1(``0,``0)">
+            <summary>
+            判断按位枚举是否存在指定的选项
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <param name="flag"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Extensions.IDictionaryExtensions">
+            <summary>
+            Extension methods of IDictionary type.
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IDictionaryExtensions.AddOrIgnore``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
+            <summary>
+            尝试将键和值添加到字典中，如果不存在才添加，存在则不添加且不抛异常
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IDictionaryExtensions.AddOrReplace``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
+            <summary>
+            将键和值添加到字典中，存在的会被替换 其实是dict[key] = value的更直白的写法
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IDictionaryExtensions.AddRange``2(System.Collections.Generic.IDictionary{``0,``1},System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},System.Boolean)">
+            <summary>
+            向字典中批量添加键值对
+            </summary>
+            <param name="dict"></param>
+            <param name="values"></param>
+            <param name="replaceExisted">如果已存在，是否替换</param>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IDictionaryExtensions.GetValueOrCustom``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
+            <summary>
+            获取与指定的键相关联的值，如果没有则返回指定的默认值或Value类的默认值（引用类型默认值null，值类型返回0或false或'\0'等）（好处：不用写ContainsKey）
+            </summary>
+            <param name="dict"></param>
+            <param name="key">如果是null也会返回默认值</param>
+            <param name="defaultValue">指定默认值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IDictionaryExtensions.ContainsAny``2(System.Collections.Generic.IDictionary{``0,``1},``0[])">
+            <summary>
+            检查指定字典中是否存在任意一个给定的元素
+            </summary>
+            <param name="dict"></param>
+            <param name="keys"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IDictionaryExtensions.ContainsAll``2(System.Collections.Generic.IDictionary{``0,``1},``0[])">
+            <summary>
+            检查指定字典中是否存在任意一个给定的元素
+            </summary>
+            <param name="dict"></param>
+            <param name="keys"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Extensions.IEnumerableExtensions">
+            <summary>
+            Extension methods of IEnumerable type
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.ToStringJoin``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Concatenates the members of a collection, using the specified separator between each member.
+            </summary>
+            <param name="separator">The string to use as a separator.separator is included in the returned string only if values has more than one element.</param>
+            <param name="values">A collection that contains the objects to concatenate.</param>
+            <typeparam name="T">The type of the members of values.</typeparam>
+            <returns>A string that consists of the members of <paramref name="values">values</paramref> delimited by the <paramref name="separator">separator</paramref> string. If <paramref name="values">values</paramref> has no members, the method returns <see cref="F:System.String.Empty"></see>.</returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.ToStringJoin``1(System.Collections.Generic.IEnumerable{``0},System.Char)">
+            <summary>
+            Concatenates the members of a collection, using the specified separator between each member.
+            </summary>
+            <param name="separator">The char to use as a separator.separator is included in the returned string only if values has more than one element.</param>
+            <param name="values">A collection that contains the objects to concatenate.</param>
+            <typeparam name="T">The type of the members of values.</typeparam>
+            <returns>A string that consists of the members of <paramref name="values">values</paramref> delimited by the <paramref name="separator">separator</paramref> string. If <paramref name="values">values</paramref> has no members, the method returns <see cref="F:System.String.Empty"></see>.</returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.IsNullOrEmptySet``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             判断一个集合是否是 null 或空集合
             </summary>
             <param name="collection">指定的集合</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.IsNullOrEmptySet(System.Collections.IEnumerable)">
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.IsNullOrEmptySet(System.Collections.IEnumerable)">
             <summary>
             判断一个集合是否是 null 或空集合
             </summary>
+            https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/nullable-analysis
         </member>
-        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.TryGetValueOrDefault``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1@,``1)">
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.AddRepeatValue``1(System.Collections.Generic.List{``0},``0,System.Int32)">
+            <summary>
+            Add into list for specific count custom value (usually use in initialize list with default value). 
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="customValue">e.g. default(T)</param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.TryGetValueOrDefault``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1@,``1)">
             <summary>
             尝试获取与指定的键相关联的值
             </summary>
@@ -812,7 +1062,7 @@
             <typeparam name="TValue"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.TryGetKey``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},``1,``0@)">
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.TryGetKey``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},``1,``0@)">
             <summary>
             尝试通过Value获取Key的值（多个value相同仅获取一个key，所以一般用于value和key一对一）
             </summary>
@@ -821,7 +1071,7 @@
             <param name="key">若是存在value将返回key</param>
             <returns>成功返回true且返回key，不成功则返回false</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.TryGetAllKey``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},``1,System.Collections.Generic.List{``0}@)">
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.TryGetAllKey``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},``1,System.Collections.Generic.List{``0}@)">
             <summary>
             尝试获取所有指定Value对应的Key值
             </summary>
@@ -832,7 +1082,7 @@
             <param name="key">value对应的所有Key</param>
             <returns>成功返回true且返回key的List，不成功则返回false</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.ConvertToNotNullable``1(System.Collections.Generic.IEnumerable{System.Nullable{``0}})">
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.ConvertToNotNullable``1(System.Collections.Generic.IEnumerable{System.Nullable{``0}})">
             <summary>
             将可空类型的集合转换为不可空的<seealso cref="T:System.Collections.Generic.IEnumerable`1"/>
             </summary>
@@ -840,7 +1090,7 @@
             <param name="list"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.IEnumerableExpand.Add``1(System.Collections.Generic.IEnumerable{``0},``0)">
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.KouAdd``1(System.Collections.Generic.IEnumerable{``0},``0)">
             <summary>
             往IEnumerable中增加元素（调用的是中之类型的方法，不同于Append）
             注意不可使用IEnumerable&lt;dynamic&gt;然后调用，dynamic无法正确解析到T，会被当做object，需要使用反射自己做出泛型T
@@ -850,12 +1100,282 @@
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="T:Koubot.Tool.Expand.RegexExpand">
+        <member name="M:Koubot.Tool.Extensions.IEnumerableExtensions.CastToList``1(System.Collections.IEnumerable)">
             <summary>
-            正则表达式类扩展方法
+            Cast current IEnumerable item to specific type IList. (Usually used in converting List&lt;object&gt; to List&lt;T&gt;)
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Extensions.NumericExtensions">
+            <summary>
+            Extension methods of Numeric type
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Expand.RegexExpand.IsMatch(System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Int32,System.Int32)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="max">最大值，超过则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Int64,System.Int64)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="max">最大值，超过则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Int64,System.Int64,System.Int64)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Int64,System.Nullable{System.Int64},System.Nullable{System.Int64})">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Double,System.Double,System.Double)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Double,System.Nullable{System.Double},System.Nullable{System.Double})">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Int32,System.Nullable{System.Double},System.Nullable{System.Double})">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Int64,System.Nullable{System.Double},System.Nullable{System.Double})">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="min">最小值，小于则取这个最小值</param>
+            <param name="max">最大值，大于则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.LimitInRange(System.Double,System.Double)">
+            <summary>
+            将指定数字限定在特定范围内
+            </summary>
+            <param name="num"></param>
+            <param name="max">最大值，超过则取这个最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.Ceiling(System.Double)">
+            <summary>
+            返回大于或等于指定double的最小整数值。
+            </summary>
+            <param name="num"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.NumericExtensions.Ceiling(System.Single)">
+            <summary>
+            返回大于或等于指定float的最小整数值。
+            </summary>
+            <param name="num"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Extensions.ObjectExtensions">
+            <summary>
+            Extension methods of object or generic type.
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.Be(System.Object,System.String)">
+            <summary>
+            直接返回给定的字符串。使用时必须obj?.Be()这样使用，可快速截断变为null。
+            </summary>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.Be(System.Object,System.String,System.Boolean)">
+            <summary>
+            直接返回给定的字符串。使用时必须obj?.Be()这样使用，可快速截断变为null。
+            </summary>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <param name="useStringFormat">Placeholder, either true or false will still use string.Format, which the {0} will represent the passed obj.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeIfNotEmpty(System.String,System.String)">
+            <summary>
+            如果字符串不为null或Empty，直接返回给定的字符串。使用时obj?.Be()这样使用，可快速截断变为null。
+            </summary>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeIfNotEmpty(System.String,System.String,System.Boolean)">
+            <summary>
+            如果字符串不为null或Empty，直接返回给定的字符串。使用时obj?.Be()这样使用，可快速截断变为null。
+            </summary>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <param name="useStringFormat">Placeholder, either true or false will still use string.Format, which the {0} will represent the passed obj.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeIfNotWhiteSpace(System.String,System.String)">
+            <summary>
+            如果字符串不为null，""或WhiteSpace，直接返回给定的字符串。使用时obj?.Be()这样使用，可快速截断变为null。
+            </summary>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeNullIfWhiteSpace(System.String)">
+            <summary>
+            如果字符串为null，""或WhiteSpace，直接返回null
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeNullIfEmpty(System.String)">
+            <summary>
+            如果字符串为null或""，直接返回null
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeIfContains``1(System.Collections.Generic.IEnumerable{``0},``0,System.String)">
+            <summary>
+            如果列表中含有指定的元素时则返回给定的customFormat否则返回null。
+            </summary>
+            <param name="list"></param>
+            <param name="item"></param>
+            <param name="customFormat"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeIfTrue(System.Boolean,System.String)">
+            <summary>
+            如果布尔值是false则返回null字符串，否则返回要成为的那个字符串
+            </summary>
+            <param name="isTrue"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeIfNotDefault``1(``0,System.String)">
+            <summary>
+            如果值类型为初始默认值则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用）（注意特殊情况比如int=0若也有效的话）
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeNullIfDefault``1(``0)">
+            <summary>
+            如果值类型为初始默认值则返回null，否则返回本身
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeIfNotDefault``1(``0,System.String,System.Boolean)">
+            <summary>
+            如果值类型为初始默认值则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用）（注意特殊情况比如int=0若也有效的话）
+            </summary>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <param name="useStringFormat">Placeholder, either true or false will still use string.Format, which the {0} will represent the passed obj.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.BeIfNotEmptySet``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            如果集合为null或Count = 0则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用）
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <param name="be"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.EqualsAny``1(``0,``0[])">
+            <summary>
+            判断是否存在一个元素给定的元素与之相等
+            </summary>
+            <typeparam name="T">可以为空</typeparam>
+            <param name="this"></param>
+            <param name="objects">给定的元素</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.EqualsAny``1(``0,``0,``0[])">
+            <summary>
+            判断是否存在一个元素给定的元素与之相等
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="this"></param>
+            <param name="placeHolder">给定的元素，占位符，只是给编译器通过</param>
+            <param name="objects">给定的元素</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.EqualsAny``1(System.Nullable{``0},System.Nullable{``0}[])">
+            <summary>
+            判断是否存在一个元素给定的元素与之相等
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="this"></param>
+            <param name="objects">给定的元素</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.SatisfyAny``1(``0,System.Func{``0,System.Boolean}[])">
+            <summary>
+            判断元素是否满足任意一个方法
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.ObjectExtensions.SatisfyAll``1(``0,System.Func{``0,System.Boolean}[])">
+            <summary>
+            判断元素是否满足所有方法
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Extensions.RegexExtensions">
+            <summary>
+            Extension Methods of Regex related
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.RegexExtensions.IsMatch(System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
             <summary>
             判断字符串是否能够匹配正则表达式
             </summary>
@@ -864,7 +1384,7 @@
             <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.RegexExpand.Match(System.String,System.String,System.Text.RegularExpressions.RegexOptions,System.Boolean)">
+        <member name="M:Koubot.Tool.Extensions.RegexExtensions.Match(System.String,System.String,System.Text.RegularExpressions.RegexOptions,System.Boolean)">
             <summary>
             搜索指定正则表达式的第一个匹配项并得到捕获的子字符串，不存在的默认返回("")
             </summary>
@@ -874,7 +1394,19 @@
             <param name="ifNotExistReturnNull">如果不存在返回 null，而不是("")</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.RegexExpand.RegexReplace(System.String,System.String,System.Text.RegularExpressions.RegexOptions,System.String,System.Int32)">
+        <member name="M:Koubot.Tool.Extensions.RegexExtensions.MatchOnceThenReplace(System.String,System.String,System.String@,System.Text.RegularExpressions.GroupCollection@,System.Text.RegularExpressions.RegexOptions,System.String)">
+            <summary>
+            搜索指定正则表达式的第一个匹配项并得到捕获的匹配组，并获取替换匹配项后的字符串结果
+            </summary>
+            <param name="s">要测试的字符串</param>
+            <param name="pattern">要匹配的正则表达式模式</param>
+            <param name="replaced">没有匹配上则返回原来的字符串</param>
+            <param name="groupResult">匹配到则获取匹配组结果</param>
+            <param name="replaceTo"></param>
+            <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
+            <returns>false则没有匹配上</returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.RegexExtensions.RegexReplace(System.String,System.String,System.Text.RegularExpressions.RegexOptions,System.String,System.Int32)">
             <summary>
             使用指定的替换字符串替换与正则表达式匹配的指定数量的字符串
             </summary>
@@ -885,7 +1417,7 @@
             <param name="count">为0默认全部替换</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.RegexExpand.Matches(System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
+        <member name="M:Koubot.Tool.Extensions.RegexExtensions.Matches(System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
             <summary>
             搜索指定正则表达式的所有匹配项并返回捕获到的所有子字符串，不存在的将返回count=0的list
             </summary>
@@ -894,7 +1426,7 @@
             <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.RegexExpand.RegexReplace(System.String,System.String,System.String,System.Nullable{System.Int32})">
+        <member name="M:Koubot.Tool.Extensions.RegexExtensions.RegexReplace(System.String,System.String,System.String,System.Nullable{System.Int32})">
             <summary>
             正则表达式替换
             </summary>
@@ -904,7 +1436,7 @@
             <param name="count">为null全部替换，否则替换指定次数</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.RegexExpand.MatchedGroupValues(System.String,System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
+        <member name="M:Koubot.Tool.Extensions.RegexExtensions.MatchedGroupValues(System.String,System.String,System.String,System.Text.RegularExpressions.RegexOptions)">
             <summary>
             找到字符串中符合正则表达式的给定命名捕获组名的所有匹配项。未找到返回Count=0的List
             </summary>
@@ -914,7 +1446,7 @@
             <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.RegexExpand.IsValidRegexPattern(System.String,System.String@)">
+        <member name="M:Koubot.Tool.Extensions.RegexExtensions.IsValidRegexPattern(System.String,System.String@)">
             <summary>
             判断是否是有效的正则表达式模式
             </summary>
@@ -922,287 +1454,57 @@
             <param name="error">如果是无效正则表达式，输出错误原因</param>
             <returns></returns>
         </member>
-        <member name="T:Koubot.Tool.Expand.TimeStampType">
+        <member name="T:Koubot.Tool.Extensions.StringExtensions">
             <summary>
-            时间戳（格林威治时间1970年01月01日00时00分00秒）类型
+            Extension methods of string
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Expand.TimeStampType.Unix">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.Repeat(System.Char,System.Int32)">
             <summary>
-            总秒数
+            Initializes a new instance of the <see cref="T:System.String" /> class to the value indicated by a specified Unicode character repeated a specified number of times.
             </summary>
-        </member>
-        <member name="F:Koubot.Tool.Expand.TimeStampType.Javascript">
-            <summary>
-            总毫秒数
-            </summary>
-        </member>
-        <member name="T:Koubot.Tool.Expand.SystemExpand">
-            <summary>
-            系统类拓展方法集
-            </summary>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.ToDateTime(System.String,Koubot.Tool.Expand.TimeStampType)">
-            <summary>
-            字符串形式时间戳转DateTime
-            </summary>
-            <returns>转换失败返回<see cref="T:System.DateTime"/>的default</returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.ToDateTime(System.Int64,Koubot.Tool.Expand.TimeStampType)">
-            <summary>
-            获取指定类型的时间戳的 <see cref="T:System.DateTime"/> 表示形式
-            </summary>
-            <param name="timestamp">时间戳</param>
-            <param name="timeStampType">指定类型，默认Unix（秒为单位）</param>
+            <param name="c"></param>
+            <param name="times"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.ToTimeStamp(System.DateTime,Koubot.Tool.Expand.TimeStampType)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.Repeat(System.String,System.Int32)">
             <summary>
-            DateTime转时间戳
+            Initializes a new instance of the <see cref="T:System.String" /> class to the value indicated by a specified string repeated a specified number of times.
             </summary>
-            <param name="dateTime"></param>
-            <param name="timeStampType"></param>
+            <param name="str"></param>
+            <param name="times"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.ToUnixTimeStamp(System.String,Koubot.Tool.Expand.TimeStampType)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.IsNullOrEmpty(System.String)">
             <summary>
-            字符串形式DateTime转时间戳
+            Indicates whether the specified string is null or an <see cref="F:System.String.Empty"></see> string.
             </summary>
-            <param name="dateTimeStr"></param>
-            <param name="timeStampType"></param>
-            <returns>转换失败返回0</returns>
+            <param name="value">The string to test.</param>
+            <returns>true if the <paramref name="value">value</paramref> parameter is null or an empty string (""); otherwise, false.</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.GetCustomAttributesIncludingBaseInterfaces``1(System.Type)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.IsNullOrWhiteSpace(System.String)">
             <summary>
-            获取该类型上指定类型的CustomAttribute，包括其接口上的（仅支持类，不支持方法或属性等）
+            Indicates whether a specified string is null, empty, or consists only of white-space characters.
             </summary>
-            <typeparam name="T">指定的Attribute类型</typeparam>
-            <param name="type"></param>
-            <returns></returns>
+            <param name="value">The string to test.</param>
+            <returns>true if the <paramref name="value">value</paramref> parameter is null or <see cref="F:System.String.Empty"></see>, or if <paramref name="value">value</paramref> consists exclusively of white-space characters.</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.GetDescription(System.Enum,System.Boolean)">
-            <summary>
-            读取 <see cref="T:System.Enum"/> 标记 <see cref="T:System.ComponentModel.DescriptionAttribute"/> 的值
-            </summary>
-            <param name="value">原始 <see cref="T:System.Enum"/> 值</param>
-            <param name="notReturnDefaultEnum">找不到标签值时不返回给定的枚举的<seealso cref="T:System.String"/>形式，直接返回null</param>
-            <returns>如果成功获取返回特性标记的值，否则返回给定的枚举的<seealso cref="T:System.String"/>形式，或 null</returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.GetFlagsDescription``1(``0,System.Char,System.Boolean,``0[])">
-            <summary>
-            使用指定分割符批量格式化按位枚举<see cref="T:System.Enum"/> 中含有的枚举值。格式化方式是使用 <see cref="T:System.ComponentModel.DescriptionAttribute"/>标记的值或string类型枚举
-            </summary>
-            <param name="flags"></param>
-            <param name="separator">分隔符</param>
-            <param name="ignoreNoDesc">忽略没有Description特性的字段</param>
-            <param name="ignoreEnums">忽略格式化的Enum值</param>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.Remove``1(``0,``0[])">
-            <summary>
-            移除按位枚举中的指定枚举
-            </summary>
-            <param name="flags"></param>
-            <param name="removeFlags">要移除的枚举</param>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.Add``1(``0,``0[])">
-            <summary>
-            添加指定枚举到指定按位枚举中
-            </summary>
-            <param name="flags"></param>
-            <param name="addFlags">要添加的枚举</param>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.HasAnyFlag``1(``0,``0[])">
-            <summary>
-            判断按位枚举是否存在指定的任意一个选项
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <param name="flags"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.HasAllFlag``1(``0,``0[])">
-            <summary>
-            判断按位枚举是否存在指定的所有选项
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <param name="flags"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.HasTheFlag``1(``0,``0)">
-            <summary>
-            判断按位枚举是否存在指定的选项
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <param name="flag"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.BeNullOr``1(``0,System.String,System.Boolean)">
-            <summary>
-            （使用时请obj?.Be()这样使用，可快速截断变为null）如果引用类型对象为空则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用，若是be要嵌套的话记得加?否则会null引用）
-            </summary>
-            <param name="obj"></param>
-            <param name="be"></param>
-            <param name="useSmartConcat">是否启用自动拼接obj.ToString()，使用 $0 指定自动位置，有冲突时注意关闭</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.Be(System.Object,System.String,System.Boolean)">
-            <summary>
-            直接返回给定的字符串。使用时必须obj?.Be()这样使用，可快速截断变为null。
-            </summary>
-            <param name="obj"></param>
-            <param name="be"></param>
-            <param name="useSmartConcat">是否启用自动拼接obj.ToString()，使用 $0 指定自动位置，有冲突时注意关闭</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.BeIfNotEmpty(System.String,System.String)">
-            <summary>
-            如果字符串不为null或Empty，直接返回给定的字符串。使用时obj?.Be()这样使用，可快速截断变为null。
-            </summary>
-            <param name="obj"></param>
-            <param name="be"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.BeIfNotWhiteSpace(System.String,System.String)">
-            <summary>
-            如果字符串不为null或WhiteSpace，直接返回给定的字符串。使用时obj?.Be()这样使用，可快速截断变为null。
-            </summary>
-            <param name="obj"></param>
-            <param name="be"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.Be(System.Object,System.String)">
-            <summary>
-            直接返回给定的字符串。使用时必须obj?.Be()这样使用，可快速截断变为null。
-            </summary>
-            <param name="obj"></param>
-            <param name="be"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.BeIfTrue(System.Boolean,System.String)">
-            <summary>
-            如果布尔值是false则返回null字符串，否则返回要成为的那个字符串
-            </summary>
-            <param name="isTrue"></param>
-            <param name="be"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.BeIfNotDefault``1(``0,System.String)">
-            <summary>
-            如果值类型为初始默认值则返回null字符串，否则返回要成为的那个字符串（在拼接字符串时使用）（注意特殊情况比如int=0若也有效的话）
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="obj"></param>
-            <param name="be"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.EqualsAny``1(``0,``0[])">
-            <summary>
-            判断是否存在一个元素给定的元素与之相等
-            </summary>
-            <typeparam name="T">可以为空</typeparam>
-            <param name="this"></param>
-            <param name="objects">给定的元素</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.EqualsAny``1(``0,``0,``0[])">
-            <summary>
-            判断是否存在一个元素给定的元素与之相等
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="this"></param>
-            <param name="placeHolder">给定的元素，占位符，只是给编译器通过</param>
-            <param name="objects">给定的元素</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.EqualsAny``1(System.Nullable{``0},System.Nullable{``0}[])">
-            <summary>
-            判断是否存在一个元素给定的元素与之相等
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="this"></param>
-            <param name="objects">给定的元素</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.SatisfyAny``1(``0,System.Func{``0,System.Boolean}[])">
-            <summary>
-            判断元素是否满足任意一个方法
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.SatisfyAny``1(System.Func{``0,System.Boolean},``0[])">
-            <summary>
-            判断一个方法是否有任意一个元素满足
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="predicate"></param>
-            <param name="objects">当元素有为null时，必不满足</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.SatisfyAll``1(System.Func{``0,System.Boolean},``0[])">
-            <summary>
-            判断一个方法是否所有元素都满足
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="predicate"></param>
-            <param name="objects">当元素有为null时，必不满足</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.SatisfyAll``1(``0,System.Func{``0,System.Boolean}[])">
-            <summary>
-            判断元素是否满足所有方法
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.Any``1(System.Func{``0,System.Boolean},``0[])">
-            <summary>
-            判断是否存在一个元素不满足此方法
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="predicate"></param>
-            <param name="objects"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.All``1(System.Func{``0,System.Boolean},``0[])">
-            <summary>
-            判断是否所有元素都满足此方法
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="predicate"></param>
-            <param name="objects"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.IsNullOrEmpty(System.String)">
-            <summary>
-            指示指定的字符串是 null 还是空字符串("")
-            </summary>
-            <param name="s">要测试的字符串</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.IsNullOrWhiteSpace(System.String)">
-            <summary>
-            指示指定的字符串是 null 还是空字符串("")还是仅由空白字符组成
-            </summary>
-            <param name="s">要测试的字符串</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.IsInt(System.String)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.IsInt(System.String)">
             <summary>
             判断是否能够被转换为int型
             </summary>
             <param name="s"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.SplitContain(System.String,System.StringComparison,System.String,System.String[])">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.IsInt(System.String,System.Int32@)">
+            <summary>
+            判断是否能够被转换为int型
+            </summary>
+            <param name="s"></param>
+            <param name="num">成功返回转换的int</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.SplitContain(System.String,System.StringComparison,System.String,System.String[])">
             <summary>
             将某段字符串按照某指定字符串分割成数组后，查找一个字符串是否在数组中
             </summary>
@@ -1212,7 +1514,17 @@
             <param name="splitArray">分割字符串，输入多个就将其都作为分割符</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.AllIndexOf(System.String,System.String,System.Boolean)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.SplitContain(System.String,System.StringComparison,System.String,System.Char[])">
+            <summary>
+            将某段字符串按照某指定字符串分割成数组后，查找一个字符串是否在数组中
+            </summary>
+            <param name="source">要分割的字符串</param>
+            <param name="comparisonType">指定搜索规则的枚举值之一</param>
+            <param name="searchStr">要查找的字符串</param>
+            <param name="splitArray">分割字符串，输入多个就将其都作为分割符</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.AllIndexOf(System.String,System.String,System.Boolean)">
             <summary>
             指定字符串在某字符串中出现的所有Index集合（可用于判断出现次数），没有则返回count=0的list
             </summary>
@@ -1221,7 +1533,7 @@
             <param name="repeat">可以重复判断已经出现过的字符（即包括子序列）</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.Contains(System.String,System.String,System.StringComparison)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.Contains(System.String,System.String,System.StringComparison)">
             <summary>
             返回一个值，该值指示指定的子串是否出现在此字符串中。
             </summary>
@@ -1230,16 +1542,44 @@
             <param name="comparisonType">指定搜索规则的枚举值之一</param>
             <returns>如果 true 参数出现在此字符串中，或者 value 为空字符串 ("")，则为 value；否则为 false。</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.IsInStringSet(System.String,System.Collections.Generic.IEnumerable{System.String},System.StringComparison)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.ContainsAny(System.String,System.Collections.Generic.IEnumerable{System.String},System.StringComparison)">
             <summary>
-            检测一个字符串集合中是否存在string的子字符串
+            Determine whether any of the strings in specified set is in source string.
             </summary>
             <param name="source"></param>
-            <param name="strList">要检测的字符串集合</param>
-            <param name="comparisonType">指定搜索规则的枚举值之一</param>
+            <param name="strSet">specified set which contains strings wanted to determine</param>
+            <param name="comparisonType">specified comparision rule</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.ReplaceAllFromPairSet(System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Boolean)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.ContainsAny(System.String,System.String[])">
+            <summary>
+            Determine whether any of the specified strings is in source string.
+            </summary>
+            <param name="source"></param>
+            <param name="testStrings"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.ContainsAny(System.String,System.Boolean,System.String@,System.String[])">
+            <summary>
+            Determine whether any of the specified strings is in source string.
+            </summary>
+            <param name="source"></param>
+            <param name="testStrings"></param>
+            <param name="culprit">the string contained in source string</param>
+            <param name="ignoreCase"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.StartsWithAny(System.String,System.Boolean,System.String@,System.String[])">
+            <summary>
+            Determine whether source string starts with any of the specified strings.
+            </summary>
+            <param name="source"></param>
+            <param name="ignoreCase"></param>
+            <param name="culprit">the string which the source string starts with.</param>
+            <param name="testStrings"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.ReplaceBasedOnDict(System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Boolean)">
             <summary>
             将一个string中与提供的键值对集合中的键相同的全部替换为对应的值（注意若是提供的集合中值与键相包含会造成重复替换）
             </summary>
@@ -1248,140 +1588,222 @@
             <param name="reverse">默认正向Key替换为Value，为true则Value替换Key</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int32,System.Int32)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.ToTitleCase(System.String,System.Globalization.CultureInfo)">
             <summary>
-            将指定数字限定在特定范围内
+            Render given string to title case. (Capitalize each first letter of a word)
             </summary>
-            <param name="num"></param>
-            <param name="max">最大值，超过则取这个最大值</param>
+            <param name="input"></param>
+            <param name="cultureInfo">Default is use en-US culture.</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int32,System.Int32,System.Int32)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.FirstCharToUpper(System.String)">
             <summary>
-            将指定数字限定在特定范围内
+            Returns the input string with the first character converted to uppercase
             </summary>
-            <param name="num"></param>
-            <param name="min">最小值，小于则取这个最小值</param>
-            <param name="max">最大值，大于则取这个最大值</param>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.GetStableHashCode(System.String)">
+            <summary>
+            Get stable string hash code that will not effect by new runtime.
+            </summary>
+            <param name="str"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int64,System.Int64)">
+        <member name="M:Koubot.Tool.Extensions.StringExtensions.ToUpperFirst(System.String)">
             <summary>
-            将指定数字限定在特定范围内
+            ToUpper the first char of string.
             </summary>
-            <param name="num"></param>
-            <param name="max">最大值，超过则取这个最大值</param>
+            <param name="s"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int64,System.Int64,System.Int64)">
+        <member name="T:Koubot.Tool.Extensions.TimeExtensions">
             <summary>
-            将指定数字限定在特定范围内
+            Extension methods of Time related type
             </summary>
-            <param name="num"></param>
-            <param name="min">最小值，小于则取这个最小值</param>
-            <param name="max">最大值，大于则取这个最大值</param>
+        </member>
+        <member name="T:Koubot.Tool.Extensions.TimeExtensions.TimeStampType">
+            <summary>
+            时间戳（格林威治时间1970年01月01日00时00分00秒）类型
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Extensions.TimeExtensions.TimeStampType.Unix">
+            <summary>
+            总秒数（10位）
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Extensions.TimeExtensions.TimeStampType.Javascript">
+            <summary>
+            总毫秒数（13位）
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.TimeExtensions.NextDaySpan(System.DateTime)">
+            <summary>
+            Get the time span of given date time to that next day 00:00.
+            </summary>
+            <param name="dateTime"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int64,System.Nullable{System.Int64},System.Nullable{System.Int64})">
+        <member name="M:Koubot.Tool.Extensions.TimeExtensions.NextDayDateTime(System.DateTime)">
             <summary>
-            将指定数字限定在特定范围内
+            Get the date time of given date time to that next day 00:00.
             </summary>
-            <param name="num"></param>
-            <param name="min">最小值，小于则取这个最小值</param>
-            <param name="max">最大值，大于则取这个最大值</param>
+            <param name="dateTime"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Double,System.Double,System.Double)">
+        <member name="M:Koubot.Tool.Extensions.TimeExtensions.ToDateTime(System.Int64,Koubot.Tool.Extensions.TimeExtensions.TimeStampType)">
             <summary>
-            将指定数字限定在特定范围内
+            获取指定类型的时间戳的 <see cref="T:System.DateTime"/> 表示形式
             </summary>
-            <param name="num"></param>
-            <param name="min">最小值，小于则取这个最小值</param>
-            <param name="max">最大值，大于则取这个最大值</param>
-            <returns></returns>
+            <param name="timestamp">时间戳</param>
+            <param name="timeStampType">指定类型，默认Unix（秒为单位）</param>
+            <returns>注意是以本地时区为准的</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Double,System.Nullable{System.Double},System.Nullable{System.Double})">
+        <member name="M:Koubot.Tool.Extensions.TimeExtensions.ToTimeStamp(System.DateTime,Koubot.Tool.Extensions.TimeExtensions.TimeStampType)">
             <summary>
-            将指定数字限定在特定范围内
+            DateTime转时间戳
             </summary>
-            <param name="num"></param>
-            <param name="min">最小值，小于则取这个最小值</param>
-            <param name="max">最大值，大于则取这个最大值</param>
-            <returns></returns>
+            <param name="dateTime"></param>
+            <param name="timeStampType"></param>
+            <returns>注意是以本地时区为准的</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Int32,System.Nullable{System.Double},System.Nullable{System.Double})">
+        <member name="M:Koubot.Tool.Extensions.TimeExtensions.ToChineseWeek(System.DayOfWeek)">
             <summary>
-            将指定数字限定在特定范围内
+            转换为中国式星期几的表述（星期天为第七天）
             </summary>
-            <param name="num"></param>
-            <param name="min">最小值，小于则取这个最小值</param>
-            <param name="max">最大值，大于则取这个最大值</param>
-            <returns></returns>
+            <param name="week"></param>
+            <returns>1-7对应星期一到星期天</returns>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.LimitInRange(System.Double,System.Double)">
+        <member name="T:Koubot.Tool.Extensions.TimeExtensions.ChineseWeeks">
             <summary>
-            将指定数字限定在特定范围内
-            </summary>
-            <param name="num"></param>
-            <param name="max">最大值，超过则取这个最大值</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.Ceiling(System.Double)">
-            <summary>
-            返回大于或等于指定double的最小整数值。
-            </summary>
-            <param name="num"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.AddOrIgnore``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
-            <summary>
-            尝试将键和值添加到字典中，如果不存在才添加，存在则不添加且不抛异常
+            Chinese week.
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.AddOrReplace``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
+        <member name="T:Koubot.Tool.Extensions.TypeExtensions">
             <summary>
-            将键和值添加到字典中，存在的会被替换 其实是dict[key] = value的更直白的写法
+            Extension method of <seealso cref="T:System.Type"/> type.
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.AddRange``2(System.Collections.Generic.IDictionary{``0,``1},System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},System.Boolean)">
+        <member name="M:Koubot.Tool.Extensions.TypeExtensions.IsNullableValueType(System.Type)">
             <summary>
-            向字典中批量添加键值对
-            </summary>
-            <param name="dict"></param>
-            <param name="values"></param>
-            <param name="replaceExisted">如果已存在，是否替换</param>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.GetValueOrCustom``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
-            <summary>
-            获取与指定的键相关联的值，如果没有则返回指定的默认值或Value类的默认值（引用类型默认值null，值类型返回0或false或'\0'等）（好处：不用写ContainsKey）
-            </summary>
-            <param name="dict"></param>
-            <param name="key">如果是null也会返回默认值</param>
-            <param name="defaultValue">指定默认值</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.ContainsAny``2(System.Collections.Generic.IDictionary{``0,``1},``0[])">
-            <summary>
-            检查指定字典中是否存在任意一个给定的元素
-            </summary>
-            <param name="dict"></param>
-            <param name="keys"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.ContainsAll``2(System.Collections.Generic.IDictionary{``0,``1},``0[])">
-            <summary>
-            检查指定字典中是否存在任意一个给定的元素
-            </summary>
-            <param name="dict"></param>
-            <param name="keys"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Expand.SystemExpand.IsNullableValueType(System.Type)">
-            <summary>
-            判断是否是可空值类型
+            Judge whether the specific type is nullable value type or not.
             </summary>
             <param name="type"></param>
             <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.TypeExtensions.IsDerivedFromGenericType(System.Type,System.Type)">
+            <summary>
+            Judge whether the specific type is derived from giving generic type or not.
+            </summary>
+            <param name="type"></param>
+            <param name="genericType">typeof(GenericType&lt;&gt;)</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Extensions.TypeExtensions.GetUnderlyingType(System.Type)">
+            <summary>
+            Get the underlying type T in such as type of IEnumerable&lt;T&gt; and T?
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.General.Accessor`1">
+            <summary>
+            https://stackoverflow.com/questions/1402803/passing-properties-by-reference-in-c-sharp
+            @Sven
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:Koubot.Tool.General.DebugTool">
+            <summary>
+            For easily debug
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.DebugTool.ToJsonString(System.Object,System.Boolean)">
+            <summary>
+            Use System.Text.Json.JsonSerializer to serialize given object.
+            </summary>
+            <param name="s"></param>
+            <param name="writeIndented">A value that defines whether JSON should use pretty printing.
+            <see langword="true" /> if JSON should pretty print on serialization; otherwise, <see langword="false" />. The default is <see langword="false" />.
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.General.DebugTool.PrintLn(System.Object)">
+            <summary>
+            ToString() and Console.WriteLine() this obj.
+            </summary>
+            <param name="s"></param>
+        </member>
+        <member name="M:Koubot.Tool.General.DebugTool.PrintLn(System.Object,System.String)">
+            <summary>
+            ToString() and Console.WriteLine() this obj.
+            </summary>
+            <param name="s"></param>
+            <param name="format">Description of given obj to print.</param>
+        </member>
+        <member name="M:Koubot.Tool.General.DebugTool.PrintLn(System.Object,System.String,System.Boolean)">
+            <summary>
+            string.Format() and Console.WriteLine() this obj.
+            </summary>
+            <param name="s"></param>
+            <param name="format">format string to print</param>
+            <param name="useFormat">Placeholder, either true or false will still use string.Format</param>
+        </member>
+        <member name="M:Koubot.Tool.General.DebugTool.PrintLn``1(System.Collections.Generic.ICollection{``0})">
+            <summary>
+            Use string.join() and ToString() to format like an array, and finally Console.WriteLine() this obj.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="objList"></param>
+        </member>
+        <member name="M:Koubot.Tool.General.DebugTool.PrintLn``2(System.Collections.Generic.IDictionary{``0,``1})">
+            <summary>
+            Format dictionary into Console.
+            </summary>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TValue"></typeparam>
+            <param name="dictionary"></param>
+        </member>
+        <member name="T:Koubot.Tool.General.ConsoleWriteUpdater">
+            <summary>
+            Update the display without flicker
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.ConsoleWriteUpdater.Update(System.Text.StringBuilder)">
+            <summary>
+            Update use given string builder. (Will make the cursor fixed where the first time you use the update method)
+            The effect depends on your console window size.
+            </summary>
+            <param name="stringBuilder"></param>
+        </member>
+        <member name="M:Koubot.Tool.General.ConsoleWriteUpdater.Update(System.String)">
+            <summary>
+            Update use given string. (Will make the cursor fixed where the first time you use the update method)
+            The effect depends on your console window size.
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="T:Koubot.Tool.General.EqualTool">
+            <summary>
+            Helper for override Equal and HashCode
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.EqualTool.TryEqual(System.Object,System.Object,System.Object,System.Boolean)">
+            <summary>
+            Try to test whether given two probable default objects are equal.
+            </summary>
+            <param name="obj">Placeholder, it's useless for the compare result.</param>
+            <param name="obj1">The first element wants to compare</param>
+            <param name="obj2">The second element wants to compare</param>
+            <param name="bothDefaultReturnTrue">Default setting is that if both objects are default(null is class while 0 is value type), it will return false means can't to compare and need use another fields.</param>
+            <returns>Return false means you need to use another fields to compare.</returns>
+        </member>
+        <member name="M:Koubot.Tool.General.EqualTool.GetHashCodeWith(System.Object,System.Object[])">
+            <summary>
+            Compute joint hashcode with all given objects.
+            </summary>
+            <param name="obj">The obj also will be computed hashcode.</param>
+            <param name="toJointComputedObjects">The objects which needed to be computed hashcode jointly.</param>
+            <returns></returns>
+            Use HashCode.Combine instead?https://stackoverflow.com/questions/263400/what-is-the-best-algorithm-for-overriding-gethashcode
         </member>
         <member name="T:Koubot.Tool.General.EscapeTool">
             <summary>
@@ -1405,8 +1827,16 @@
         </member>
         <member name="T:Koubot.Tool.General.FileTool">
             <summary>
-            文件操作的工具
+            Not recommend to use this directly. This collects many command operation of file,
+            and aims to remind you the official implementation 
             </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.FileTool.GetFolderPath(System.Environment.SpecialFolder)">
+            <summary>
+            The same as Environment.GetFolderPath();
+            </summary>
+            <param name="folder">Default is desktop directory</param>
+            <returns></returns>
         </member>
         <member name="M:Koubot.Tool.General.FileTool.LoadAssembly(System.String)">
             <summary>
@@ -1431,15 +1861,28 @@
         </member>
         <member name="M:Koubot.Tool.General.FileTool.GetFileName(System.String,System.Boolean)">
             <summary>
-            根据目录获取文件名
+            Returns the file name and extension of the specified path string.
             </summary>
-            <param name="path">文件所在目录</param>
-            <param name="needExtension">需要文件拓展名</param>
+            <param name="path">The path string from which to obtain the file name and extension.</param>
+            <param name="needExtension">if to get file name with file extension.</param>
+            <returns>The characters after the last directory character in <paramref name="path">path</paramref>. If the last character of <paramref name="path">path</paramref> is a directory or volume separator character, this method returns <see cref="F:System.String.Empty"></see>. If <paramref name="path">path</paramref> is null, this method returns null.</returns>
+        </member>
+        <member name="M:Koubot.Tool.General.FileTool.GetRandomFileName">
+            <summary>
+            The same as Path.GetRandomFileName();
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.General.FileTool.GetTimestampRandomFileName(System.Int32)">
+            <summary>
+            Get timestamp of now based random file name.
+            </summary>
+            <param name="randomDeep">The random number count that will generate after timestamp</param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.General.FileTool.IsPath(System.String)">
             <summary>
-            检查路径是否是合法路径
+            检查路径是否是合法路径（Windows）
             </summary>
             <param name="path"></param>
             <returns></returns>
@@ -1451,7 +1894,7 @@
             根据文件路径获取当前目录名
             </summary>
             <param name="path"></param>
-            <returns></returns>
+            <returns>获取不到返回null</returns>
         </member>
         <member name="M:Koubot.Tool.General.FileTool.GetDirectoryPath(System.String)">
             <summary>
@@ -1460,27 +1903,27 @@
             <param name="path"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.General.FileTool.CreateDirectory(System.String)">
-            <summary>
-            创建目录
-            </summary>
-            <param name="path"></param>
-            <returns></returns>
-        </member>
         <member name="M:Koubot.Tool.General.FileTool.CombineDirectoryWithFileName(System.String,System.String)">
             <summary>
-            合并目录路径与文件名（即自动处理是否末尾有\的情况）或使用Path.Combine
+            The same as Path.Combine
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.General.FileTool.AppendFile(System.String,System.Text.StringBuilder)">
+        <member name="M:Koubot.Tool.General.FileTool.WriteFile(System.String,System.String)">
+            <summary>
+            覆盖写入文件
+            </summary>
+            <param name="path"></param>
+            <param name="content"></param>
+        </member>
+        <member name="M:Koubot.Tool.General.FileTool.AppendFile(System.String,System.String)">
             <summary>
             向文件末尾追加写入
             </summary>
             <param name="path"></param>
             <param name="content"></param>
         </member>
-        <member name="M:Koubot.Tool.General.FileTool.AppendFile(System.String,System.String)">
+        <member name="M:Koubot.Tool.General.FileTool.AppendFile(System.String,System.Text.StringBuilder)">
             <summary>
             向文件末尾追加写入
             </summary>
@@ -1494,18 +1937,32 @@
             <param name="path"></param>
             <param name="content"></param>
         </member>
-        <member name="M:Koubot.Tool.General.FileTool.WriteFile(System.String,System.String)">
-            <summary>
-            覆盖写入文件
-            </summary>
-            <param name="path"></param>
-            <param name="content"></param>
-        </member>
         <member name="M:Koubot.Tool.General.FileTool.ReadFile(System.String)">
             <summary>
             读取文件信息
             </summary>
             <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.General.FormatTool">
+            <summary>
+            General format style for some scenario
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.FormatTool.FormatBytes(System.Int64)">
+            <summary>
+            Returns a formatted string representing the size, up to PB, especially of the file length defined in the FileInfo instance (i.e. 10 KB).
+            </summary>
+            <param name="bytes">The bytes value.</param>
+            <from>CSharpLib</from>
+            <returns>The equivalent formatted string of given bytes</returns>
+        </member>
+        <member name="M:Koubot.Tool.General.FormatTool.FormatProgressBar(System.Int32,System.Double)">
+            <summary>
+            Progress bar style format like "[|||||||||  ]"
+            </summary>
+            <param name="len">the whole bar's str length. (At least 3)</param>
+            <param name="percentage">the progress percentage of whole bar</param>
             <returns></returns>
         </member>
         <member name="T:Koubot.Tool.General.GenericsTool">
@@ -1529,14 +1986,15 @@
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.General.GenericsTool.ConvertFunc``4(System.Func{``0,``1,``3})">
+        <member name="M:Koubot.Tool.General.GenericsTool.ConvertFunc``5(System.Func{``0,``2,``4})">
             <summary>
-            (in T, in TIn, out TR)类型 将Func第二个参数类型（TIn）支持协变，即将TIn转换为指定类型TOut（TIn需是TOut的子类）
+            将Func第一个、第二个参数类型（TIn）支持协变，即将TIn转换为指定类型TOut（TIn需是TOut的子类）
             </summary>
-            <typeparam name="T"></typeparam>
-            <typeparam name="TIn"></typeparam>
-            <typeparam name="TOut"></typeparam>
+            <typeparam name="TIn1"></typeparam>
+            <typeparam name="TOut2"></typeparam>
             <typeparam name="TR"></typeparam>
+            <typeparam name="TOut1"></typeparam>
+            <typeparam name="TIn2"></typeparam>
             <param name="func"></param>
             <returns></returns>
         </member>
@@ -1550,12 +2008,136 @@
             <param name="func"></param>
             <returns></returns>
         </member>
+        <member name="T:Koubot.Tool.General.KouColdDown`1">
+            <summary>
+            A cold down pool for a serials of operators to invoke a service or feature.
+            This is not for API cool down but for one time easy operate cd,
+            advanced usage please use LeakyBucketRateLimiter.
+            To use it, you need to add this cold down pool to your class and mark as singleton (or static).
+            T is the id type for distinguishing different operator (must support hash set).
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.General.KouColdDown`1._coldDownDict">
+            <summary>
+            [operate ID, last operation invoke time] 
+            </summary>
+        </member>
+        <member name="T:Koubot.Tool.General.KouColdDown`1.InvokeTime">
+            <summary>
+            For lock
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.KouColdDown`1.IsInCd(`0,System.TimeSpan,System.TimeSpan@)">
+            <summary>
+            Test whether the operation is in the cool down time. (The same as !IsOK())
+            </summary>
+            <returns>if true, it will think the operate is going to invoke and the cool down will start, or it will give
+            the remaining cd duration.</returns>
+        </member>
+        <member name="M:Koubot.Tool.General.KouColdDown`1.IsInCd(`0,System.TimeSpan)">
+            <summary>
+            Test whether the operation is in the cool down time. (The same as !IsOK())
+            </summary>
+            <returns>if false, it will think the operate is going to invoke and the cool down will start</returns>
+        </member>
+        <member name="M:Koubot.Tool.General.KouColdDown`1.IsOk(`0,System.TimeSpan)">
+            <summary>
+            Test whether the operation has passed the cool down time.
+            </summary>
+            <returns>if true, it will think the operate is going to invoke and the cool down will start</returns>
+        </member>
+        <member name="M:Koubot.Tool.General.KouColdDown`1.ResetCd(`0)">
+            <summary>
+            Reset cd of specific operator.
+            </summary>
+            <param name="operatorID"></param>
+        </member>
+        <member name="M:Koubot.Tool.General.KouColdDown`1.ResetCd(`0,System.TimeSpan@)">
+            <summary>
+            Reset cd of specific operator and get canceled duration.
+            </summary>
+            <param name="operatorID"></param>
+            <param name="canceledDuration">if has no cd, return default(TimeSpan)</param>
+        </member>
+        <member name="M:Koubot.Tool.General.KouColdDown`1.IsOk(`0,System.TimeSpan,System.TimeSpan@)">
+            <summary>
+            Test whether the operation has passed the cool down time.
+            </summary>
+            <returns>if true, it will think the operate is going to invoke and the cool down will start, or it will give
+            the remaining cd duration.</returns>
+        </member>
+        <member name="P:Koubot.Tool.General.KouLog.CustomLogPath">
+            <summary>
+            [Only useful before the KouLog initialized] Default value is AppDomain base directory.
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.General.KouLog.CustomWriteInterval">
+            <summary>
+            [Only useful before the KouLog initialized] Default value is 1000 millisecond; 
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.General.KouLog.SubDirectory">
+            <summary>
+            Combine with the log path and the sub directory. 
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.General.KouLog.LoggingLevel">
+            <summary>
+            Default is LogLevel.Info
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.General.KouLog.LogLevel.Debug">
+            <summary>
+            A log level used for events considered to be useful during software debugging when more granular information is needed.
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.General.KouLog.LogLevel.Info">
+            <summary>
+            An event happened, the event is purely informative and can be ignored during normal operations.
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.General.KouLog.LogLevel.Warning">
+            <summary>
+            Unexpected behavior happened inside the application, but it is continuing its work and the key business features are operating as expected.
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.General.KouLog.LogLevel.Error">
+            <summary>
+            One or more functionalities are not working, preventing some functionalities from working correctly.
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.General.KouLog.LogLevel.Fatal">
+            <summary>
+            One or more key business functionalities are not working and the whole system doesn’t fulfill the business functionalities.
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.General.KouLog.CurLogFileDirectory">
+            <summary>
+            Also the buffer key of every logger.
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.KouLog.Add(System.String,System.Nullable{Koubot.Tool.General.KouLog.LogLevel},System.Boolean)">
+            <summary>
+            Add log into log file.
+            </summary>
+            <param name="content"></param>
+            <param name="level"></param>
+            <param name="writeInstantly">Usually uses in quit program.</param>
+        </member>
+        <member name="M:Koubot.Tool.General.KouLog.QuickAdd(System.String,Koubot.Tool.General.KouLog.LogLevel,System.Boolean)">
+            <summary>
+            Use normal config to quickly add log into log file.
+            </summary>
+            <param name="content"></param>
+            <param name="level"></param>
+            <param name="writeInstantly">Usually uses in quit program.</param>
+        </member>
         <member name="T:Koubot.Tool.General.KouTaskDelayer">
             <summary>
             Kou定时、延时器
             </summary>
         </member>
-        <member name="F:Koubot.Tool.General.KouTaskDelayer._sleepTime">
+        <member name="F:Koubot.Tool.General.KouTaskDelayer.SleepTime">
             <summary>
             单次线程等待时间（ms）
             </summary>
@@ -1572,34 +2154,55 @@
             <param name="executeTime"></param>
             <param name="task">要执行的任务</param>
         </member>
+        <member name="M:Koubot.Tool.General.KouTaskDelayer.AddTask(System.DateTime,System.Action)">
+            <summary>
+            向定时池增加需要执行的任务
+            </summary>
+            <param name="executeTime"></param>
+            <param name="action">要执行的任务</param>
+        </member>
         <member name="T:Koubot.Tool.General.DuplicateKeyComparer`1">
             <summary>
-            Comparer for comparing two keys, handling equality as beeing greater
+            Comparer for comparing two keys, handling equality as being lower (first come first out) Note: this will break Remove(key) or IndexOfKey(key) since the comparer never returns 0 to signal key equality
             Use this Comparer e.g. with SortedLists or SortedDictionaries, that don't allow duplicate keys
             </summary>
             <typeparam name="TKey"></typeparam>
         </member>
         <member name="T:Koubot.Tool.General.KouWatch">
             <summary>
-            Kou计时表类，方便测试效率
+            KouWatch for test action invoke efficiency.
             </summary>
+        </member>
+        <member name="M:Koubot.Tool.General.KouWatch.GetElapsedMilliseconds(System.Action)">
+            <summary>
+            Use stopwatch to test the given action's elapsed milliseconds.
+            </summary>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.General.KouWatch.Start(System.Action)">
+            <summary>
+            Test and print the invoke-time of specific action.
+            </summary>
+            <param name="action">the specific action</param>
         </member>
         <member name="M:Koubot.Tool.General.KouWatch.Start(System.String,System.Action)">
             <summary>
-            开始计时，并自动结束，输出执行时间
+            Test and print the invoke-time of specific action.
             </summary>
             <param name="action"></param>
-            <param name="actionName">动作名字，区分执行时间</param>
+            <param name="actionName">Action name, better for distinguishing</param>
         </member>
         <member name="M:Koubot.Tool.General.KouWatch.Start(System.String,System.Action,System.String,System.Action,System.Int32)">
             <summary>
-            两个动作测试优劣。自动开始计时、结束，输出执行时间、两者比较的结果
+            Two actions to test the advantages and disadvantages.
+            Automatically start timing, end, output the execution time, and print the result of comparing the two actions.
             </summary>
             <param name="action1Name"></param>
             <param name="action1"></param>
             <param name="action2Name"></param>
             <param name="action2"></param>
-            <param name="testTimes">执行次数</param>
+            <param name="testTimes">Doing each two actions times</param>
         </member>
         <member name="T:Koubot.Tool.General.ReflectionTool">
             <summary>
@@ -1624,14 +2227,6 @@
             <param name="instance">类的实例</param>
             <param name="toLowerCase">返回的属性名是否转小写</param>
             <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.General.ReflectionTool.SetModelPropertyValue(System.Object,System.String,System.Object)">
-            <summary>
-            利用反射快速将model与数据库取出的数据赋值（需要model名字与数据库字段一致）
-            </summary>
-            <param name="instance">要赋值的model实例</param>
-            <param name="propertyName">要赋值的model属性</param>
-            <param name="value">要赋值的model值</param>
         </member>
         <member name="T:Koubot.Tool.General.SortTool">
             <summary>
@@ -1785,6 +2380,49 @@
             <summary>
             动词列表
             </summary>
+        </member>
+        <member name="M:Koubot.Tool.KouData.KouTimeType.TryGetDateTimeFromZhDescription(System.String,System.DateTime@)">
+            <summary>
+            获取中文描述的时间获取相对于现在的时间（例：明天上午13点15分）
+            </summary>
+            <param name="str"></param>
+            <param name="dateTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.KouData.KouTimeType.TryGetTimeSpanFromAncientStr(System.String,System.TimeSpan@,System.String@)">
+            <summary>
+            使用古代格式的字符尝试转换为TimeSpan格式的时间间隔
+            </summary>
+            <param name="str">支持格式为 旬10天[旬]；候5天[候]；须臾48分钟[须臾]；昼夜24小时[昼夜]；2小时[更|鼓|时辰]；30分钟[炷香|顿饭]；15分[刻|盏茶]；144秒[罗预]；7200毫秒[弹指]；360毫秒[瞬]；18毫秒[念|刹那]；</param>
+            <param name="timeSpan"></param>
+            <param name="parsedStr"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.KouData.KouTimeType.TryGetTimeSpanFromStr(System.String,System.TimeSpan@,System.String@)">
+            <summary>
+            使用现代时间计数格式尝试转换为TimeSpan格式的时间间隔
+            </summary>
+            <param name="parsedStr">支持格式为世纪(century)[c|世纪]；年数[y|年]；季[季]；月数[M|月]；周数[w|周]；天数[d|天|日]；小时数[h|小时|时]；分钟数[m|分]；秒数[s|秒]；毫秒数(millisecond)[ms|毫秒]；</param>
+            <param name="timeSpan"></param>
+            <param name="str">被处理后的str</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.KouData.KouTimeType.TryGetTimeSpanFormal(System.String,System.TimeSpan@)">
+            <summary>
+            使用正式时间计数格式尝试转换为TimeSpan格式的时间间隔
+            </summary>
+            <param name="str">格式为[7位天数.][7位小时:]7位分钟:7位秒[.7位毫秒数]</param>
+            <param name="timeSpan"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.KouData.KouTimeType.TryGetTimeSpan(System.String,System.TimeSpan@,System.Boolean)">
+            <summary>
+            尝试转换为TimeSpan格式的时间间隔
+            </summary>
+            <param name="str">格式为[7位天数.][7位小时:][7位分钟:]7位秒[.7位毫秒数]</param>
+            <param name="timeSpan"></param>
+            <param name="isStrict">是否严格匹配（即开头结尾不能有其他字符）</param>
+            <returns></returns>
         </member>
         <member name="T:Koubot.Tool.Math.ExpressionCalculator">
             <summary>
@@ -2021,168 +2659,22 @@
             <param name="right">右值</param>
             <returns></returns>
         </member>
-        <member name="T:Koubot.Tool.Model.FilterType">
+        <member name="T:Koubot.Tool.Random.EntityRandomTool">
             <summary>
-            过滤类型
+            Random Tool for entity or linq.
             </summary>
         </member>
-        <member name="F:Koubot.Tool.Model.FilterType.Default">
+        <member name="M:Koubot.Tool.Random.EntityRandomTool.RandomGetOne``1(System.Linq.IQueryable{``0})">
             <summary>
-            默认（String默认为模糊并忽略大小写，int以及double为区间支持型匹配，其他类型为精确匹配）
+            Get a random item from the <see cref="T:System.Linq.IQueryable`1"/>.
             </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.IgnoreCase">
-            <summary>
-            仅忽略大小写
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.Fuzzy">
-            <summary>
-            模糊匹配（会忽略两边空格）
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.FuzzyIgnoreCase">
-            <summary>
-            模糊并忽略大小写
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.Exact">
-            <summary>
-            精确匹配
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.Interval">
-            <summary>
-            针对源数据为字符串型数字，包含范围、区间型值(闭区间)（即格式为 num1分隔符num2 的string类型）
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.SupportNull">
-            <summary>
-            支持空值匹配
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.SupportStrEmpty">
-            <summary>
-            string类型支持""值匹配
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.SupportValueDefault">
-            <summary>
-            支持默认值匹配（默认会过滤掉为默认值的，比如0）
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.OnlyFilterNull">
-            <summary>
-            [非用户用] 自动过滤空值（Sorter专用，意思是仅排序，filter仅过滤无效值和默认值）
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterType.SorterNoFilterNull">
-            <summary>
-            让使用的Sorter不要自动添加过滤器
-            </summary>
-        </member>
-        <member name="T:Koubot.Tool.Model.SortType">
-            <summary>
-            排序类型，默认不排序
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.SortType.None">
-            <summary>
-            不排序
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.SortType.Ascending">
-            <summary>
-            升序排序
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.SortType.Descending">
-            <summary>
-            降序排序
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Model.SortType.StringAuto">
-            <summary>
-            指示该字段支持字符串型排序（认为ASC、DESC/DSC、升序、降序这四个字段为关键字）
-            </summary>
-        </member>
-        <member name="T:Koubot.Tool.Model.FilterContainer`1">
-            <summary>
-            针对一个Model类的搜索过滤器容器，能够提高效率，并提供自动化的泛型Filter
-            </summary>
+            <param name="queryable"></param>
             <typeparam name="T"></typeparam>
-        </member>
-        <member name="F:Koubot.Tool.Model.FilterContainer`1.filterInvokeList">
-            <summary>
-            容器filter Invoke列表 [Key:Filter, Value:传入Filter的值]
-            </summary>
-        </member>
-        <member name="P:Koubot.Tool.Model.FilterContainer`1.ModelFilterDict">
-            <summary>
-            已加入的泛型ModelFilter [Key属性名 Value[Key属性值,Value过滤类型]]
-            </summary>
-        </member>
-        <member name="P:Koubot.Tool.Model.FilterContainer`1.ModelSortRuleDict">
-            <summary>
-            自动Model排序规则列表，若Dict中有某字段则说明该字段要排序。默认升序，可以指定降序[KeyModel字段名,Value[key权重,value是否降序]] 权重越大越先排
-            </summary>
-        </member>
-        <member name="M:Koubot.Tool.Model.FilterContainer`1.AddAutoModelFilter(System.String,System.Object,Koubot.Tool.Model.FilterType,Koubot.Tool.Model.SortType)">
-            <summary>
-            在泛型ModelFilter列表中添加一个字段的过滤规则，最后需要调用AddModelFilterIntoContainer将其添加到Filter容器里，不然不会生效
-            </summary>
-            <param name="modelFieldName">Model对应的字段名，使用namof(Model.字段名)</param>
-            <param name="compareValue">传入与Model字段需要比较的值</param>
-            <param name="fieldFilterMode">指定字段过滤模式（模糊以及忽略大小写仅对String有效），其他类型字段默认为精确匹配，string字段默认模糊并忽略大小写匹配</param>
-            <param name="sortType">指定字段排序规则，默认不排序</param>
-        </member>
-        <member name="M:Koubot.Tool.Model.FilterContainer`1.GetModelSorter">
-            <summary>
-            根据放入AutoModelFilterDict的字段（要指定排序功能）自动生成一个对应的ModelSorter用于Sort排序，若SortRuleDict中没有规则，则返回null
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Model.FilterContainer`1.ActivateAutoModelFilter">
-            <summary>
-            激活自动ModelFilter，将泛型ModelFilter添加到Filter容器里
-            </summary>
-        </member>
-        <member name="M:Koubot.Tool.Model.FilterContainer`1.ModelFilter">
-            <summary>
-            获取一个泛型ModelFilter
-            </summary>
-        </member>
-        <member name="M:Koubot.Tool.Model.FilterContainer`1.Convert``1(System.Func{`0,``0,System.Boolean})">
-            <summary>
-            Func强类型转换器，转换为FilterContainer支持的类型
-            </summary>
-            <typeparam name="TIn"></typeparam>
-            <param name="func"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.Model.FilterContainer`1.Add(System.Func{`0,System.Object,System.Boolean},System.Object,System.Boolean)">
-            <summary>
-            添加一个过滤器，用于筛选时使用
-            </summary>
-            <param name="func">T是针对的Model类的， object是用于比较的对象，bool是比较后的返回值，用于筛选时使用</param>
-            <param name="condition"> object是用于比较的条件对象</param>
-            <param name="isSupportNull">默认不支持空值判断，这样可以不用手动判断是否为空了</param>
-        </member>
-        <member name="M:Koubot.Tool.Model.FilterContainer`1.StartFilter(`0)">
-            <summary>
-            用容器里的filter开始筛选（用于linq）
-            </summary>
-            <param name="modelInstance"></param>
-            <returns></returns>
+            <returns><c>default</c>(<paramref name="T" />) if list is empty; otherwise, the first element in result list.</returns>
         </member>
         <member name="T:Koubot.Tool.Random.RandomTool">
             <summary>
-            随机工具类
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Random.RandomTool._randomSeed">
-            <summary>
-            随机数种子
+            Random Tool (Thread-safe)
             </summary>
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.GetSecurityRandomByte(System.Int32)">
@@ -2204,37 +2696,41 @@
             <param name="custom">要包含的自定义字符，直接输入要包含的字符列表</param>
             <returns>指定长度的随机字符串</returns>
         </member>
-        <member name="M:Koubot.Tool.Random.RandomTool.RandomGetOne``1(``0[])">
+        <member name="M:Koubot.Tool.Random.RandomTool.RandomGetOne``1(``0[],System.String)">
             <summary>
-            从数组中随机获取一个item，失败返回default(T)
+            Get a random item from the array.
             </summary>
             <typeparam name="T"></typeparam>
             <param name="list"></param>
-            <returns></returns>
+            <param name="hashString">if use hash, then the result depends on it</param>
+            <returns>return default(T) if fails</returns>
         </member>
-        <member name="M:Koubot.Tool.Random.RandomTool.RandomGetOne``1(System.Collections.Generic.IList{``0})">
+        <member name="M:Koubot.Tool.Random.RandomTool.RandomGetOne``1(System.Collections.Generic.IList{``0},System.String)">
             <summary>
-            从<see cref="T:System.Collections.Generic.IList`1"/>中随机获取一个item，失败返回default(T)
+            Get a random item from the <see cref="T:System.Collections.Generic.IList`1"/>.
             </summary>
             <typeparam name="T"></typeparam>
             <param name="list"></param>
-            <returns></returns>
+            <param name="hashString">if use hash, then the result depends on it</param>
+            <returns>return default(T) if fails</returns>
         </member>
-        <member name="M:Koubot.Tool.Random.RandomTool.RandomGetItems``1(System.Collections.Generic.IList{``0},System.Int32)">
+        <member name="M:Koubot.Tool.Random.RandomTool.RandomGet``1(System.Collections.Generic.IList{``0},System.Int32,System.String)">
             <summary>
-            从<see cref="T:System.Collections.Generic.IList`1"/>中随机获取规定数量的items（不会重复），返回list，当集合为null时返回null
+            Get a number of random items from <see cref="T:System.Collections.Generic.IList`1"/> (no duplicates).
             </summary>
             <typeparam name="T"></typeparam>
             <param name="list"></param>
-            <param name="count">实现已经自动限制count在1-list.Count之间了</param>
-            <returns></returns>
+            <param name="count">Count is already automatically limited to 1-list.Count</param>
+            <param name="hashString">if use hash, then the result depends on it</param>
+            <returns>return null when the set is null</returns>
         </member>
-        <member name="M:Koubot.Tool.Random.RandomTool.RandomList``1(System.Collections.Generic.IList{``0})">
+        <member name="M:Koubot.Tool.Random.RandomTool.RandomList``1(System.Collections.Generic.IList{``0},System.String)">
             <summary>
-            将<see cref="T:System.Collections.Generic.IList`1"/>打乱顺序返回，失败则返回原来的list
+            Return <see cref="T:System.Collections.Generic.IList`1"/> in disordered order, or return the original data if it fails
             </summary>
             <typeparam name="T"></typeparam>
             <param name="list"></param>
+            <param name="hashString">if use hash, then the result depends on it</param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.EnumRandomGetOne``1">
@@ -2252,8 +2748,17 @@
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomDouble(System.Double,System.Double)">
             <summary>
-            产生区间范围中的随机浮点数
+            Generate a random double between minValue and maxValue (include min but not max value)
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomDouble(System.Double,System.Double,System.Object)">
+            <summary>
+            Generate a random double between minValue and maxValue base on hash code (include min but not max value)
+            </summary>
+            <param name="minValue"></param>
+            <param name="maxValue"></param>
+            <param name="objectToHash"></param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomInt(Koubot.Tool.Math.IntervalDoublePair)">
@@ -2265,8 +2770,25 @@
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomInt(System.Int32,System.Int32)">
             <summary>
-            产生区间范围中的随机整数
+            Generate a random integer between minValue and maxValue (include min and max value)
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Random.RandomTool.GenerateRandomInt(System.Int32,System.Int32,System.Object)">
+            <summary>
+            Generate a random integer between minValue and maxValue base on hash code (include min and max value)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Random.RandomTool.ProbablyNull``1(``0,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            有x%可能性返回null（用于 ?? 来随机选择，并较其他效率较高）
+            </summary>
+            <param name="obj"></param>
+            <param name="probability">概率基础值，不返回null的可能性[0-1]</param>
+            <param name="influenceValue">影响值，与原始基础概率相加，可为负</param>
+            <param name="maxProbability">最大可能性，影响值+基础值的最大值</param>
+            <param name="minProbability">最小可能性，影响值+基础值的最小值</param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.ProbablyDo``1(``0,System.Double,System.Double,System.Double,System.Double)">
@@ -2290,13 +2812,24 @@
             <param name="influenceValue">影响值，与原始基础概率相加，可为负</param>
             <param name="maxProbability">最大可能性，影响值+基础值的最大值</param>
             <param name="minProbability">最小可能性，影响值+基础值的最小值</param>
-            <returns></returns>
+            <returns>没有成为就返回原先的对象</returns>
         </member>
         <member name="M:Koubot.Tool.Random.RandomTool.ProbablyTrue(System.Double,System.Double,System.Double,System.Double)">
             <summary>
             有x%可能性返回true
             </summary>
             <param name="probability">概率基础值，返回true的可能性[0-1]</param>
+            <param name="influenceValue">影响值，与原始基础概率相加，可为负</param>
+            <param name="maxProbability">0-1之间 最大可能性，影响值+基础值的最大值</param>
+            <param name="minProbability">0-1之间 最小可能性，影响值+基础值的最小值</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Random.RandomTool.ProbablyTrue(System.Double,System.Object,System.Double,System.Double,System.Double)">
+            <summary>
+            结果基于给定的哈希，有x%可能性返回true
+            </summary>
+            <param name="probability">概率基础值，返回true的可能性[0-1]</param>
+            <param name="objectToHash"></param>
             <param name="influenceValue">影响值，与原始基础概率相加，可为负</param>
             <param name="maxProbability">0-1之间 最大可能性，影响值+基础值的最大值</param>
             <param name="minProbability">0-1之间 最小可能性，影响值+基础值的最小值</param>
@@ -2328,7 +2861,7 @@
         </member>
         <member name="P:Koubot.Tool.String.KouEnumName.Names">
             <summary>
-            使用此类字符串来转换成该Enum，默认都是toLower后对比的
+            使用此类字符串来转换成该Enum
             </summary>
         </member>
         <member name="M:Koubot.Tool.String.KouEnumName.#ctor(System.String[])">
@@ -2342,7 +2875,14 @@
             KouEnum工具，可将string转换为对应的Enum
             </summary>
         </member>
-        <member name="M:Koubot.Tool.String.KouEnumTool.TryGetKouEnum``1(System.String,``0@)">
+        <member name="M:Koubot.Tool.String.KouEnumTool.ToKouEnum``1(System.String)">
+            <summary>
+            通过字符串获取对应KouEnum标签枚举
+            </summary>
+            <param name="str"></param>
+            <returns>失败抛出异常</returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouEnumTool.TryToKouEnum``1(System.String,``0@)">
             <summary>
             尝试通过字符串获取对应KouEnum标签枚举
             </summary>
@@ -2350,13 +2890,38 @@
             <param name="result"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.String.KouEnumTool.TryGetKouEnum(System.Type,System.String,System.Object@)">
+        <member name="M:Koubot.Tool.String.KouEnumTool.TryToKouEnumFuzzy``1(System.String,System.Collections.Generic.List{``0}@)">
+            <summary>
+            尝试通过字符串模糊获取对应KouEnum标签枚举
+            </summary>
+            <param name="str"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouEnumTool.GetKouEnumName(System.Enum,System.Int32)">
+            <summary>
+            读取 <see cref="T:System.Enum"/> 标记 <see cref="T:Koubot.Tool.String.KouEnumName"/> 的值
+            </summary>
+            <param name="value">原始 <see cref="T:System.Enum"/> 值</param>
+            <param name="valueAt"> <see cref="T:Koubot.Tool.String.KouEnumName"/> 中的第几个值</param>
+            <returns>如果成功获取返回特性标记的值，否则返回null</returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouEnumTool.GetKouEnumNameOrString(System.Enum,System.Int32)">
+            <summary>
+            读取 <see cref="T:System.Enum"/> 标记 <see cref="T:Koubot.Tool.String.KouEnumName"/> 的值或自身ToString
+            </summary>
+            <param name="value">原始 <see cref="T:System.Enum"/> 值</param>
+            <param name="valueAt"> <see cref="T:Koubot.Tool.String.KouEnumName"/> 中的第几个值</param>
+            <returns>如果成功获取返回特性标记的值，否则返回自身自身ToString</returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouEnumTool.TryToKouEnum(System.Type,System.String,System.Object@,System.Boolean)">
             <summary>
             尝试通过字符串获取对应KouEnum标签枚举
             </summary>
             <param name="enumType">枚举的类型</param>
             <param name="str"></param>
             <param name="result"></param>
+            <param name="fuzzy">模糊则返回的是List</param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouEnumTool.CreateCache(System.Type)">
@@ -2379,42 +2944,6 @@
             <param name="parsedPage">处理后的页数</param>
             <param name="parseInt">处理Int型页数</param>
             <returns>错误输入返回false，能够处理页数返回true</returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.ContainsReturnCustomOrNull``1(System.Collections.Generic.IEnumerable{``0},``0,System.String)">
-            <summary>
-            如果列表中含有指定的元素时则返回给定的customFormat否则返回null。
-            </summary>
-            <param name="list"></param>
-            <param name="item"></param>
-            <param name="customFormat"></param>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.ToIListString``1(System.Collections.Generic.IEnumerable{``0},System.String)">
-            <summary>
-            使用特定的分割字符串合并一个Enumerable中的所有元素的字符串形式
-            （本质是string.Join方法）
-            </summary>
-            <param name="values"></param>
-            <param name="separator"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.SmartConcat(System.String,System.String)">
-            <summary>
-            智能拼接
-            </summary>
-            <param name="mainStr">其中有$0的将会自动将secondStr拼接进去，否则是mainStr在前secondStr在后拼接</param>
-            <param name="secondStr">要拼接到主字符串中$0或后面的字符串</param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.SmartConcat(System.String,System.Nullable{System.Int32},System.String[])">
-            <summary>
-            智能拼接（必定按照$num来拼接，不会自动向后拼接。$num如果要跳过一个可以赋值null）
-            </summary>
-            <param name="mainStr">$0的将会自动将整个secondStr拼接进去，$1拼接第一个，$2拼接第二个，最多九个以此类推</param>
-            <param name="notParse">不处理第几号元素，一般用于嵌套使用</param>
-            <param name="numStr">要拼接到主字符串中$num的字符串，按顺序，最多9个</param>
-            <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.TryToBool(System.String,System.Boolean@,System.Boolean)">
             <summary>
@@ -2443,23 +2972,33 @@
             <param name="kouType"></param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryToEnum``1(System.String,``0@)">
+        <member name="M:Koubot.Tool.String.KouStringTool.TryToLong(System.String,System.Int64@,System.Boolean)">
+            <summary>
+            将字符串类型的数字转换为long类型，支持中文以及带单位
+            </summary>
+            <param name="str"></param>
+            <param name="longResult"></param>
+            <param name="kouType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.String.KouStringTool.TryToEnum``1(System.String,``0@,System.Boolean)">
             <summary>
             将字符串类型的数字转换为enum类型，支持KouEnumName标签特性别名枚举
             </summary>
             <param name="str"></param>
             <param name="enumResult"></param>
+            <param name="supportNumeric"></param>
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryToEnum(System.String,System.Type,System.Object@)">
+        <member name="M:Koubot.Tool.String.KouStringTool.TryToEnum(System.String,System.Type,System.Object@,System.Boolean)">
             <summary>
             将字符串类型的数字转换为enum类型，支持KouEnumName标签特性别名枚举
             </summary>
             <param name="str"></param>
             <param name="enumType"></param>
             <param name="enumResult"></param>
-            <typeparam name="T"></typeparam>
+            <param name="supportNumeric"></param>
             <returns></returns>
         </member>
         <member name="M:Koubot.Tool.String.KouStringTool.ToEnPunctuation(System.String)">
@@ -2484,54 +3023,22 @@
             <param name="timeSpan"></param>
             <returns></returns>
         </member>
+        <member name="M:Koubot.Tool.String.KouStringTool.TryToDateTime(System.String,System.DateTime@,System.Boolean)">
+            <summary>
+            使用所有Kou支持的单位获取时间；（支持中文）（纯数字默认为s）(若是时间间隔会自动转换为当前时间+时间间隔)
+            </summary>
+            <param name="str"></param>
+            <param name="dateTime"></param>
+            <param name="kouType"></param>
+            <returns></returns>
+        </member>
         <member name="M:Koubot.Tool.String.KouStringTool.TryToTimeSpan(System.String,System.TimeSpan@,System.Boolean)">
             <summary>
-            使用所有Kou支持的单位获取时间间隔；（支持中文）（纯数字默认为s）(若是日期会自动转换为距离当前时间的时间间隔)
+            使用所有Kou支持的单位获取时间间隔；（支持中文）（纯数字默认为秒）(若是日期会自动转换为距离当前时间的时间间隔)
             </summary>
             <param name="str"></param>
             <param name="timeSpan"></param>
             <param name="kouType"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryGetTimeSpanFromZhDescription(System.String,System.TimeSpan@)">
-            <summary>
-            获取中文描述的时间获取相对于现在的时间间隔（例：明天上午13点15分）
-            </summary>
-            <param name="str"></param>
-            <param name="timeSpan"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryGetTimeSpanFromAncientStr(System.String,System.TimeSpan@)">
-            <summary>
-            使用古代格式的字符尝试转换为TimeSpan格式的时间间隔
-            </summary>
-            <param name="str">支持格式为 旬10天[旬]；候5天[候]；须臾48分钟[须臾]；昼夜24小时[昼夜]；2小时[更|鼓|时辰]；30分钟[炷香|顿饭]；15分[刻|盏茶]；144秒[罗预]；7200毫秒[弹指]；360毫秒[瞬]；18毫秒[念|刹那]；</param>
-            <param name="timeSpan"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryGetTimeSpanFromStr(System.String,System.TimeSpan@)">
-            <summary>
-            使用现代时间计数格式尝试转换为TimeSpan格式的时间间隔
-            </summary>
-            <param name="str">支持格式为世纪(century)[c|世纪]；年数[y|年|]；季[季]；月数[M|月]；周数[w|周]；天数[d|天|日]；小时数[h|小时|时]；分钟数[m|分]；秒数[s|秒]；毫秒数(millisecond)[ms|毫秒]；</param>
-            <param name="timeSpan"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryGetTimeSpanFormal(System.String,System.TimeSpan@)">
-            <summary>
-            使用正式时间计数格式尝试转换为TimeSpan格式的时间间隔
-            </summary>
-            <param name="str">格式为[7位天数.][7位小时:]7位分钟:7位秒[.7位毫秒数]</param>
-            <param name="timeSpan"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Koubot.Tool.String.KouStringTool.TryGetTimeSpan(System.String,System.TimeSpan@,System.Boolean)">
-            <summary>
-            尝试转换为TimeSpan格式的时间间隔
-            </summary>
-            <param name="str">格式为[7位天数.][7位小时:][7位分钟:]7位秒[.7位毫秒数]</param>
-            <param name="timeSpan"></param>
-            <param name="isStrict">是否严格匹配（即开头结尾不能有其他字符）</param>
             <returns></returns>
         </member>
         <member name="T:Koubot.Tool.String.MultiSelectionHelper">
@@ -2649,18 +3156,217 @@
             <param name="str"></param>
             <returns></returns>
         </member>
-        <member name="T:Koubot.Tool.Web.ImageTool">
+        <member name="T:Koubot.Tool.Structure.Tree.BinaryTreeFactory`1">
             <summary>
-            图片工具
+            BinaryTree Factory for getting specific Binary Tree
             </summary>
         </member>
-        <member name="M:Koubot.Tool.Web.ImageTool.DownloadImageAsync(System.String,System.String,System.Uri)">
+        <member name="T:Koubot.Tool.Structure.Tree.BinaryTreeFactory`1.StructureType">
             <summary>
-            异步下载图片文件
+            The underlying structure representation type.
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Structure.Tree.BinaryTreeFactory`1.StructureType.ContiguousArray">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Structure.Tree.BinaryTreeFactory`1.StructureType.DynamicallyLinked">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Structure.Tree.BinaryTreeFactory`1.Construct(Koubot.Tool.Structure.Tree.BinaryTreeFactory{`0}.StructureType)">
+            <summary>
+            Get a binary tree constructed in specific way.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Structure.Tree.MultiTree`1">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:Koubot.Tool.Structure.Tree.TreeBase`1">
+            <summary>
+            A Tree, which Node type is T
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Koubot.Tool.Structure.Tree.TreeBase`1.Root">
+            <summary>
+            A Tree's root
+            </summary>
+        </member>
+        <member name="T:Koubot.Tool.Web.DownloadTool">
+            <summary>
+            DownloadTool on web.
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Web.DownloadTool.DownloadFile(System.String,System.Uri)">
+            <summary>
+            Download file from web using given uri to the specific path.
+            </summary>
+            <param name="path">Path with file name (file name must with extension but will change it into resource type at the end)</param>
+            <param name="uri"></param>
+            <returns>Get the downloaded file path, and if failed, return null</returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.DownloadTool.DownloadFile(System.String,System.String,System.Uri)">
+            <summary>
+            Download file from web using given uri to the specific path.
             </summary>
             <param name="directoryPath"></param>
-            <param name="fileName"></param>
+            <param name="fileName">file name without extension. (extension defined by the given resource in uri)</param>
             <param name="uri"></param>
+            <returns>Get the downloaded file path, and if failed, return null</returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.DownloadTool.DownloadFileAsync(System.String,System.String,System.Uri)">
+            <summary>
+            Download file async from web using given uri to the specific path.
+            </summary>
+            <param name="directoryPath"></param>
+            <param name="fileName">file name without extension. (extension defined by the given resource in uri)</param>
+            <param name="uri"></param>
+            <returns>Get the downloaded file path, and if failed, return null</returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.DownloadTool.GetFileSize(System.String)">
+            <summary>
+            Get file size use HEAD request to get Content-Length from given url.
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Web.KouHttp">
+            <summary>
+            For create HTTP request and handle response easily.
+            <para>Work in progress</para>
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.Url">
+            <summary>
+            Url to send request to.
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.BodyEncoding">
+            <summary>
+            Body content encoding.
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.ResponseEncoding">
+            <summary>
+            Response encoding.
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.MaxQPS">
+            <summary>
+            MaxQPS to send request.
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.KouHttp._request">
+            <summary>
+            The web request object.
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.KouHttp._response">
+            <summary>
+            The web response object.
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.RequestBody">
+            <summary>
+            The request body.
+            </summary>
+        </member>
+        <member name="M:Koubot.Tool.Web.KouHttp.Create(System.String,System.Action{System.Net.HttpWebRequest})">
+            <summary>
+            The factory to create KouHttp.
+            </summary>
+            <param name="url"></param>
+            <param name="setting"></param>
+            <param name="maxQPS"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.KouHttp.SetQPS(System.Double)">
+            <summary>
+            Set Max QPS. Use LeakyBucket algorithm to send request based on request host.
+            </summary>
+            <param name="maxQPS"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.KouHttp.SetJsonBody(System.Object,System.Action{System.Text.Json.JsonSerializerOptions})">
+            <summary>
+            Set request body use obj in json format.
+            </summary>
+            <param name="content">class obj or anonymous class obj and will automatically serialize to json</param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.KouHttp.AddCookie(System.String,System.String)">
+            <summary>
+            Add cookie to current request. (Domain use current request uri, and path set to '/')
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.KouHttp.SetBody(System.String,Koubot.Tool.Web.WebContentType)">
+            <summary>
+            Set request body.
+            </summary>
+            <param name="body"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.KouHttp.SendRequestAsync(Koubot.Tool.Web.HttpMethods)">
+            <summary>
+            WIP
+            </summary>
+            <param name="method"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.KouHttp.SendRequest(Koubot.Tool.Web.HttpMethods)">
+            <summary>
+            Send request by post method.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Koubot.Tool.Web.KouHttp.SendRequestInner(Koubot.Tool.Web.HttpMethods)">
+            <summary>
+            Send request by post method.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Koubot.Tool.Web.KouHttp.Response">
+            <summary>
+            KouHttp Response
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.Response.ExceptionStatus">
+            <summary>
+            错误状态
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.Response.Body">
+            <summary>
+            Response body.
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.Response.Cookies">
+            <summary>
+            The cookies the response given.
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.Response.Headers">
+            <summary>
+            The headers the response given.
+            </summary>
+        </member>
+        <member name="P:Koubot.Tool.Web.KouHttp.ErrorMsg">
+            <summary>
+            Error message.
+            </summary>
         </member>
         <member name="T:Koubot.Tool.Web.RateLimiter.ILimitingService">
             <summary>
@@ -2736,7 +3442,7 @@
         </member>
         <member name="F:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter._limiterDictionary">
             <summary>
-            同一个api请求在同一个限速器队列中
+            同一个api请求在同一个限速器队列中 [API名，请求队列]
             </summary>
         </member>
         <member name="F:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter._hasHandled">
@@ -2800,9 +3506,9 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.TryRequestOnce">
+        <member name="M:Koubot.Tool.Web.RateLimiter.LeakyBucketRateLimiter.TokenBucketRequest">
             <summary>
-            尝试请求一次，若失败则直接返回false
+            令牌桶式请求，桶满直接返回false
             </summary>
             <returns></returns>
         </member>
@@ -2920,62 +3626,82 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Koubot.Tool.Web.WebContentType">
+            <summary>
+            常用ContentType
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.WebContentType.General">
+            <summary>
+            application/x-www-form-urlencoded 即?key1=value1＆key2=value2形式，在发送前要自行编码key和value
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.WebContentType.Json">
+            <summary>
+            application/json 是POST请求以JSON的格式向服务请求发起请求或者请求返回JSON格式的响应内容，服务端接受到数据后对JSON进行解析拿到所需要的参数。自行处理数据为{"title":"test","sub":[1,2,3]}这种格式
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.WebContentType.Plain">
+            <summary>
+            text/plain	空格要转换为 "+" 加号，但不用对特殊字符编码。
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.WebContentType.Upload">
+            <summary>
+            multipart/form-data 是使用POST请求上传文件，如果上传照片，文件等，不用对字符编码。
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.WebContentType.Html">
+            <summary>
+            text/html
+            </summary>
+        </member>
+        <member name="T:Koubot.Tool.Web.HttpMethods">
+            <summary>
+            Method to send request.
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.HttpMethods.GET">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.HttpMethods.POST">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Koubot.Tool.Web.WebCharSet">
+            <summary>
+            Http supported chart set.
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.WebCharSet.UTF8">
+            <summary>
+            世界通用语言编码
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.WebCharSet.GB2312">
+            <summary>
+            中文编码
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.WebCharSet.BIG5">
+            <summary>
+            繁体中文编码
+            </summary>
+        </member>
+        <member name="F:Koubot.Tool.Web.WebCharSet.ISO88591">
+            <summary>
+            西欧的编码，英文编码
+            </summary>
+        </member>
         <member name="T:Koubot.Tool.Web.WebHelper">
             <summary>
             提供Http请求快速获得响应等Web功能
             </summary>
         </member>
-        <member name="T:Koubot.Tool.Web.WebHelper.WebContentType">
-            <summary>
-            常用ContentType
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Web.WebHelper.WebContentType.General">
-            <summary>
-            application/x-www-form-urlencoded 即?key1=value1＆key2=value2形式，在发送前要自行编码key和value
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Web.WebHelper.WebContentType.Json">
-            <summary>
-            application/json 是POST请求以JSON的格式向服务请求发起请求或者请求返回JSON格式的响应内容，服务端接受到数据后对JSON进行解析拿到所需要的参数。自行处理数据为{"title":"test","sub":[1,2,3]}这种格式
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Web.WebHelper.WebContentType.Plain">
-            <summary>
-            text/plain	空格要转换为 "+" 加号，但不用对特殊字符编码。
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Web.WebHelper.WebContentType.Upload">
-            <summary>
-            multipart/form-data 是使用POST请求上传文件，如果上传照片，文件等，不用对字符编码。
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Web.WebHelper.WebContentType.Html">
-            <summary>
-            text/html
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Web.WebHelper.WebCharSet.UTF8">
-            <summary>
-            世界通用语言编码
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Web.WebHelper.WebCharSet.GB2312">
-            <summary>
-            中文编码
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Web.WebHelper.WebCharSet.BIG5">
-            <summary>
-            繁体中文编码
-            </summary>
-        </member>
-        <member name="F:Koubot.Tool.Web.WebHelper.WebCharSet.ISO88591">
-            <summary>
-            西欧的编码，英文编码
-            </summary>
-        </member>
-        <member name="M:Koubot.Tool.Web.WebHelper.HttpGet(System.String,Koubot.Tool.Web.WebHelper.WebContentType,System.Int32)">
+        <member name="M:Koubot.Tool.Web.WebHelper.HttpGet(System.String,Koubot.Tool.Web.WebContentType,System.Int32)">
             <summary>
             模拟GET方法（默认编码UTF-8）
             </summary>
@@ -2984,7 +3710,7 @@
             <param name="timeout">超时值 默认6000ms</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Web.WebHelper.HttpPost(System.String,System.String,Koubot.Tool.Web.WebHelper.WebContentType)">
+        <member name="M:Koubot.Tool.Web.WebHelper.HttpPost(System.String,System.String,Koubot.Tool.Web.WebContentType)">
             <summary>
             模拟POST方法（默认编码UTF-8）
             </summary>
@@ -3022,7 +3748,7 @@
             <param name="codeType">编码类型，为空默认是UTF8</param>
             <returns></returns>
         </member>
-        <member name="M:Koubot.Tool.Web.WebTool.EncryptStringMD5(System.String)">
+        <member name="M:Koubot.Tool.Web.WebTool.StringHash(System.String)">
             <summary>
             计算MD5值
             </summary>
