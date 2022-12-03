@@ -1,4 +1,4 @@
-﻿namespace Koubot.Tool.Structure.Tree
+﻿namespace Koubot.Tool.Algorithm.Tree
 {
     /// <summary>
     /// BinaryTree Factory for getting specific Binary Tree

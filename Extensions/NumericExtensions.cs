@@ -1,4 +1,6 @@
-﻿namespace Koubot.Tool.Extensions
+﻿using System;
+
+namespace Koubot.Tool.Extensions
 {
     /// <summary>
     /// Extension methods of Numeric type
@@ -154,5 +156,9 @@
         /// <returns></returns>
         public static string FormatPercentage(this float num, int maxRetain = 2) =>
             FormatPercentage((double) num, maxRetain);
+
+        public static int Truncate(this double num) => (int)Math.Truncate(num);
+        public static double Round(this double num, int leftDecimalCount = 2, MidpointRounding rounding = MidpointRounding.AwayFromZero) =>
+            Math.Round(num, leftDecimalCount, rounding);
     }
 }

@@ -11,7 +11,7 @@ namespace Koubot.Tool.General
     public static class ReflectionTool
     {
         /// <summary>
-        /// 克隆某个对象中所有属性值到对象（引用类型依然是同个引用，值类型则是复制）（EFCore会追踪修改，因为做的是Action操作）
+        /// 克隆某个对象中所有可写的属性值到对象（引用类型依然是同个引用，值类型则是复制）（EFCore会追踪修改，因为做的是Action操作）
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>

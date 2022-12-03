@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Koubot.Tool.General;
 
 namespace Koubot.Tool.Extensions
 {
@@ -15,6 +16,16 @@ namespace Koubot.Tool.Extensions
     /// </summary>
     public static class StringExtensions
     {
+        /// <summary>
+        /// Convert string to byte array use specific encoding.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="encoding">default is <see cref="Encoding"/>.UTF8</param>
+        /// <returns></returns>
+        public static byte[] ConvertToBytes(this string str, Encoding? encoding = null)
+        {
+            return (encoding ?? Encoding.UTF8).GetBytes(str);
+        }
         /// <summary>
         /// Convert byte array to string use specific encoding.
         /// </summary>
@@ -72,6 +83,22 @@ namespace Koubot.Tool.Extensions
         /// <param name="times"></param>
         /// <returns></returns>
         public static string Repeat(this string str, int times) => new(Enumerable.Range(0, times).SelectMany(x => str).ToArray());
+        /// <summary>
+        /// Indicates whether the specified string is NOT null or an <see cref="F:System.String.Empty"></see> string.
+        /// </summary>
+        /// <param name="value">The string to test.</param>
+        /// <returns>true if the <paramref name="value">value</paramref> parameter is null or an empty string (""); otherwise, false.</returns>
+        [ContractAnnotation("null => false")]
+        public static bool IsNotNullOrEmpty([NotNullWhen(false)] this string? value) => !string.IsNullOrEmpty(value);
+
+        /// <summary>
+        /// Indicates whether a specified string is NOT null, empty, or consists only of white-space characters.
+        /// </summary>
+        /// <param name="value">The string to test.</param>
+        /// <returns>true if the <paramref name="value">value</paramref> parameter is null or <see cref="F:System.String.Empty"></see>, or if <paramref name="value">value</paramref> consists exclusively of white-space characters.</returns>
+        [ContractAnnotation("null => false")]
+        public static bool IsNotNullOrWhiteSpace([NotNullWhen(false)] this string? value) => !string.IsNullOrWhiteSpace(value);
+        
         /// <summary>
         /// Indicates whether the specified string is null or an <see cref="F:System.String.Empty"></see> string.
         /// </summary>
@@ -207,22 +234,15 @@ namespace Koubot.Tool.Extensions
         /// <param name="culprit">the string contained in source string</param>
         /// <param name="ignoreCase"></param>
         /// <returns></returns>
-        public static bool ContainsAny(this string source, bool ignoreCase, out string culprit, params string[] testStrings)
-        {
-            var type = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-            foreach (var s in testStrings)
-            {
-                if (source.Contains(s, type))
-                {
-                    culprit = s;
-                    return true;
-                }
-            }
+        public static bool ContainsAny(this string source, bool ignoreCase, out string? culprit, params string[] testStrings) => InnerWithAny(2, source, ignoreCase, out culprit, testStrings);
 
-            culprit = null;
-            return false;
-        }
-
+        /// <summary>
+        /// Determine whether source string starts with any of the specified strings.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="testStrings"></param>
+        /// <returns></returns>
+        public static bool StartsWithAny(this string source, params string[] testStrings) => StartsWithAny(source, false, out _, testStrings);
         /// <summary>
         /// Determine whether source string starts with any of the specified strings.
         /// </summary>
@@ -231,21 +251,68 @@ namespace Koubot.Tool.Extensions
         /// <param name="culprit">the string which the source string starts with.</param>
         /// <param name="testStrings"></param>
         /// <returns></returns>
-        public static bool StartsWithAny(this string source, bool ignoreCase, out string? culprit, params string[] testStrings)
+        public static bool StartsWithAny(this string source, bool ignoreCase, out string? culprit, params string[] testStrings) => InnerWithAny(1, source, ignoreCase, out culprit, testStrings);
+        /// <summary>
+        /// Determine whether source string ends with any of the specified strings.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="testStrings"></param>
+        /// <returns></returns>
+        public static bool EndsWithAny(this string source, params string[] testStrings) => EndsWithAny(source, false, out _, testStrings);
+        /// <summary>
+        /// Determine whether source string ends with any of the specified strings.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="ignoreCase"></param>
+        /// <param name="culprit">the string which the source string ends with.</param>
+        /// <param name="testStrings"></param>
+        /// <returns></returns>
+        public static bool EndsWithAny(this string source, bool ignoreCase, out string? culprit, params string[] testStrings) => InnerWithAny(1, source, ignoreCase, out culprit, testStrings);
+        private static bool InnerWithAny(int kind, string source, bool ignoreCase, out string? culprit, params string[] testStrings)
         {
             var type = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
             foreach (var s in testStrings)
             {
-                if (source.StartsWith(s, type))
+                switch (kind)
                 {
-                    culprit = s;
-                    return true;
+                    case 1:
+                    {
+                        if (source.StartsWith(s, type))
+                        {
+                            culprit = s;
+                            return true;
+                        }
+
+                        continue;
+                    }
+                    case 2:
+                    {
+                        if (source.Contains(s, type))
+                        {
+                            culprit = s;
+                            return true;
+                        }
+                        continue;
+                    }
+                    case 3:
+                    {
+                        if (source.EndsWith(s, type))
+                        {
+                            culprit = s;
+                            return true;
+                        }
+                        continue;
+                    }
+                    default:
+                        throw new Exception("not supported.");
                 }
+                
             }
 
             culprit = null;
             return false;
         }
+
         /// <summary>
         /// Filter specific chars from given string.
         /// </summary>
@@ -282,13 +349,15 @@ namespace Koubot.Tool.Extensions
         /// </summary>
         /// <param name="str"></param>
         /// <param name="minLength">length big than 0</param>
-        /// <param name="appendChar">default append blank space.</param>
+        /// <param name="paddingChar">default append blank space.</param>
+        /// <param name="padStart">default is append to end.</param>
         /// <exception cref="InvalidOperationException"></exception>
         /// <returns>if not enough will append with blank space or given char.</returns>
-        public static string LimitMinLength(this string str, int minLength, char appendChar = ' ')
+        public static string LimitMinLength(this string str, int minLength, char paddingChar = ' ', bool padStart = false)
         {
             if (minLength <= 0) throw new InvalidOperationException($"{nameof(minLength)} must big than 0");
-            return str.Length > minLength ? str : str + appendChar.Repeat(minLength - str.Length);
+            return str.Length > minLength ? str :
+                padStart ? str.PadLeft(minLength, paddingChar) : str.PadRight(minLength, paddingChar);
         }
 
         /// <summary>
@@ -296,13 +365,14 @@ namespace Koubot.Tool.Extensions
         /// </summary>
         /// <param name="str"></param>
         /// <param name="length">the return string's length.</param>
-        /// <param name="appendChar">default append blank space.</param>
+        /// <param name="paddingChar">default append blank space.</param>
+        /// /// <param name="padStart">default is append to end.</param>
         /// <exception cref="InvalidOperationException"></exception>
         /// <returns>if not enough will append with blank space or given char, else if exceed length will cut of to match max length.</returns>
-        public static string LimitLengthTo(this string str, int length, char appendChar = ' ')
+        public static string LimitLengthTo(this string str, int length, char paddingChar = ' ', bool padStart = false)
         {
             if (length <= 0) throw new InvalidOperationException($"{nameof(length)} must big than 0");
-            return str.LimitMaxLength(length).LimitMinLength(length, appendChar);
+            return str.LimitMaxLength(length).LimitMinLength(length, paddingChar, padStart);
         }
         /// <summary>
         /// 将一个string中与提供的键值对集合中的键相同的全部替换为对应的值（注意若是提供的集合中值与键相包含会造成重复替换）
@@ -383,6 +453,28 @@ namespace Koubot.Tool.Extensions
             if (string.IsNullOrEmpty(input)) return input;
             var firstCharacter = char.ToUpperInvariant(input[0]).ToString();
             return string.Concat(firstCharacter, input.Substring(1, input.Length - 1));
+        }
+
+        private const string SpecialCharacters = "!@#$%^&*()-+=/\\{}[]|:;\"'<>,.?~~`_——！—？·：；、。《》（）￥…【】”“‘’\n\t\r ";
+        private static readonly string _regexSpecialCharacters = SpecialCharacters.ToRegexEscapedAll();
+        private static readonly char[] _regexSpecialChars = SpecialCharacters.ToCharArray();
+        public static string RemoveSpecialCharacters(this string input)
+        {
+            return input.RegexReplace($"[{_regexSpecialCharacters}]");
+        }
+
+        public static string TrimSpecialCharacters(this string input)
+        {
+            return input.Trim(_regexSpecialChars);
+        }
+
+        public static string RemoveOtherCharacters(this string input, UnicodeRegexs supportCharacters)
+        {
+            return input.RegexReplace($"[^{supportCharacters.Get()}]");
+        }
+        public static string TrimOtherCharacters(this string input, UnicodeRegexs supportCharacters)
+        {
+            return input.RegexReplace($"^[^{supportCharacters.Get()}]+").RegexReplace($"[^{supportCharacters.Get()}]+$");
         }
     }
 }

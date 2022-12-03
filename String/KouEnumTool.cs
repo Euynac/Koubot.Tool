@@ -53,10 +53,10 @@ namespace Koubot.Tool.String
         /// <param name="str"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        public static bool TryToKouEnum<T>(this string str, out T result) where T : struct, Enum
+        public static bool TryToKouEnum<T>(this string? str, out T result) where T : struct, Enum
         {
             result = default;
-            if (!TryToKouEnum(typeof(T), str, out object resultEnum)) return false;
+            if (!TryToKouEnum(typeof(T), str??"", out object resultEnum)) return false;
             result = (T)resultEnum;
             return true;
         }
@@ -67,10 +67,10 @@ namespace Koubot.Tool.String
         /// <param name="str"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        public static bool TryToKouEnumFuzzy<T>(this string str, out List<T> result) where T : struct, Enum
+        public static bool TryToKouEnumFuzzy<T>(this string? str, out List<T> result) where T : struct, Enum
         {
             result = new List<T>();
-            if (!TryToKouEnum(typeof(T), str, out object resultEnum, true)) return false;
+            if (!TryToKouEnum(typeof(T), str??"", out object resultEnum, true)) return false;
             result = ((IEnumerable)resultEnum).Cast<T>().ToList();
             return true;
         }

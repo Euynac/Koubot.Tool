@@ -5,13 +5,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Koubot.Tool.Interfaces;
 
-namespace Koubot.Tool.Math
+namespace Koubot.Tool.Maths
 {
     /// <summary>
     /// 表达式计算器
     /// </summary>
-    public class ExpressionCalculator
+    public class ExpressionCalculator : IKouErrorMsg
     {
         /// <summary>
         /// 计算结果,如果表达式出错则返回空（调用ToString即是结果）
@@ -27,8 +28,9 @@ namespace Koubot.Tool.Math
                     var evaluator = new ExpressionCalculator();
                     return evaluator.GetFormulaResult(statement);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    ErrorMsg = e.Message;
                     return null;
                 }
 
@@ -80,8 +82,9 @@ namespace Koubot.Tool.Math
                             tmp = operand.ToString();
                             operandStack.Push(Convert.ToDouble(tmp));
                         }
-                        catch
+                        catch(Exception e)
                         {
+                            ErrorMsg = $"{e.Message}：{tmp}";
                             return null;
                         }
                         operand = new StringBuilder();
@@ -138,7 +141,7 @@ namespace Koubot.Tool.Math
                                 if (x > 0)
                                 {
                                     //我原本还想,如果被计算的数是负数,又要开真分数次方时如何处理的问题.后来我想还是算了吧.
-                                    operandStack.Push(System.Math.Pow(x, y));
+                                    operandStack.Push(Math.Pow(x, y));
                                 }
                                 else
                                 {
@@ -171,46 +174,46 @@ namespace Koubot.Tool.Math
                                 switch (nowChar) //这里改对应函数映射关系
                                 {
                                     case 'a':
-                                        operandStack.Push(System.Math.Abs(y));
+                                        operandStack.Push(Math.Abs(y));
                                         break;
                                     case 'b':
-                                        operandStack.Push(System.Math.Acos(y));
+                                        operandStack.Push(Math.Acos(y));
                                         break;
                                     case 'c':
-                                        operandStack.Push(System.Math.Asin(y));
+                                        operandStack.Push(Math.Asin(y));
                                         break;
                                     case 'd':
-                                        operandStack.Push(System.Math.Atan(y));
+                                        operandStack.Push(Math.Atan(y));
                                         break;
                                     case 'e':
-                                        operandStack.Push(System.Math.Floor(y));
+                                        operandStack.Push(Math.Floor(y));
                                         break;
                                     case 'f':
-                                        operandStack.Push(System.Math.Sqrt(y));
+                                        operandStack.Push(Math.Sqrt(y));
                                         break;
                                     case 'g':
-                                        operandStack.Push(System.Math.Log(y));
+                                        operandStack.Push(Math.Log(y));
                                         break;
                                     case 'h':
-                                        operandStack.Push(System.Math.Sin(y));
+                                        operandStack.Push(Math.Sin(y));
                                         break;
                                     case 'i':
-                                        operandStack.Push(System.Math.Cos(y));
+                                        operandStack.Push(Math.Cos(y));
                                         break;
                                     case 'j':
-                                        operandStack.Push(System.Math.Cos(y) / System.Math.Sin(y));
+                                        operandStack.Push(Math.Cos(y) / Math.Sin(y));
                                         break;
                                     case 'k':
-                                        operandStack.Push(System.Math.Tan(y));
+                                        operandStack.Push(Math.Tan(y));
                                         break;
                                     case 'l':
-                                        operandStack.Push(System.Math.Log10(y));
+                                        operandStack.Push(Math.Log10(y));
                                         break;
                                     case 'm':
-                                        operandStack.Push(System.Math.Ceiling(y));
+                                        operandStack.Push(Math.Ceiling(y));
                                         break;
                                     case 'n':
-                                        operandStack.Push(System.Math.Log(y, System.Math.E));
+                                        operandStack.Push(Math.Log(y, Math.E));
                                         break;
                                     default:
                                         break;
@@ -267,8 +270,8 @@ namespace Koubot.Tool.Math
             {"lg", "l"},
             {"ceiling", "m"},
             {"ln","n" },
-            {"pi", System.Math.PI.ToString(CultureInfo.InvariantCulture)},
-            {"e", System.Math.E.ToString(CultureInfo.InvariantCulture)}
+            {"pi", Math.PI.ToString(CultureInfo.InvariantCulture)},
+            {"e", Math.E.ToString(CultureInfo.InvariantCulture)}
         };
 
         /// <summary>
@@ -474,5 +477,7 @@ namespace Koubot.Tool.Math
             return ret.ToString();
             //.Replace( '!','-' );
         }
+
+        public string? ErrorMsg { get; set; }
     }
 }

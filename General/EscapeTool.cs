@@ -9,12 +9,22 @@ namespace Koubot.Tool.General
     public static class EscapeTool
     {
         /// <summary>
-        /// 正则表达式模式字符串转义
+        /// The same as Regex.Escape.
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns>
         public static string ToRegexEscaped(this string pattern) => Regex.Escape(pattern);
-
+        /// <summary>
+        /// Doing Regex.Escape and also escape ])}.
+        /// <para></para>
+        /// https://github.com/dotnet/runtime/issues/45896
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        public static string ToRegexEscapedAll(this string pattern)
+        {
+            return Regex.Escape(pattern).Replace("]", "\\]").Replace("}", "\\}").Replace(")", "\\)");
+        }
         private enum RemoveEscapeCharsStates
         {
             Reset,

@@ -2,7 +2,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Koubot.Tool.Math
+namespace Koubot.Tool.Maths
 {
     /// <summary>
     /// 数的类型
@@ -149,7 +149,7 @@ namespace Koubot.Tool.Math
         /// <returns></returns>
         public int GetLeftIntervalNearestNumber()
         {
-            int minValue = LeftInterval.NumType == NumberType.Infinitesimal ? int.MinValue : (int)System.Math.Ceiling(LeftInterval.Value);
+            int minValue = LeftInterval.NumType == NumberType.Infinitesimal ? int.MinValue : (int)Math.Ceiling(LeftInterval.Value);
             if (LeftInterval.IsOpen && minValue == (int)LeftInterval.Value) minValue += 1;
             return minValue;
         }
@@ -161,7 +161,7 @@ namespace Koubot.Tool.Math
         {
             int maxValue = RightInterval.NumType == NumberType.Infinity
                 ? int.MaxValue
-                : (int)System.Math.Floor(RightInterval.Value);
+                : (int)Math.Floor(RightInterval.Value);
             if (RightInterval.IsOpen && maxValue == (int)RightInterval.Value) maxValue -= 1;
             return maxValue;
         }
@@ -313,7 +313,7 @@ namespace Koubot.Tool.Math
         /// <returns></returns>
         public override string ToString()
         {
-            return this.NumType switch
+            return NumType switch
             {
                 NumberType.Infinity => "+∞",
                 NumberType.Infinitesimal => "-∞",

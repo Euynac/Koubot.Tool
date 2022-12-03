@@ -1,98 +1,179 @@
 ﻿using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Koubot.Tool.Extensions
 {
+    [Flags]
+    public enum UnicodeRegexs
+    {
+        /// <summary>
+        /// \u4e00-\u9fa5
+        /// </summary>
+        Chinese = 1 << 0,
+        /// <summary>
+        /// A-Z
+        /// </summary>
+        UpperLetter= 1 << 1,
+        /// <summary>
+        /// a-z
+        /// </summary>
+        LowerLetter= 1 << 2,
+        /// <summary>
+        /// 0-9
+        /// </summary>
+        Digit= 1 << 3,
+        /// <summary>
+        /// ，。！？：
+        /// </summary>
+        ChineseCommonPunctuationMarks = 1 << 4,
+        /// <summary>
+        /// ,.?!:
+        /// </summary>
+        EnglishCommonPunctuationMarks = 1 << 5,
+        /// <summary>
+        /// A-Za-z
+        /// </summary>
+        Letter = LowerLetter|UpperLetter,
+        ValidCharacters = Digit|Letter|Chinese
+    }
     /// <summary>
     /// Extension Methods of Regex related
     /// </summary>
     public static class RegexExtensions
     {
-        /// <summary>
-        /// 判断字符串是否能够匹配正则表达式
-        /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <returns></returns>
-        public static bool IsMatch(this string? s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None)
+        public static string Get(this UnicodeRegexs regexs)
         {
-            return s != null && Regex.IsMatch(s, pattern, regexOptions);
+            var sb = new StringBuilder();
+            if (regexs.HasFlag(UnicodeRegexs.UpperLetter)) sb.Append("A-Z");
+            if (regexs.HasFlag(UnicodeRegexs.LowerLetter)) sb.Append("a-z");
+            if (regexs.HasFlag(UnicodeRegexs.Digit)) sb.Append("0-9");
+            if(regexs.HasFlag(UnicodeRegexs.Chinese)) sb.Append("\u4e00-\u9fa5");
+            if(regexs.HasFlag(UnicodeRegexs.ChineseCommonPunctuationMarks)) sb.Append("，。！？：");
+            if(regexs.HasFlag(UnicodeRegexs.EnglishCommonPunctuationMarks)) sb.Append(",.?!:");
+            return sb.ToString();
         }
 
         /// <summary>
-        /// 搜索指定正则表达式的第一个匹配项并得到捕获的子字符串，不存在的默认返回("")
+        /// Indicates whether the specified regular expression finds a match in the specified input string, using the specified matching options.
         /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <param name="ifNotExistReturnNull">如果不存在返回 null，而不是("")</param>
-        /// <returns></returns>
-        public static string? Match(this string? s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None, bool ifNotExistReturnNull = false)
+        /// <param name="input">The string to search for a match.</param>
+        /// <param name="pattern">The regular expression pattern to match.</param>
+        /// <param name="options">A bitwise combination of the enumeration values that provide options for matching.</param>
+        /// <returns><see langword="true" /> if the regular expression finds a match; otherwise, <see langword="false" />.</returns>
+        public static bool IsMatch(this string? input, [RegexPattern] string pattern, RegexOptions options = RegexOptions.None)
         {
-            if (s == null) return ifNotExistReturnNull ? null : "";
-            var result = Regex.Match(s, pattern, regexOptions);
-            return result.Success ? result.Value : ifNotExistReturnNull ? null : "";
+            return input != null && Regex.IsMatch(input, pattern, options);
         }
 
         /// <summary>
-        /// 搜索指定正则表达式的第一个匹配项并得到捕获的匹配组，并获取替换匹配项后的字符串结果
+        /// Search for the first match of the specified regular expression and get the captured substring.
         /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="replaced">替换后的字符串，没有匹配上则返回原来的字符串</param>
-        /// <param name="groupResult">匹配到则获取匹配组结果</param>
-        /// <param name="replaceTo"></param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <returns>false则没有匹配上</returns>
-        public static bool MatchOnceThenReplace(this string s,
-            [RegexPattern] string pattern, out string replaced,
-            out GroupCollection? groupResult,
-            RegexOptions regexOptions = RegexOptions.None, string replaceTo = "")
+        /// <param name="input">The string to search for a match.</param>
+        /// <param name="pattern">The regular expression pattern to match.</param>
+        /// <param name="options">A bitwise combination of the enumeration values that provide options for matching.</param>
+        /// <returns>Not matched return <see cref="string.Empty"/>.</returns>
+        public static string Match(this string? input, [RegexPattern] string pattern, RegexOptions options = RegexOptions.None)
         {
-            replaced = s;
+            if (input == null) return "";
+            var result = Regex.Match(input, pattern, options);
+            return result.Success ? result.Value : "";
+        }
+        /// <summary>
+        /// Search for the first match of the specified regular expression and get the captured match group.
+        /// </summary>
+        /// <param name="input">The string to search for a match.</param>
+        /// <param name="pattern">The regular expression pattern to match.</param>
+        /// <param name="options">A bitwise combination of the enumeration values that provide options for matching.</param>
+        /// <param name="groupResult">The result of the matched group.</param>
+        /// <returns>Not matched return <see langword="false"/>.</returns>
+        public static bool MatchOnce(this string input,
+            [RegexPattern] string pattern,
+            [NotNullWhen(true)]out GroupCollection? groupResult,
+            RegexOptions options = RegexOptions.None)
+        {
             groupResult = null;
-            var regex = new Regex(pattern, regexOptions);
-            var result = regex.Match(s);
+            var regex = new Regex(pattern, options);
+            var result = regex.Match(input);
             if (!result.Success) return false;
             groupResult = result.Groups;
-            replaced = regex.Replace(s, replaceTo, 1);
+            return true;
+        }
+        /// <summary>
+        /// Search for the first match of the specified regular expression and get the captured match group, and get the replaced string.
+        /// </summary>
+        /// <param name="input">The string to search for a match.</param>
+        /// <param name="pattern">The regular expression pattern to match.</param>
+        /// <param name="options">A bitwise combination of the enumeration values that provide options for matching.</param>
+        /// <param name="replaced">Replaced string, or return the original string if it does not match</param>
+        /// <param name="groupResult">The result of the matched group.</param>
+        /// <param name="replaceTo"></param>
+        /// <returns>Not matched return <see langword="false"/>.</returns>
+        public static bool MatchOnceThenReplace(this string input,
+            [RegexPattern] string pattern, out string replaced,
+            [NotNullWhen(true)]out GroupCollection? groupResult,
+            RegexOptions options = RegexOptions.None, string replaceTo = "")
+        {
+            replaced = input;
+            groupResult = null;
+            var regex = new Regex(pattern, options);
+            var result = regex.Match(input);
+            if (!result.Success) return false;
+            groupResult = result.Groups;
+            replaced = regex.Replace(input, replaceTo, 1);
             return true;
         }
        
         /// <summary>
-        /// 搜索指定正则表达式的所有匹配项并返回捕获到的所有子字符串，不存在的将返回count=0的list
+        /// Searches the specified input string for all occurrences of a specified regular expression, using the specified matching options.
         /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <returns></returns>
-        public static List<string> Matches(this string? s, [RegexPattern] string pattern, RegexOptions regexOptions = RegexOptions.None)
+        /// <param name="input">The string to search for a match.</param>
+        /// <param name="pattern">The regular expression pattern to match.</param>
+        /// <param name="options">A bitwise combination of the enumeration values that provide options for matching.</param>
+        /// <returns>If not matched ones will return empty list.</returns>
+        public static List<string> Matches(this string? input, [RegexPattern] string pattern, RegexOptions options = RegexOptions.None)
         {
             var list = new List<string>();
-            if (string.IsNullOrEmpty(s)) return list;
-            list.AddRange(from Match item in Regex.Matches(s, pattern, regexOptions) select item.Value);
+            if (string.IsNullOrEmpty(input)) return list;
+            list.AddRange(from Match item in Regex.Matches(input, pattern, options) select item.Value);
             return list;
         }
 
         /// <summary>
-        /// 使用指定的替换字符串替换与正则表达式匹配的指定数量的字符串
+        /// In a specified input string, replaces all strings that match a specified regular expression with a string returned by a <see cref="MatchEvaluator" /> delegate.
         /// </summary>
-        /// <param name="s">要测试的字符串</param>
-        /// <param name="pattern">要匹配的正则表达式模式</param>
-        /// <param name="replacement">指定的替换字符串</param>
-        /// <param name="regexOptions">使用指定的选项进行匹配，可按位组合</param>
-        /// <param name="count">为0默认全部替换</param>
+        /// <param name="input">The string to search for a match.</param>
+        /// <param name="pattern">The regular expression pattern to match.</param>
+        /// <param name="evaluator">A custom method that examines each match and returns either the original matched string or a replacement string.</param>
+        /// <param name="options">A bitwise combination of the enumeration values that provide options for matching.</param>
+        /// <param name="count">The maximum number of times the replacement can occur. if zero replace all.</param>
         /// <returns></returns>
-        public static string RegexReplace(this string s, [RegexPattern] string pattern, string replacement = "",
-            RegexOptions regexOptions = RegexOptions.None, int count = 0)
+        public static string RegexReplace(this string input, [RegexPattern] string pattern, MatchEvaluator evaluator,
+            RegexOptions options = RegexOptions.None, int count = 0)
         {
-            if (string.IsNullOrEmpty(s)) return s;
-            var regex = new Regex(pattern, regexOptions);
-            return count > 0 ? regex.Replace(s, replacement, count) : regex.Replace(s, replacement);
+            if (string.IsNullOrEmpty(input)) return input;
+            var regex = new Regex(pattern, options);
+            return count > 0 ? regex.Replace(input, evaluator, count) : regex.Replace(input, evaluator);
+        }
+        /// <summary>
+        /// In a specified input string, replaces a specified maximum number of strings that match a regular expression pattern with a specified replacement string.
+        /// </summary>
+        /// <param name="input">The string to search for a match.</param>
+        /// <param name="pattern">The regular expression pattern to match.</param>
+        /// <param name="options">A bitwise combination of the enumeration values that provide options for matching.</param>
+        /// <param name="replacement">The replacement string.</param>
+        /// <param name="count">The maximum number of times the replacement can occur. if zero replace all.</param>
+        /// <returns></returns>
+        public static string RegexReplace(this string input, [RegexPattern] string pattern, string replacement = "",
+            RegexOptions options = RegexOptions.None, int count = 0)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+            var regex = new Regex(pattern, options);
+            return count > 0 ? regex.Replace(input, replacement, count) : regex.Replace(input, replacement);
         }
         /// <summary>
         /// 找到字符串中符合正则表达式的给定命名捕获组名的所有匹配项。未找到返回Count=0的List
@@ -108,7 +189,7 @@ namespace Koubot.Tool.Extensions
         {
             var itemList = new List<string>();
             if (s == null || groupName.IsNullOrEmpty()) return itemList;
-            var regex = new Regex(pattern);
+            var regex = new Regex(pattern, regexOptions);
             foreach (Match match in regex.Matches(s))
             {
                 var matched = match.Groups[groupName].Value;
@@ -124,9 +205,9 @@ namespace Koubot.Tool.Extensions
         /// <param name="s"></param>
         /// <param name="error">如果是无效正则表达式，输出错误原因</param>
         /// <returns></returns>
-        public static bool IsValidRegexPattern(this string? s, out string? error)
+        public static bool IsValidRegexPattern(this string? s, out string error)
         {
-            error = null;
+            error = "";
             if (s == null)
             {
                 error = "pattern is empty!";

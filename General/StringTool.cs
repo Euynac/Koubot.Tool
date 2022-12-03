@@ -1,6 +1,10 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Koubot.Tool.Extensions;
+using Koubot.Tool.Maths;
 
 namespace Koubot.Tool.General
 {
@@ -66,8 +70,62 @@ namespace Koubot.Tool.General
         }
         #endregion
 
-        #region Unicode与Ascii转换
+        /// <summary>
+        /// Convert string to unicode representation string. e.g. 你好 -> \u4F60\u597D
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="encoding"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        public static string StringEncode(string value, Encoding? encoding = null, string prefix = "\\u")
+        {
+            encoding ??= Encoding.Unicode;
+            var enumerator = StringInfo.GetTextElementEnumerator(value);//use string info instead of string.length to get exact iterator of unicode characters. because one unicode character may consist of more than two chars.
+            var sb = new StringBuilder();
+            while (enumerator.MoveNext())
+            {
+                sb.Append(GetCodePoint(enumerator.GetTextElement(), prefix, encoding));
+            }
 
+            return sb.ToString();
+
+            static string GetCodePoint(string character, string prefix, Encoding encoding)
+            {
+                var retVal = prefix;
+                var bytes = encoding.GetBytes(character);
+                for (var ctr = bytes.Length - 1; ctr >= 0; ctr--)
+                    retVal += bytes[ctr].ToString("X2");
+   
+                return retVal;
+            }
+        }
+        /// <summary>
+        /// Convert unicode representation string to string. e.g. \u4F60\u597D -> 你好
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="encoding"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        public static string StringDecode(string value, Encoding? encoding = null, string prefix = "\\u")
+        {
+            encoding ??= Encoding.Unicode;
+            return Regex.Replace(
+                value,
+                $@"{prefix.ToRegexEscaped()}([a-zA-Z0-9]+)",
+                m =>
+                {
+                    var hexStr = m.Groups[1].Value;
+                    hexStr = hexStr.Length.IsEven() ? hexStr : "0" + hexStr;
+                    var list = new List<byte>();
+                    for (var i = hexStr.Length - 1; i >= 0; i-=2)
+                    {
+                        var hex = hexStr.Substring(i - 1, 2);
+                        list.Add((byte) int.Parse(hex, NumberStyles.HexNumber));
+                    }
+                    return encoding.GetString(list.ToArray());
+                });
+        }
+        #region Unicode与Ascii转换
         public static string UnicodeEncode(string value, bool notEncodeAscii = false)
         {
             var sb = new StringBuilder();

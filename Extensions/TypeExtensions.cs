@@ -32,16 +32,27 @@ namespace Koubot.Tool.Extensions
         /// <returns></returns>
         public static Type GetUnderlyingType(this Type type)
         {
+            Type? underlyingType = null;
             if (typeof(IEnumerable).IsAssignableFrom(type) && type != typeof(string))
             {
-                var innerType = type.GetGenericArguments().FirstOrDefault();
-                type = innerType ?? throw new Exception($"{type.FullName} not support {nameof(GetUnderlyingType)}");
+                if (type.IsArray)
+                {
+                    underlyingType = type.GetElementType() ?? throw new Exception($"{type.FullName} not support {nameof(GetUnderlyingType)}");
+                }
+                else
+                {
+                    underlyingType = type.GetGenericArguments().FirstOrDefault() ?? throw new Exception($"{type.FullName} not support {nameof(GetUnderlyingType)}");
+                }
+                
             }
-            if (type.IsNullableValueType())
+
+            underlyingType ??= type;
+            if (underlyingType.IsNullableValueType())
             {
-                type = Nullable.GetUnderlyingType(type);
+                underlyingType = Nullable.GetUnderlyingType(type);
             }
-            return type;
+
+            return underlyingType ?? type;
         }
     }
 }

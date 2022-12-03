@@ -1,4 +1,5 @@
-﻿using Koubot.Tool.Extensions;
+﻿using System;
+using Koubot.Tool.Extensions;
 using System.Text;
 
 namespace Koubot.Tool.General
@@ -8,6 +9,19 @@ namespace Koubot.Tool.General
     /// </summary>
     public static class FormatTool
     {
+        public static char ToUpperLetter(this int num)
+        {
+            if (num is < 1 or > 26) throw new Exception("number to letter only support 1 - 26");
+            return (char) ('A' + (num - 1));
+        }
+
+        public static int FromLetter(this char letter)
+        {
+            letter = letter.ToString().ToUpperInvariant()[0];
+            if(letter is < 'A' or > 'Z') throw new Exception("letter to number only support a - z or A-Z");
+            return letter - 'A' + 1;
+        }
+
         private static readonly string[] _sizeUnit = {
             "B",
             "KB",

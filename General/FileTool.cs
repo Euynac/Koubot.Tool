@@ -32,6 +32,19 @@ namespace Koubot.Tool.General
                 return null;
             }
         }
+
+        /// <summary>
+        /// Check if the file path a directory.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>If file not exist or is a file, return false.</returns>
+        public static bool IsDirectory(string path)
+        {
+            if(File.Exists(path)) return false;
+            var attr = File.GetAttributes(path);
+            return attr.HasFlag(FileAttributes.Directory);
+        }
+
         /// <summary>
         /// The same as Environment.GetFolderPath();
         /// </summary>
@@ -90,7 +103,7 @@ namespace Koubot.Tool.General
         /// <returns></returns>
         public static string GetTimestampRandomFileName(int randomDeep = 3)
         {
-            return DateTime.Now.ToTimeStamp() + RandomTool.GetRandomString(3);
+            return DateTime.Now.ToTimeStamp() + RandomTool.GetString(3);
         }
 
         /// <summary>
@@ -137,28 +150,37 @@ namespace Koubot.Tool.General
         /// </summary>
         /// <param name="path"></param>
         /// <param name="content"></param>
-        public static void WriteFile(string path, string content)
+        /// <param name="ensureDirectory">如果不存在目录，则创建</param>
+        public static void WriteFile(string path, string content, bool ensureDirectory = true)
         {
             var stringBuilder = new StringBuilder(content);
-            WriteFile(path, stringBuilder);
+            WriteFile(path, stringBuilder, ensureDirectory);
         }
+
         /// <summary>
         /// 向文件末尾追加写入
         /// </summary>
         /// <param name="path"></param>
         /// <param name="content"></param>
-        public static void AppendFile(string path, string content)
+        /// <param name="ensureDirectory">如果不存在目录，则创建</param>
+        public static void AppendFile(string path, string content, bool ensureDirectory = true)
         {
             var stringBuilder = new StringBuilder(content);
-            AppendFile(path, stringBuilder);
+            AppendFile(path, stringBuilder, ensureDirectory);
         }
+
         /// <summary>
         /// 向文件末尾追加写入
         /// </summary>
         /// <param name="path"></param>
         /// <param name="content"></param>
-        public static void AppendFile(string path, StringBuilder content)
+        /// <param name="ensureDirectory">如果不存在目录，则创建</param>
+        public static void AppendFile(string path, StringBuilder content, bool ensureDirectory = true)
         {
+            if (ensureDirectory)
+            {
+                Directory.CreateDirectory(Directory.GetParent(path)?.FullName ?? path);
+            }
             using var fileStream = new FileStream(path, FileMode.Append);
             var writer = new StreamWriter(fileStream);
             writer.Write(content);
@@ -170,8 +192,13 @@ namespace Koubot.Tool.General
         /// </summary>
         /// <param name="path"></param>
         /// <param name="content"></param>
-        public static void WriteFile(string path, StringBuilder content)
+        /// <param name="ensureDirectory">如果不存在目录，则创建</param>
+        public static void WriteFile(string path, StringBuilder content, bool ensureDirectory = true)
         {
+            if (ensureDirectory)
+            {
+                Directory.CreateDirectory(Directory.GetParent(path)?.FullName ?? path);
+            }
             using var fileStream = new FileStream(path, FileMode.Create);
             var writer = new StreamWriter(fileStream);
             writer.Write(content);
@@ -190,6 +217,15 @@ namespace Koubot.Tool.General
             return true;
         }
 
+
+        /// <summary>
+        /// The same as Directory.GetCurrentDirectory().
+        /// <para>Get the current working directory of the application.</para>
+        /// </summary>
+        /// <returns></returns>
+
+        public static string GetCurrentDirectory() => Directory.GetCurrentDirectory();
+        
         /// <summary>
         /// 读取文件信息
         /// </summary>

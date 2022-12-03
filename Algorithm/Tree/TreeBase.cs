@@ -1,4 +1,4 @@
-﻿namespace Koubot.Tool.Structure.Tree
+﻿namespace Koubot.Tool.Algorithm.Tree
 {
     /// <summary>
     /// A Tree, which Node type is T

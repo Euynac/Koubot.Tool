@@ -263,5 +263,19 @@ namespace Koubot.Tool.Extensions
             }
             return result;
         }
+        /// <summary>
+        /// Force cast object to specific type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static T ForceCast<T>(this object obj) => (T)obj;
+        /// <summary>
+        /// Use as to cast object to specific type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static T? AsCast<T>(this object obj) where T : class => obj as T;
     }
 }

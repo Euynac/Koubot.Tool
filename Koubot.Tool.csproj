@@ -38,9 +38,9 @@ PS: IDE hint language is Chinese (now slowly moving to English), but there is a 
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Structure\Graph\**" />
-    <EmbeddedResource Remove="Structure\Graph\**" />
-    <None Remove="Structure\Graph\**" />
+    <Compile Remove="Algorithm\Graph\**" />
+    <EmbeddedResource Remove="Algorithm\Graph\**" />
+    <None Remove="Algorithm\Graph\**" />
   </ItemGroup>
 
   <ItemGroup>

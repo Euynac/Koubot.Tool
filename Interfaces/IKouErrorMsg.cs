@@ -49,9 +49,18 @@ namespace Koubot.Tool.Interfaces
         /// <param name="errorObject"></param>
         /// <returns></returns>
         public static bool HasError(this IKouErrorMsg errorObject) => !string.IsNullOrWhiteSpace(errorObject.ErrorMsg);
-
-
         #region 具体类型
+        /// <summary>
+        /// 移除发生的错误
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static void RemoveError<T>(this IKouError<T> obj) where T : struct,Enum
+        {
+            obj.ErrorCode = default;
+            obj.ErrorMsg = null;
+        }
 
         /// <summary>
         /// 继承某个实现了IKouError接口的类的错误

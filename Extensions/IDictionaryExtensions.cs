@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -42,6 +43,31 @@ namespace Koubot.Tool.Extensions
             }
             return dict;
         }
+        /// <summary>
+        /// Create dictionary from <see cref="IEnumerable{T}">IEnumerable</see>&lt;<see cref="KeyValuePair{TKey,TValue}"/>&gt;.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(
+            this IEnumerable<KeyValuePair<TKey, TValue>> enumerable) => new(enumerable);
+        /// <summary>
+        /// Create case insensitive dictionary from <see cref="IEnumerable{T}">IEnumerable</see>.
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        public static Dictionary<string, TValue> ToIgnoreCaseDictionary<TValue>(
+            this IEnumerable<KeyValuePair<string, TValue>> enumerable) => new(enumerable, StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Create case insensitive dictionary from given dictionary.
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="oldDictionary"></param>
+        /// <returns></returns>
+        public static Dictionary<string, TValue> ToIgnoreCaseDictionary<TValue>(this Dictionary<string, TValue> oldDictionary) => new(oldDictionary, StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 获取与指定的键相关联的值，如果没有则返回指定的默认值或Value类的默认值（引用类型默认值null，值类型返回0或false或'\0'等）（好处：不用写ContainsKey）
@@ -79,6 +105,20 @@ namespace Koubot.Tool.Extensions
         {
             if (keys == null || dict.IsNullOrEmptySet()) return false;
             return keys.All(dict.ContainsKey);
+        }
+
+        /// <summary>
+        /// Set element at specific index to given value.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="dict"></param>
+        /// <param name="index"></param>
+        /// <param name="setValue"></param>
+        public static void SetElementAt<TKey, TValue>(this IDictionary<TKey, TValue>? dict, int index, TValue setValue)
+        {
+            if(dict == null || dict.IsNullOrEmptySet()) return;
+            dict[dict.ElementAt(index).Key] = setValue;
         }
     }
 }

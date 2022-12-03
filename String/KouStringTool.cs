@@ -1,6 +1,6 @@
 ﻿using Koubot.Tool.Extensions;
 using Koubot.Tool.KouData;
-using Koubot.Tool.Math;
+using Koubot.Tool.Maths;
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -192,6 +192,17 @@ namespace Koubot.Tool.String
                 : str;
         }
 
+        /// <summary>
+        /// 转换为中文标点符号
+        /// </summary>
+        /// <returns></returns>
+        public static string ToZhPunctuation(this string? str)
+        {
+            if (str.IsNullOrWhiteSpace()) return str;
+            return str.ContainsAny(KouStaticData.ZhToEnPunctuationDict.Values)
+                ? str.ReplaceBasedOnDict(KouStaticData.ZhToEnPunctuationDict, true)
+                : str;
+        }
         #endregion
 
         #region 区间格式转区间
@@ -235,23 +246,7 @@ namespace Koubot.Tool.String
         #endregion
 
         #region 时间转换
-        /// <summary>
-        /// 时间间隔转换为中文格式 <paramref name="duration"/>.Days 天 <paramref name="duration"/>.Hours 小时 <paramref name="duration"/>.Minutes 分 <paramref name="duration"/>.Seconds 秒
-        /// </summary>
-        /// <param name="duration"></param>
-        /// <returns></returns>
-        public static string ToZhFormatString(this TimeSpan duration)
-        {
-            var days = duration.Days;
-            var hours = duration.Hours;
-            var minutes = duration.Minutes;
-            var seconds = duration.Seconds;
-            var milliseconds = duration.Milliseconds;
-            return days.BeIfNotDefault($"{days}天")
-                   + hours.BeIfNotDefault($"{hours}小时")
-                   + minutes.BeIfNotDefault($"{minutes}分钟")
-                   + (milliseconds.BeIfNotDefault($"{seconds + milliseconds / 1000.0}秒") ?? seconds.BeIfNotDefault($"{seconds}秒"));
-        }
+        
         /// <summary>
         /// 使用所有Kou支持的单位获取时间；（支持中文）（纯数字默认为s）(若是时间间隔会自动转换为当前时间+时间间隔)
         /// </summary>
@@ -301,7 +296,6 @@ namespace Koubot.Tool.String
             if (str.IsNullOrWhiteSpace()) return false;
             if (!kouType) return TimeSpan.TryParse(str, out timeSpan);
             if (ZhNumber.IsContainZhNumber(str)) str = ZhNumber.ToArabicNumber(str);
-            
             if (TryGetDateTimeFromZhDescription2(str, out var date2))
             {
                 timeSpan = date2 - DateTime.Now;
@@ -346,6 +340,5 @@ namespace Koubot.Tool.String
         
 
         #endregion
-
     }
 }

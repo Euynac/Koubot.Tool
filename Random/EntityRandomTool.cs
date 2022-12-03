@@ -19,7 +19,7 @@ namespace Koubot.Tool.Random
             // return queryable.OrderBy(r => Guid.NewGuid()).FirstOrDefault();
             int total = queryable.Count();
             if (total == 0) return default;
-            int offset = RandomTool.GenerateRandomInt(0, total - 1);
+            int offset = RandomTool.GetInt(0, total - 1);
             return queryable.Skip(offset).FirstOrDefault();
         }
 

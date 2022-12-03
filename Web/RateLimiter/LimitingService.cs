@@ -36,7 +36,7 @@ namespace Koubot.Tool.Web.RateLimiter
         /// <param name="limit">0为不限制</param>
         public LimitedQueue(int limit) : base(limit)
         {
-            this.Limit = limit;
+            Limit = limit;
         }
         /// <summary>
         /// 创建一个不限制长度的队列（实际上就是Queue）

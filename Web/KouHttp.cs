@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Koubot.Tool.Extensions;
+using Koubot.Tool.General;
 using Koubot.Tool.Interfaces;
 using Koubot.Tool.Web.RateLimiter;
 
@@ -35,7 +36,7 @@ public class KouHttp :IKouErrorMsg
     /// <summary>
     /// The web request object.
     /// </summary>
-    private readonly HttpWebRequest _request;
+    private HttpWebRequest _request;
     /// <summary>
     /// The web response object.
     /// </summary>
@@ -80,6 +81,14 @@ public class KouHttp :IKouErrorMsg
         MaxQPS = maxQPS;
         return this;
     }
+
+    public KouHttp SetQuery<T>(ISignableModel<T> queryModel) where T : class, ISignableModel<T>
+    {
+        _request.ContentType = WebContentType.General.GetDescription();
+        RequestBody = queryModel.GetConcatStr();
+        return this;
+    }
+
     /// <summary>
     /// Set request body.
     /// </summary>
@@ -117,6 +126,21 @@ public class KouHttp :IKouErrorMsg
         _request.ContentType = WebContentType.Json.GetDescription();
         return this;
     }
+    /// <summary>
+    /// Set request body use obj in json format.
+    /// </summary>
+    /// <param name="content">class obj or anonymous class obj and will automatically serialize to json</param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public KouHttp SetJsonBody<T>(T content, Action<JsonSerializerOptions>? options = null) where T : class
+    {
+        var option = new JsonSerializerOptions();
+        options?.Invoke(option);
+        RequestBody = JsonSerializer.Serialize(content, option);
+        _request.ContentType = WebContentType.Json.GetDescription();
+        return this;
+    }
+
 
     /// <summary>
     /// Add cookie to current request. (Domain use current request uri, and path set to '/')
@@ -175,6 +199,12 @@ public class KouHttp :IKouErrorMsg
 
         return SendRequestInner(method);
     }
+
+    private void ReConstructRequestUrl(string newUrl)
+    {
+        var newRequest = (HttpWebRequest) WebRequest.Create(newUrl);
+        _request  = newRequest.CloneParameters(_request);
+    }
     /// <summary>
     /// Send request by post method.
     /// </summary>
@@ -182,11 +212,17 @@ public class KouHttp :IKouErrorMsg
     private Response SendRequestInner(HttpMethods method)
     {
         _request.Method = method.ToString();
-        if (RequestBody != null || _requestBuffer != null)
+        if (method == HttpMethods.POST &&  (RequestBody != null || _requestBuffer != null))
         {
             _requestBuffer ??= BodyEncoding.GetBytes(RequestBody!);
             _request.ContentLength = _requestBuffer.Length;
             _request.GetRequestStream().Write(_requestBuffer, 0, _requestBuffer.Length);
+        }
+        else if(method == HttpMethods.GET && RequestBody != null)
+        {
+            var url = Url;
+            if(!url.EndsWith("?")) url += "?";
+            ReConstructRequestUrl(url + RequestBody);
         }
 
         WebExceptionStatus? exceptionStatus = null;
@@ -202,14 +238,18 @@ public class KouHttp :IKouErrorMsg
         }
         
         var response = _response?.GetResponseStream();
+        
         var body = "";
+        var bytes = Array.Empty<byte>();
         if (response != null)
         {
-            using StreamReader reader = new StreamReader(response, ResponseEncoding);
-            body = reader.ReadToEnd();
+            bytes = response.ReadAllBytes();
+            body = bytes.ConvertToString(ResponseEncoding);
+            //using var reader = new StreamReader(response, ResponseEncoding);
+            //body = reader.ReadToEnd();
         }
-        
-        return new Response(body, _response)
+
+        return new Response(body, _response, bytes)
         {
             ExceptionStatus = exceptionStatus
         };
@@ -228,14 +268,16 @@ public class KouHttp :IKouErrorMsg
         internal Response(WebExceptionStatus status)
         {
             ExceptionStatus = status;
+            BodyBytes = Array.Empty<byte>();
             Body = "";
             _response = null;
         }
 
-        internal Response(string body, HttpWebResponse? response)
+        internal Response(string body, HttpWebResponse? response, byte[] bodyBytes)
         {
             Body = body;
             _response = response;
+            BodyBytes = bodyBytes;
         }
 
         private readonly HttpWebResponse? _response;
@@ -243,12 +285,26 @@ public class KouHttp :IKouErrorMsg
         /// Response body.
         /// </summary>
         public string Body { get; }
-
+        /// <summary>
+        /// Response body bytes.
+        /// </summary>
+        public byte[] BodyBytes { get; }
         /// <summary>
         /// The cookies the response given.
         /// </summary>
         public CookieCollection? Cookies => _response?.Cookies;
 
+        /// <summary>
+        /// Save as file from body bytes.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>if no bytes to save return null.</returns>
+        public string? SaveFile(string path)
+        {
+            if (BodyBytes == Array.Empty<byte>()) return null;
+            File.WriteAllBytes(path, BodyBytes);
+            return path;
+        }
         /// <summary>
         /// The headers the response given.
         /// </summary>

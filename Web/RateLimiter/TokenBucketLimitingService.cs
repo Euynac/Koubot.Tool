@@ -107,7 +107,7 @@ namespace Koubot.Tool.Web.RateLimiter
 
                 Thread.Sleep(limitedQueue.Count == 1
                     ? (1000 / MaxQPS - 1).Ceiling()
-                    : System.Math.Max(0, ((limitedQueue.Count - 1) * 1000 / MaxQPS).Ceiling()));
+                    : Math.Max(0, ((limitedQueue.Count - 1) * 1000 / MaxQPS).Ceiling()));
                 retryCount--;
             }
             return false;

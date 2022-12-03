@@ -156,8 +156,9 @@ public class KouLog
     /// <param name="content"></param>
     /// <param name="level"></param>
     /// <param name="writeInstantly">Usually uses in quit program.</param>
-    public void Add(string content, LogLevel? level = null, bool writeInstantly = false)
+    public void Add(string? content, LogLevel? level = null, bool writeInstantly = false)
     {
+        if(content == null) return;
         Initialize();
         var logContent = $"[{DateTime.Now}][{(level ?? LoggingLevel).ToString().ToUpper()}] {content}";
         var logger = _logQueueDict.GetOrAdd(CurLogFileDirectory, p =>
@@ -180,7 +181,7 @@ public class KouLog
     /// <param name="content"></param>
     /// <param name="level"></param>
     /// <param name="writeInstantly">Usually uses in quit program.</param>
-    public static void QuickAdd(string content, LogLevel level = LogLevel.Info, bool writeInstantly = false)
+    public static void QuickAdd(string? content, LogLevel level = LogLevel.Info, bool writeInstantly = false)
     {
         new KouLog().Add(content, level, writeInstantly);
     }

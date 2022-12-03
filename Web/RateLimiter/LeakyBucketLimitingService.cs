@@ -129,7 +129,7 @@ namespace Koubot.Tool.Web.RateLimiter
                     }
                 }
                 if (requestObject.HasHandle) return true;
-                Thread.Sleep(System.Math.Max(0, (limitedQueue.Count * (1000 / MaxQPS)).Ceiling()));
+                Thread.Sleep(Math.Max(0, (limitedQueue.Count * (1000 / MaxQPS)).Ceiling()));
                 retryCount--;
             }
             return false;

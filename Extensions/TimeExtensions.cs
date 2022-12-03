@@ -8,6 +8,28 @@ namespace Koubot.Tool.Extensions
     /// </summary>
     public static class TimeExtensions
     {
+        #region 格式化
+
+        /// <summary>
+        /// 时间间隔转换为中文格式 <paramref name="duration"/>.Days 天 <paramref name="duration"/>.Hours 小时 <paramref name="duration"/>.Minutes 分 <paramref name="duration"/>.Seconds 秒
+        /// </summary>
+        /// <param name="duration"></param>
+        /// <returns></returns>
+        public static string ToZhFormatString(this TimeSpan duration)
+        {
+            var days = duration.Days;
+            var hours = duration.Hours;
+            var minutes = duration.Minutes;
+            var seconds = duration.Seconds;
+            var milliseconds = duration.Milliseconds;
+            return days.BeIfNotDefault($"{days}天")
+                   + hours.BeIfNotDefault($"{hours}小时")
+                   + minutes.BeIfNotDefault($"{minutes}分钟")
+                   + (milliseconds.BeIfNotDefault($"{seconds + milliseconds / 1000.0}秒") ?? seconds.BeIfNotDefault($"{seconds}秒"));
+        }
+
+        #endregion
+
         /// <summary>
         /// 时间戳（格林威治时间1970年01月01日00时00分00秒）类型
         /// </summary>
@@ -157,5 +179,33 @@ namespace Koubot.Tool.Extensions
         /// <returns></returns>
         public static DateTime CombineDateAndTime(this DateTime date, DateTime time) => 
             new(date.Year, date.Month , date.Day, time.Hour, time.Minute, time.Second, time.Millisecond);
+        public enum DateTimePart
+        {
+            Year,
+            Month,
+            Day,
+            Hour,
+            Minute,
+            Second,
+            Millisecond
+        }
+
+        public static DateTime Truncate(DateTime dateTime, DateTimePart part)
+        {
+            return part switch
+            {
+                DateTimePart.Year => new DateTime(dateTime.Year, 0, 0),
+                DateTimePart.Month => new DateTime(dateTime.Year, dateTime.Month, 0),
+                DateTimePart.Day => new DateTime(dateTime.Year, dateTime.Month, dateTime.Day),
+                DateTimePart.Hour => new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 0, 0),
+                DateTimePart.Minute => new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour,
+                    dateTime.Minute, 0),
+                DateTimePart.Second => new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour,
+                    dateTime.Minute, dateTime.Second),
+                DateTimePart.Millisecond => new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour,
+                    dateTime.Minute, dateTime.Second, dateTime.Millisecond),
+                _ => throw new ArgumentOutOfRangeException(nameof(part), part, null)
+            };
+        }
     }
 }

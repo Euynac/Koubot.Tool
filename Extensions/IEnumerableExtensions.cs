@@ -19,7 +19,7 @@ namespace Koubot.Tool.Extensions
         /// <param name="values">A collection that contains the objects to concatenate.</param>
         /// <typeparam name="T">The type of the members of values.</typeparam>
         /// <returns>A string that consists of the members of <paramref name="values">values</paramref> delimited by the <paramref name="separator">separator</paramref> string. If <paramref name="values">values</paramref> has no members, the method returns <see cref="F:System.String.Empty"></see>.</returns>
-        public static string ToStringJoin<T>(this IEnumerable<T>? values, string separator) =>
+        public static string StringJoin<T>(this IEnumerable<T>? values, string separator) =>
             values == null ? string.Empty : string.Join(separator, values);
         /// <summary>
         /// Concatenates the members of a collection, using the specified separator between each member.
@@ -28,7 +28,7 @@ namespace Koubot.Tool.Extensions
         /// <param name="values">A collection that contains the objects to concatenate.</param>
         /// <typeparam name="T">The type of the members of values.</typeparam>
         /// <returns>A string that consists of the members of <paramref name="values">values</paramref> delimited by the <paramref name="separator">separator</paramref> string. If <paramref name="values">values</paramref> has no members, the method returns <see cref="F:System.String.Empty"></see>.</returns>
-        public static string ToStringJoin<T>(this IEnumerable<T>? values, char separator) =>
+        public static string StringJoin<T>(this IEnumerable<T>? values, char separator) =>
             values == null ? string.Empty : string.Join(separator.ToString(), values);
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Koubot.Tool.Extensions
         /// </summary>
         /// <param name="collection">指定的集合</param>
         /// <returns></returns>
-        [ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)
+        [ContractAnnotation("null => true")]
         public static bool IsNullOrEmptySet<T>([NotNullWhen(false)] [NoEnumeration] this IEnumerable<T>? collection) //指示不会对collection进行读写操作，但这里读了?
             => collection == null || !collection.Any();
 
@@ -48,7 +48,35 @@ namespace Koubot.Tool.Extensions
         public static bool IsNullOrEmptySet([NotNullWhen(false)] [NoEnumeration] this IEnumerable? @this) => @this == null || !@this.GetEnumerator().MoveNext();
 
         /// <summary>
-        /// Add into list for specific count custom value (usually use in initialize list with default value). 
+        /// If given value not null, it will add into list, otherwise, ignore the value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="valueToAdd"></param>
+        public static void AddIfNotNull<T>(this List<T> list, T? valueToAdd)
+        {
+            if(valueToAdd == null) return;
+            list.Add(valueToAdd);
+        }
+        /// <summary>
+        /// Add into list for specific count of custom values using given function to get. (usually use in initialize list with default value). 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="customValueFunc">Add this method return value to add into list.</param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static List<T> AddRepeatValue<T>(this List<T> list, int count, Func<T> customValueFunc)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(customValueFunc.Invoke());
+            }
+
+            return list;
+        }
+        /// <summary>
+        /// Add into list for specific count of custom values. (usually use in initialize list with default value). 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
@@ -57,7 +85,7 @@ namespace Koubot.Tool.Extensions
         /// <returns></returns>
         public static List<T> AddRepeatValue<T>(this List<T> list, T customValue, int count)
         {
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 list.Add(customValue);
             }
@@ -75,7 +103,7 @@ namespace Koubot.Tool.Extensions
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
         [ContractAnnotation("dict:null => false; key:null => false")]
-        public static bool TryGetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue>? dict, TKey? key, out TValue value, TValue defaultValue = default)
+        public static bool TryGetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue>? dict, TKey? key, out TValue? value, TValue? defaultValue = default)
         {
             if (dict.IsNullOrEmptySet() || key == null)
             {
@@ -94,7 +122,7 @@ namespace Koubot.Tool.Extensions
         /// <param name="value">预测Dictionary中会有的值</param>
         /// <param name="key">若是存在value将返回key</param>
         /// <returns>成功返回true且返回key，不成功则返回false</returns>
-        public static bool TryGetKey<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>>? dict, TValue value, out TKey key)
+        public static bool TryGetKey<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>>? dict, TValue value, out TKey? key)
         {
             key = default;
             if (dict.IsNullOrEmptySet()) return false;
@@ -138,7 +166,7 @@ namespace Koubot.Tool.Extensions
         /// <returns></returns>
         public static IEnumerable<T> ConvertToNotNullable<T>(this IEnumerable<T?> list) where T : struct
         {
-            return list.Where(i => i != null).Select(i => i.Value).ToList();
+            return list.Where(i => i != null).Select(i => i!.Value).ToList();
         }
 
         /// <summary>
@@ -179,6 +207,44 @@ namespace Koubot.Tool.Extensions
             var list = (IList<T>)Activator.CreateInstance(listType);
             foreach (var item in source) list.Add((T)item);
             return list;
+        }
+
+        /// <summary>
+        /// Usually use in foreach, when enumerable is null, this method will return count = 0 list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> BeNotNull<T>(this IEnumerable<T>? enumerable) => enumerable ?? new List<T>();
+
+        /// <summary>
+        /// Foreach with index.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self">Support to iterate null.</param>
+        /// <returns></returns>
+        public static IEnumerable<(int index, T item)> WithIndex<T>(this IEnumerable<T>? self) => self?.Select((item, index) => (index, item)) ?? Enumerable.Empty<(int,T)>();
+
+        /// <summary>
+        /// Opposition of IEnumerable.Where.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> Remove<T>(this IEnumerable<T> list, Func<T, bool> func) => list.Where(p => !func(p));
+        /// <summary>
+        /// Take specific item at given index to create a tuple.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="index1"></param>
+        /// <param name="index2"></param>
+        /// <returns></returns>
+        public static (T? item1, T? item2) TakeTuple<T>(this IEnumerable<T> list, int index1, int index2)
+        {
+            var tmp = list.ToList();
+            return (tmp.ElementAtOrDefault(index1), tmp.ElementAtOrDefault(index2));
         }
     }
 }

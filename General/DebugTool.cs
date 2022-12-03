@@ -18,20 +18,26 @@ namespace Koubot.Tool.General
     public static class DebugTool
     {
         /// <summary>
+        /// When enable this, Debug method will function.
+        /// </summary>
+        public static bool IsDebugging { get; set; }
+        /// <summary>
         /// Use <see cref="System.Text.Json.JsonSerializer"/> to serialize given object.
         /// </summary>
         /// <param name="s"></param>
         /// <param name="writeIndented">A value that defines whether JSON should use pretty printing.
         /// <see langword="true" /> if JSON should pretty print on serialization; otherwise, <see langword="false" />. The default is <see langword="false" />.
         /// </param>
+        /// <param name="includeFields">default behavior will not serialize field.</param>
         /// <remarks>Not support serialize <see cref="Exception"/> and <see cref="Type"/>. See <see href="https://github.com/dotnet/runtime/issues/43026"/> and <see href="https://github.com/dotnet/runtime/issues/31567#issuecomment-558335944"/></remarks>
         /// <returns></returns>
-        public static string? ToJsonString(this object? s, bool writeIndented = true)
+        public static string? ToJsonString(this object? s, bool writeIndented = true, bool includeFields = false)
         {
             if (s == null) return null;
             var options = new JsonSerializerOptions
             {
                 WriteIndented = writeIndented,
+                IncludeFields = includeFields,
             };
             if (writeIndented)
             {
@@ -66,8 +72,18 @@ namespace Koubot.Tool.General
             var json = JsonSerializer.Serialize(s, options);
             return writeIndented ? Regex.Unescape(json) : json;
         }
-        
-
+        /// <summary>
+        /// Do given action given times.
+        /// </summary>
+        /// <param name="times"></param>
+        /// <param name="action"></param>
+        public static void Do(int times, Action action)
+        {
+            while (times-- > 0)
+            {
+                action.Invoke();
+            }
+        }
         /// <summary>
         /// ToString() and Console.WriteLine() this obj.
         /// </summary>
@@ -92,7 +108,7 @@ namespace Koubot.Tool.General
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="objList"></param>
-        public static void PrintLn<T>(this ICollection<T> objList) => Console.WriteLine($"[{objList.ToStringJoin(",")}]");
+        public static void PrintLn<T>(this ICollection<T> objList) => Console.WriteLine($"[{objList.StringJoin(",")}]");
         /// <summary>
         /// Format dictionary into Console.
         /// </summary>
@@ -100,6 +116,45 @@ namespace Koubot.Tool.General
         /// <typeparam name="TValue"></typeparam>
         /// <param name="dictionary"></param>
         public static void PrintLn<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        {
+            foreach (var pair in dictionary)
+            {
+                Console.WriteLine($"{pair.Key} —— {pair.Value}");
+            }
+        }
+
+        /// <summary>
+        /// ToString() and Console.WriteLine() this obj. Only function when <see cref="IsDebugging"/> is true.
+        /// </summary>
+        /// <param name="s"></param>
+        public static void DebugPrintLn(this object? s) => Console.WriteLine(s?.ToString());
+        /// <summary>
+        /// ToString() and Console.WriteLine() this obj. Only function when <see cref="IsDebugging"/> is true.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="format">Description of given obj to print.</param>
+        public static void DebugPrintLn(this object? s, string format) => Console.WriteLine(format + s);
+        /// <summary>
+        /// string.Format() and Console.WriteLine() this obj. Only function when <see cref="IsDebugging"/> is true.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="format">format string to print</param>
+        /// <param name="useFormat">Placeholder, either true or false will still use string.Format</param>
+        [StringFormatMethod("format")]
+        public static void DebugPrintLn(this object? s, string format, bool useFormat) => Console.WriteLine(format, s);
+        /// <summary>
+        /// Use string.join() and ToString() to format like an array, and finally Console.WriteLine() this obj. Only function when <see cref="IsDebugging"/> is true.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objList"></param>
+        public static void DebugPrintLn<T>(this ICollection<T> objList) => Console.WriteLine($"[{objList.StringJoin(",")}]");
+        /// <summary>
+        /// Format dictionary into Console. Only function when <see cref="IsDebugging"/> is true.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="dictionary"></param>
+        public static void DebugPrintLn<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
         {
             foreach (var pair in dictionary)
             {
