@@ -214,18 +214,6 @@ namespace Koubot.Tool.Extensions
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="this"></param>
-        /// <param name="placeHolder">给定的元素，占位符，只是给编译器通过</param>
-        /// <param name="objects">给定的元素</param>
-        /// <returns></returns>
-        public static bool EqualsAny<T>(this T @this, T placeHolder, params T?[] objects) where T : struct
-        {
-            return placeHolder.Equals(@this) || objects.Any(obj => obj.Equals(@this));
-        }
-        /// <summary>
-        /// 判断是否存在一个元素给定的元素与之相等
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="this"></param>
         /// <param name="objects">给定的元素</param>
         /// <returns></returns>
         public static bool EqualsAny<T>(this T? @this, params T?[] objects) where T : struct
@@ -234,6 +222,17 @@ namespace Koubot.Tool.Extensions
             return objects.Any(obj => obj.Equals(@this));
         }
 
+        /// <summary>
+        /// 判断是否存在一个元素给定的元素与之相等
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="this"></param>
+        /// <param name="objects">给定的元素</param>
+        /// <returns></returns>
+        public static bool EqualsAny<T>(this T @this, params T?[] objects) where T : struct
+        {
+            return objects.Any(obj => obj.Equals(@this));
+        }
         /// <summary>
         /// 判断元素是否满足任意一个方法
         /// </summary>
@@ -257,7 +256,7 @@ namespace Koubot.Tool.Extensions
         public static bool Each<T>(this T tuples, Func<dynamic, bool> predicate) where T : ITuple
         {
             var result = true;
-            for (int i = 0; i < tuples.Length; i++)
+            for (var i = 0; i < tuples.Length; i++)
             {
                 result &= predicate.Invoke(tuples[i]);
             }

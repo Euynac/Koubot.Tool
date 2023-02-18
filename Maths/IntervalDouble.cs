@@ -75,7 +75,7 @@ namespace Koubot.Tool.Maths
         /// <returns></returns>
         public static bool TryGetIntervalDoublePair(string str, out IntervalDoublePair intervalDoublePair, bool force = false)
         {
-            if (IntervalDouble.GetInterval(str, out IntervalDouble left, out IntervalDouble right, force))
+            if (IntervalDouble.GetInterval(str, out var left, out IntervalDouble right, force))
             {
                 intervalDoublePair = new IntervalDoublePair(left, right);
                 return true;
@@ -91,15 +91,15 @@ namespace Koubot.Tool.Maths
         /// <returns></returns>
         public int GetIntervalLength()
         {
-            int left = LeftInterval.Value < int.MinValue ? int.MinValue : (int)LeftInterval.Value;
-            int right = RightInterval.Value > int.MaxValue ? int.MaxValue : (int)RightInterval.Value;
+            var left = LeftInterval.Value < int.MinValue ? int.MinValue : (int)LeftInterval.Value;
+            var right = RightInterval.Value > int.MaxValue ? int.MaxValue : (int)RightInterval.Value;
             if (SubOk(right, left)) return right - left;
             return int.MaxValue;
         }
 
         private bool AddOk(int x, int y)
         {
-            int z = x + y;
+            var z = x + y;
             switch (x)
             {
                 case > 0 when y > 0 && z < 0:
@@ -112,7 +112,7 @@ namespace Koubot.Tool.Maths
 
         private bool SubOk(int x, int y)
         {
-            int z = x - y;
+            var z = x - y;
             switch (x)
             {
                 case > 0 when y < 0 && z < 0:
@@ -149,7 +149,7 @@ namespace Koubot.Tool.Maths
         /// <returns></returns>
         public int GetLeftIntervalNearestNumber()
         {
-            int minValue = LeftInterval.NumType == NumberType.Infinitesimal ? int.MinValue : (int)Math.Ceiling(LeftInterval.Value);
+            var minValue = LeftInterval.NumType == NumberType.Infinitesimal ? int.MinValue : (int)Math.Ceiling(LeftInterval.Value);
             if (LeftInterval.IsOpen && minValue == (int)LeftInterval.Value) minValue += 1;
             return minValue;
         }
@@ -159,7 +159,7 @@ namespace Koubot.Tool.Maths
         /// <returns></returns>
         public int GetRightIntervalNearestNumber()
         {
-            int maxValue = RightInterval.NumType == NumberType.Infinity
+            var maxValue = RightInterval.NumType == NumberType.Infinity
                 ? int.MaxValue
                 : (int)Math.Floor(RightInterval.Value);
             if (RightInterval.IsOpen && maxValue == (int)RightInterval.Value) maxValue -= 1;
@@ -232,21 +232,21 @@ namespace Koubot.Tool.Maths
             intervalLeft = new IntervalDouble(0);
             intervalRight = new IntervalDouble(0);
             if (str.IsNullOrWhiteSpace()) return false;
-            Regex regex = new Regex(@"[\[\(](-?\d*\.?\d+)?.+?(-?\d*\.?\d+)?[\]\)]");//匹配区间（浮点数以及负数支持）
+            var regex = new Regex(@"[\[\(](-?\d*\.?\d+)?.+?(-?\d*\.?\d+)?[\]\)]");//匹配区间（浮点数以及负数支持）
             if (regex.IsMatch(str))
             {
                 var groups = regex.Match(str).Groups;
 
                 if (groups.Count == 3 && !groups[0].Value.IsNullOrWhiteSpace()) //第一组捕获组是全部
                 {
-                    if (double.TryParse(groups[1].Value, out double left))
+                    if (double.TryParse(groups[1].Value, out var left))
                     {
                         if (groups[0].Value.StartsWith("(")) intervalLeft.IsOpen = true;
                         intervalLeft.Value = left;
                     }
                     else intervalLeft.NumType = NumberType.Infinitesimal;//无法判断或空则是认为是无穷小
 
-                    if (double.TryParse(groups[2].Value, out double right))
+                    if (double.TryParse(groups[2].Value, out var right))
                     {
                         if (groups[0].Value.EndsWith(")")) intervalRight.IsOpen = true;
                         intervalRight.Value = right;
@@ -257,13 +257,13 @@ namespace Koubot.Tool.Maths
                 if (intervalLeft > intervalRight) return false;
                 return true;
             }
-            else if (GetInterval(str, out double left, out double right))
+            else if (GetInterval(str, out var left, out double right))
             {
                 intervalLeft.Value = left;
                 intervalRight.Value = right;
                 return true;
             }
-            else if (force && double.TryParse(str, out double num))
+            else if (force && double.TryParse(str, out var num))
             {
                 intervalLeft.Value = intervalRight.Value = num;
                 return true;
@@ -285,14 +285,14 @@ namespace Koubot.Tool.Maths
             right = default;
             if (result == null || result.Count < 2)
             {
-                if (force && Double.TryParse(str, out double num))
+                if (force && Double.TryParse(str, out var num))
                 {
                     left = right = num;
                     return true;
                 }
                 return false;
             }
-            for (int i = 0; i < result.Count; i++)
+            for (var i = 0; i < result.Count; i++)
             {
                 if (i == 0)
                 {

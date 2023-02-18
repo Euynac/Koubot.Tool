@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Koubot.Tool.General.UnitConvert;
@@ -15,7 +16,8 @@ public class UnitValue
     }
     public UnitValue ConvertToUnit(Unit toUnit)
     {
-        return new UnitValue(toUnit.FromBaseValue(Unit.ToBaseValue(Value)), toUnit);
+        
+        return new UnitValue(toUnit.FromRootValue(Unit.ToRootValue(Value)), toUnit);
     }
 
     public override string ToString()
@@ -36,52 +38,76 @@ public class Unit
     /// </summary>
     public string? Description { get; set; }
 
+    public Unit ParentUnit { get; set; }
+    public Func<double,double>? ParentToCurUnitFunc { get; set; }
+    public Func<double, double>? CurToParentUnitFunc { get; }
+    public bool IsRootLeafUnit => ParentToCurUnitFunc == null || CurToParentUnitFunc == null;
     public override string ToString() => Symbol;
 
-    public Unit(string symbol, double factor, string? alias = null)
+    public Unit(string symbol, double factor, string? alias = null, Unit? parentUnit = null)
     {
+        ParentUnit = parentUnit ?? this;
         Symbol = symbol;
         Factor = factor;
         UnitNames = new List<string> {Symbol};
         UnitNames.AddRange(alias?.Split('|').ToList() ?? new List<string>());
     }
 
+    public Unit(Unit parentUnit, Func<double, double> parentToCurUnitFunc, string symbol, Func<double, double> curToParentUnitFunc, string? alias = null) : this(symbol, 0, alias, parentUnit)
+    {
+        ParentToCurUnitFunc = parentToCurUnitFunc;
+        CurToParentUnitFunc = curToParentUnitFunc;
+    }
+
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="baseUnit"></param>
+    /// <param name="parentUnit"></param>
     /// <param name="factor">one base unit value equal to how many current unit?</param>
     /// <param name="symbol"></param>
     /// <param name="alias"></param>
-    public Unit(Unit baseUnit, double factor, string symbol, string? alias = null) :
-        this(symbol, baseUnit.Factor / factor, alias)
+    public Unit(Unit parentUnit, double factor, string symbol, string? alias = null) :
+        this(symbol, parentUnit.Factor / factor, alias, parentUnit)
     {
-
+        
     }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="symbol"></param>
     /// <param name="factor">one current unit value equal to how many base unit?</param>
-    /// <param name="baseUnit"></param>
+    /// <param name="parentUnit"></param>
     /// <param name="alias"></param>
-    public Unit(string symbol, double factor, Unit baseUnit, string? alias = null) :
-        this(symbol, baseUnit.Factor * factor, alias)
+    public Unit(string symbol, double factor, Unit parentUnit, string? alias = null) :
+        this(symbol, parentUnit.Factor * factor, alias, parentUnit)
     {
-
+       
     }
+
+    public Unit GetRootUnit()
+    {
+        return ParentUnit == this ? this : ParentUnit.GetRootUnit();
+    }
+
     /// <summary>
-    /// From factor 1 base unit value to current unit value.
+    /// From parent unit value to current unit value.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public double FromBaseValue(double value) => value / Factor;
+    public double FromRootValue(double value)
+    {
+        return IsRootLeafUnit ? value / Factor : ParentToCurUnitFunc!(ParentUnit.FromRootValue(value));
+    }
+
     /// <summary>
-    /// From current unit value to factor 1 base unit value.
+    /// From current unit value to parent unit value.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public double ToBaseValue(double value) => value * Factor;
+    public double ToRootValue(double value)
+    {
+        return IsRootLeafUnit ? value * Factor : ParentUnit.ToRootValue(CurToParentUnitFunc!(value));
+    }
 
     public UnitValue GetUnitValue(double currentUnitValue) => new(currentUnitValue, this);
     public UnitValue ConvertToUnit(double currentUnitValue, Unit toUnit)

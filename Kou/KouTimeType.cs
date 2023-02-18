@@ -23,12 +23,12 @@ internal class KouTimeType
     public static bool TryGetDateTimeFromZhDescription2(string str, out DateTime dateTime)
     {
         dateTime = default;
-        Regex regex = new Regex(@"((?<day>大前|前|昨|今|当|明|后|大后)(?:日|天)(的)?(?<now>(这个时候|这时|现在))?)|(?<now2>(这个时候|这时|现在))");
+        var regex = new Regex(@"((?<day>大前|前|昨|今|当|明|后|大后)(?:日|天)(的)?(?<now>(这个时候|这时|现在))?)|(?<now2>(这个时候|这时|现在))");
         if (!regex.IsMatch(str)) return false;
         var match = regex.Match(str);
         var day = match.Groups["day"].Value;
-        bool isSameAsNow = match.Groups["now"].Value != "";
-        int dayAwayFromNow = 0;//距离今天的天数
+        var isSameAsNow = match.Groups["now"].Value != "";
+        var dayAwayFromNow = 0;//距离今天的天数
         var now = DateTime.Now;
         var hour = isSameAsNow ? now.Hour : 0;
         var minute = isSameAsNow ? now.Minute : 0;
@@ -61,18 +61,32 @@ internal class KouTimeType
     {
         dateTime = new DateTime();
         if (str.IsNullOrWhiteSpace()) return false;
-        Regex regex = new Regex(@"(?:(?<day>大前|前|昨|今|当|明|后|大后)(?:日|天))?(?<period>早上|上午|下午|晚上)?(?<hour>\d{1,2})[:点]过?(?<minute>\d{1,2})?[:分]?(?:(?<second>\d{1,7})秒?)?(?<period2>[pa]\.?m\.?)?");
+        var now = DateTime.Now;
+        var baseMonth =  now.Month;
+        var baseDay = now.Day;
+        
+        if (str.MatchOnceThenReplace(@"月底", out str, out _))
+        {
+            baseDay = DateTime.DaysInMonth(baseMonth, baseDay);
+        }
+        else if (str.MatchOnceThenReplace(@"(\d+)[号日]", out str, out var group))
+        {
+            baseDay = int.Parse(group[1].Value);
+        }
+
+
+        var regex = new Regex(@"(?:(?<day>大前|前|昨|今|当|明|后|大后)(?:日|天))?(?<period>早上|上午|下午|晚上)?(?<hour>\d{1,2})[:点]过?(?<minute>\d{1,2})?[:分]?(?:(?<second>\d{1,7})秒?)?(?<period2>[pa]\.?m\.?)?");
         if (!regex.IsMatch(str)) return false;
         var match = regex.Match(str);
         bool? isAM = null;//为null是24小时制，否则true为AM，false为PM
-        int dayAwayFromNow = 0;//距离今天的天数
+        var dayAwayFromNow = 0;//距离今天的天数
         var day = match.Groups["day"].Value;
         var period = match.Groups["period"].Value;
         var hourStr = match.Groups["hour"].Value.BeIfNotEmpty("{0}", true) ?? "0";
         var minuteStr = match.Groups["minute"].Value.BeIfNotEmpty("{0}", true) ?? "0";
         var secondStr = match.Groups["second"].Value.BeIfNotEmpty("{0}", true) ?? "0";
         int minute = 0, second = 0;
-        if (hourStr.IsNullOrEmpty() || !int.TryParse(hourStr, out int hour)) return false;
+        if (hourStr.IsNullOrEmpty() || !int.TryParse(hourStr, out var hour)) return false;
         if (!minuteStr.IsNullOrEmpty() && !int.TryParse(minuteStr, out minute)) return false;
         if (!secondStr.IsNullOrEmpty() && !int.TryParse(secondStr, out second)) return false;
         var period2 = match.Groups["period2"]?.Value;
@@ -113,8 +127,8 @@ internal class KouTimeType
         {
             hour += 12;
         }
-        var now = DateTime.Now;
-        dateTime = new DateTime(now.Year, now.Month, now.Day + dayAwayFromNow, hour, minute, second); ;
+        
+        dateTime = new DateTime(now.Year, baseMonth, baseDay + dayAwayFromNow, hour, minute, second); ;
         return true;
     }
     private static readonly List<string> _ancientTimePatternList = new()
@@ -159,12 +173,12 @@ internal class KouTimeType
         if (ZhNumber.IsContainZhNumber(parsedStr)) parsedStr = ZhNumber.ToArabicNumber(parsedStr);
 
         double day = 0, hour = 0, minute = 0, second = 0, millisecond = 0;
-        bool success = false;//指示是否成功转换过一次
-        for (int i = 0; i < _ancientTimePatternList.Count; i++)
+        var success = false;//指示是否成功转换过一次
+        for (var i = 0; i < _ancientTimePatternList.Count; i++)
         {
             var regex = new Regex(_ancientTimePatternList[i]);
             var timeStr = regex.Match(parsedStr).Value;
-            if (timeStr.IsNullOrEmpty() || !double.TryParse(timeStr.Match(@"\d+(\.\d+)?"), out double num)) continue;
+            if (timeStr.IsNullOrEmpty() || !double.TryParse(timeStr.Match(@"\d+(\.\d+)?"), out var num)) continue;
             parsedStr = regex.Replace(parsedStr, "", 1);
             success = true;
             switch (i)
@@ -237,12 +251,12 @@ internal class KouTimeType
         if (ZhNumber.IsContainZhNumber(parsedStr)) parsedStr = ZhNumber.ToArabicNumber(parsedStr);
         parsedStr = parsedStr.Replace("个", "");
         long day = 0, hour = 0, minute = 0, second = 0, millisecond = 0;
-        bool success = false;//指示是否成功转换过一次
-        for (int i = 0; i < _modernTimePatternList.Count; i++)
+        var success = false;//指示是否成功转换过一次
+        for (var i = 0; i < _modernTimePatternList.Count; i++)
         {
             var regex = new Regex(_modernTimePatternList[i]);
             var timeStr = regex.Match(parsedStr).Value;
-            if (timeStr.IsNullOrEmpty() || !double.TryParse(timeStr.Match(@"\d+(\.\d+)?"), out double num)) continue;
+            if (timeStr.IsNullOrEmpty() || !double.TryParse(timeStr.Match(@"\d+(\.\d+)?"), out var num)) continue;
             parsedStr = regex.Replace(parsedStr, "", 1);
             success = true;
             switch (i)
@@ -329,15 +343,15 @@ internal class KouTimeType
     {
         timeSpan = new TimeSpan();
         if (str.IsNullOrWhiteSpace()) return false;
-        Regex regex = new Regex(@"(?<time>(?:(?:(?<day>\d{1,7})\.)?(?:(?<hour>\d{1,7}):)?(?:(?<minute>\d{1,7}):))(?<second>\d{1,7})(?:(?:\.)(?<millisecond>\d{1,7}))?)");
+        var regex = new Regex(@"(?<time>(?:(?:(?<day>\d{1,7})\.)?(?:(?<hour>\d{1,7}):)?(?:(?<minute>\d{1,7}):))(?<second>\d{1,7})(?:(?:\.)(?<millisecond>\d{1,7}))?)");
         if (regex.IsMatch(str))
         {
             var groups = regex.Match(str).Groups;
-            int.TryParse(groups["day"]?.Value, out int day);
-            int.TryParse(groups["hour"]?.Value, out int hour);
-            int.TryParse(groups["minute"]?.Value, out int minute);
-            int.TryParse(groups["second"]?.Value, out int second);
-            int.TryParse(groups["millisecond"]?.Value, out int millisecond);
+            int.TryParse(groups["day"]?.Value, out var day);
+            int.TryParse(groups["hour"]?.Value, out var hour);
+            int.TryParse(groups["minute"]?.Value, out var minute);
+            int.TryParse(groups["second"]?.Value, out var second);
+            int.TryParse(groups["millisecond"]?.Value, out var millisecond);
             timeSpan = new TimeSpan(day, hour, minute, second, millisecond);
             return true;
         }
@@ -370,11 +384,11 @@ internal class KouTimeType
         if (regex.IsMatch(str))
         {
             var groups = regex.Match(str).Groups;
-            int.TryParse(groups["day"]?.Value, out int day);
-            int.TryParse(groups["hour"]?.Value, out int hour);
-            int.TryParse(groups["minute"]?.Value, out int minute);
-            int.TryParse(groups["second"]?.Value, out int second);
-            int.TryParse(groups["millisecond"]?.Value, out int millisecond);
+            int.TryParse(groups["day"]?.Value, out var day);
+            int.TryParse(groups["hour"]?.Value, out var hour);
+            int.TryParse(groups["minute"]?.Value, out var minute);
+            int.TryParse(groups["second"]?.Value, out var second);
+            int.TryParse(groups["millisecond"]?.Value, out var millisecond);
             timeSpan = new TimeSpan(day, hour, minute, second, millisecond);
             return true;
         }

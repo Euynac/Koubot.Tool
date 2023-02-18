@@ -235,6 +235,10 @@ public class KouHttp :IKouErrorMsg
         {
             _response = (HttpWebResponse?)ex.Response;
             exceptionStatus = ex.Status;
+            return new Response(ex.Message, _response, Array.Empty<byte>())
+            {
+                ExceptionStatus = exceptionStatus
+            };
         }
         
         var response = _response?.GetResponseStream();
@@ -249,10 +253,7 @@ public class KouHttp :IKouErrorMsg
             //body = reader.ReadToEnd();
         }
 
-        return new Response(body, _response, bytes)
-        {
-            ExceptionStatus = exceptionStatus
-        };
+        return new Response(body, _response, bytes);
     }
 
     /// <summary>

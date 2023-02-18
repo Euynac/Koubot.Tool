@@ -17,9 +17,9 @@ namespace Koubot.Tool.Random
         {
             // //OrderBy Guid.NewGuid() does not work when using Include with Many to Many? #5583
             // return queryable.OrderBy(r => Guid.NewGuid()).FirstOrDefault();
-            int total = queryable.Count();
+            var total = queryable.Count();
             if (total == 0) return default;
-            int offset = RandomTool.GetInt(0, total - 1);
+            var offset = RandomTool.GetInt(0, total - 1);
             return queryable.Skip(offset).FirstOrDefault();
         }
 

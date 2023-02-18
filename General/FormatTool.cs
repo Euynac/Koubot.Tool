@@ -57,15 +57,15 @@ namespace Koubot.Tool.General
         public static string FormatProgressBar(int len, double percentage)
         {
             if (len <= 2) return null;
-            int progressCount = (int)((len - 2) * percentage.LimitInRange(0, 1));
-            int blankCount = len - 2 - progressCount;
-            StringBuilder result = new StringBuilder();
+            var progressCount = (int)((len - 2) * percentage.LimitInRange(0, 1));
+            var blankCount = len - 2 - progressCount;
+            var result = new StringBuilder();
             result.Append("[");
-            for (int i = 0; i < progressCount; i++)
+            for (var i = 0; i < progressCount; i++)
             {
                 result.Append("|");
             }
-            for (int i = 0; i < blankCount; i++)
+            for (var i = 0; i < blankCount; i++)
             {
                 result.Append(" ");
             }

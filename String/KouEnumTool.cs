@@ -41,7 +41,7 @@ namespace Koubot.Tool.String
         /// <returns>失败抛出异常</returns>
         public static T ToKouEnum<T>(this string str) where T : struct, Enum
         {
-            if (!TryToKouEnum(typeof(T), str, out object resultEnum))
+            if (!TryToKouEnum(typeof(T), str, out var resultEnum))
             {
                 throw new Exception($"{str} convert to {typeof(T).FullName} through KouEnumName failed");
             }
@@ -56,7 +56,7 @@ namespace Koubot.Tool.String
         public static bool TryToKouEnum<T>(this string? str, out T result) where T : struct, Enum
         {
             result = default;
-            if (!TryToKouEnum(typeof(T), str??"", out object resultEnum)) return false;
+            if (!TryToKouEnum(typeof(T), str??"", out var resultEnum)) return false;
             result = (T)resultEnum;
             return true;
         }
@@ -70,7 +70,7 @@ namespace Koubot.Tool.String
         public static bool TryToKouEnumFuzzy<T>(this string? str, out List<T> result) where T : struct, Enum
         {
             result = new List<T>();
-            if (!TryToKouEnum(typeof(T), str??"", out object resultEnum, true)) return false;
+            if (!TryToKouEnum(typeof(T), str??"", out var resultEnum, true)) return false;
             result = ((IEnumerable)resultEnum).Cast<T>().ToList();
             return true;
         }
@@ -123,7 +123,7 @@ namespace Koubot.Tool.String
             var enumDict = GetDict(enumType);
             switch (fuzzy)
             {
-                case false when enumDict.TryGetValue(str, out Enum enumResult):
+                case false when enumDict.TryGetValue(str, out var enumResult):
                     result = enumResult;
                     return true;
                 case true:
@@ -145,7 +145,7 @@ namespace Koubot.Tool.String
             var enumValues = Enum.GetValues(enumType);
             var enumNames = Enum.GetNames(enumType);
             Dictionary<string, Enum> enumsNameDict = new Dictionary<string, Enum>();
-            int i = 0;
+            var i = 0;
             foreach (var value in enumValues)
             {
                 enumsNameDict.Add(enumNames[i], (Enum)value);

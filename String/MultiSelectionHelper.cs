@@ -80,7 +80,7 @@ namespace Koubot.Tool.String
         {
             multiList = new List<string>();
             if (str.IsNullOrEmpty() || constraintPattern.IsNullOrEmpty() || splitStr.IsNullOrEmpty()) return false;
-            Regex regex = new Regex("[" + splitStr + "]");
+            var regex = new Regex("[" + splitStr + "]");
             if (!regex.IsMatch(str))
             {
                 if (str.IsMatch(constraintPattern, regexOptions)) //不匹配说明只选择了一个选项

@@ -38,9 +38,9 @@ namespace Koubot.Tool.General
         /// <returns></returns>
         public static string RemoveEscapeChars(string originalText, char escapeChar = '\\')
         {
-            StringBuilder result = new StringBuilder();
-            RemoveEscapeCharsStates state = RemoveEscapeCharsStates.Reset;
-            foreach (char chr in originalText)
+            var result = new StringBuilder();
+            var state = RemoveEscapeCharsStates.Reset;
+            foreach (var chr in originalText)
             {
                 switch (state)
                 {

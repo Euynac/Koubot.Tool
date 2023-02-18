@@ -1,7 +1,7 @@
 ﻿using System;
-
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Koubot.Tool.General
 {
@@ -10,6 +10,18 @@ namespace Koubot.Tool.General
     /// </summary>
     public static class ReflectionTool
     {
+        /// <summary>
+        /// Extension of memberwise clone. Not recommend for production (Best practice is to each class needs clone define relative method). use for debug.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static T ShallowCopy<T>(this T obj) where T : class
+        {
+            var method = obj.GetType().GetMethod("MemberwiseClone", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            return (T) method.Invoke(obj, null);
+        }
+
         /// <summary>
         /// 克隆某个对象中所有可写的属性值到对象（引用类型依然是同个引用，值类型则是复制）（EFCore会追踪修改，因为做的是Action操作）
         /// </summary>

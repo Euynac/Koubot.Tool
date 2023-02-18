@@ -144,6 +144,20 @@ namespace Koubot.Tool.Random
             return RandomGet(candidates.ToList(), count);
         }
         /// <summary>
+        /// Get a random item from given items.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="candidates"></param>
+        /// <returns></returns>
+        public static T? RandomGetOneFrom<T>(params T?[]? candidates) => candidates.RandomGetOne();
+        /// <summary>
+        /// Get a number of random items from given items (no duplicates).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>return null when the set is null</returns>
+        public static IEnumerable<T>? RandomGetFrom<T>(int count, params T[]? candidates) => candidates.RandomGet(count);
+
+        /// <summary>
         /// Get a random item from the array.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -255,12 +269,14 @@ namespace Koubot.Tool.Random
             return _randomSeed.Value.NextDouble() * (maxValue - minValue) + minValue;
         }
         /// <summary>
-        /// Generate a random double between minValue and maxValue (include min but not max value)
+        /// Generate a random double between minValue and maxValue (include min but not max value).
+        /// Recommend using Random.Shared.
         /// </summary>
         /// <returns></returns>
         public static double GetDouble(double minValue, double maxValue) => _randomSeed.Value.NextDouble() * (maxValue - minValue) + minValue;
         /// <summary>
-        /// Generate a random double between minValue and maxValue base on hash code (include min but not max value)
+        /// Generate a random double between minValue and maxValue base on hash code (include min but not max value).
+        /// Recommend using Random.Shared.
         /// </summary>
         /// <param name="minValue"></param>
         /// <param name="maxValue"></param>
@@ -283,7 +299,8 @@ namespace Koubot.Tool.Random
             return _randomSeed.Value.Next(minValue, maxValue + 1);
         }
         /// <summary>
-        /// Generate a random integer between minValue and maxValue (include min and max value)
+        /// Generate a random integer between minValue and maxValue (include min and max value).
+        /// Recommend using Random.Shared.
         /// </summary>
         /// <returns></returns>
         public static int GetInt(int minValue, int maxValue)
@@ -293,7 +310,8 @@ namespace Koubot.Tool.Random
             return _randomSeed.Value.Next(minValue, maxValue + 1);
         }
         /// <summary>
-        /// Generate a random integer between minValue and maxValue base on hash code (include min and max value)
+        /// Generate a random integer between minValue and maxValue base on hash code (include min and max value).
+        /// Recommend using Random.Shared.
         /// </summary>
         /// <returns></returns>
         ///https://stackoverflow.com/a/29811247/18731746
@@ -306,7 +324,8 @@ namespace Koubot.Tool.Random
             return minValue + rest;
         }
         /// <summary>
-        /// Generate a random long integer between minValue and maxValue (include min and max value)
+        /// Generate a random long integer between minValue and maxValue (include min and max value).
+        /// Recommend using Random.Shared.
         /// </summary>
         /// <returns></returns>
         public static long GetLong(long minValue, long maxValue)
@@ -315,7 +334,7 @@ namespace Koubot.Tool.Random
                 throw new ArgumentOutOfRangeException(nameof(maxValue), "max must be >= min!");
             if (maxValue == minValue) return maxValue;
             //Working with ulong so that modulo works correctly with values > long.MaxValue
-            ulong uRange = (ulong)(maxValue - minValue);
+            var uRange = (ulong)(maxValue - minValue);
 
             //Prevent a modolo bias; see https://stackoverflow.com/a/10984975/238419
             //for more information.

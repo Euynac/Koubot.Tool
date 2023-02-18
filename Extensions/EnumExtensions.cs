@@ -73,7 +73,7 @@ namespace Koubot.Tool.Extensions
         public static string GetFlagsDescription<T>(this T flags, char separator = '、', bool ignoreNoDesc = false, params T[] ignoreEnums) where T : Enum
         {
             var enumValues = Enum.GetValues(typeof(T));
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             var ignoreList = ignoreEnums.ToHashSet();
             foreach (var value in enumValues)
             {
@@ -146,7 +146,7 @@ namespace Koubot.Tool.Extensions
         public static string GetFlagsString<T>(this T flags, char separator = ',', params T[] ignoreEnums) where T : Enum
         {
             var enumValues = Enum.GetValues(typeof(T));
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             var ignoreList = ignoreEnums.ToHashSet();
             foreach (var value in enumValues)
             {
@@ -170,7 +170,7 @@ namespace Koubot.Tool.Extensions
         /// <returns></returns>
         public static T Remove<T>(this T flags, params T[] removeFlags) where T : Enum
         {
-            int flagInt = flags.GetHashCode();
+            var flagInt = flags.GetHashCode();
             foreach (var removeFlag in removeFlags)//其实var直接用dynamic更好，不过当前版本不支持?
             {
                 flagInt &= ~removeFlag.GetHashCode();//避免装箱产生过多损耗 
@@ -187,7 +187,7 @@ namespace Koubot.Tool.Extensions
         /// <returns></returns>
         public static T Add<T>(this T flags, params T[] addFlags) where T : Enum
         {
-            int flagInt = flags.GetHashCode();
+            var flagInt = flags.GetHashCode();
             foreach (var flag in addFlags)
             {
                 flagInt |= flag.GetHashCode();

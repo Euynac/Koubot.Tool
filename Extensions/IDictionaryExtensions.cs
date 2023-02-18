@@ -79,7 +79,7 @@ namespace Koubot.Tool.Extensions
         public static TValue? GetValueOrCustom<TKey, TValue>(this IDictionary<TKey, TValue>? dict, TKey? key, TValue? defaultValue = default)
         {
             if (key == null || dict == null) return defaultValue;
-            return dict.TryGetValue(key, out TValue result) == false ? defaultValue : result;
+            return dict.TryGetValue(key, out var result) == false ? defaultValue : result;
         }
 
         /// <summary>

@@ -15,9 +15,9 @@ namespace Koubot.Tool.String
         /// <returns>Unicode编码后的字符串</returns>
         public static string String2Unicode(string source)
         {
-            byte[] bytes = Encoding.Unicode.GetBytes(source);
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i += 2)
+            var bytes = Encoding.Unicode.GetBytes(source);
+            var stringBuilder = new StringBuilder();
+            for (var i = 0; i < bytes.Length; i += 2)
             {
                 stringBuilder.AppendFormat("\\u{0}{1}", bytes[i + 1].ToString("x").PadLeft(2, '0'), bytes[i].ToString("x").PadLeft(2, '0'));
             }

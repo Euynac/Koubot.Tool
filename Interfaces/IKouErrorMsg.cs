@@ -77,7 +77,7 @@ namespace Koubot.Tool.Interfaces
                 if (supplement != null && inheritor != null)
                 {
                     inheritor.ErrorMsg = supplement;
-                    return true;
+                    return false;
                 }
                 return false;
             }
@@ -101,7 +101,7 @@ namespace Koubot.Tool.Interfaces
                 if (supplement != null && inheritor != null)
                 {
                     inheritor.ErrorMsg = supplement;
-                    return true;
+                    return false;
                 }
                 return false;
             }

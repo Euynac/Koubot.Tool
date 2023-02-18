@@ -27,11 +27,11 @@ namespace Koubot.Tool.String
                 @"(?<w>\d+(?:\.\d+)?)(?:w)((?<k>\d+(\.\d+)?)(?:k(?!w)))?(?<tail>\d+)?",//1  匹配6w1k、6w1k500之类
                 @"(?<kw>\d+(\.\d+)?)(?:kw)((?<w>\d+(?:\.\d+)?)(?:w))?((?<k>\d+(\.\d+)?)(?:k(?!w)))?(?<tail>\d+)?",//2 匹配6kw6w
             };
-            bool success = false;//指示是否成功转换过一次
+            var success = false;//指示是否成功转换过一次
 
-            for (int i = patternList.Count - 1; i >= 0; i--)
+            for (var i = patternList.Count - 1; i >= 0; i--)
             {
-                Regex regex = new Regex(patternList[i]);
+                var regex = new Regex(patternList[i]);
                 if (regex.IsMatch(str))
                 {
                     success = true;
@@ -41,11 +41,11 @@ namespace Koubot.Tool.String
                         var wStr = match.Groups["w"].Value;
                         var kStr = match.Groups["k"].Value;
                         var tailStr = match.Groups["tail"].Value;
-                        double.TryParse(kwStr, out double kw);
-                        double.TryParse(wStr, out double w);
-                        double.TryParse(kStr, out double k);
-                        double.TryParse(tailStr, out double tail);
-                        double total = kw * 10000000 + w * 10000 + k * 1000 + tail;
+                        double.TryParse(kwStr, out var kw);
+                        double.TryParse(wStr, out var w);
+                        double.TryParse(kStr, out var k);
+                        double.TryParse(tailStr, out var tail);
+                        var total = kw * 10000000 + w * 10000 + k * 1000 + tail;
                         parsedStr = regex.Replace(parsedStr, total.ToString(CultureInfo.InvariantCulture), 1);
                     }
                 }

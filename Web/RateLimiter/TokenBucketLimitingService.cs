@@ -39,7 +39,7 @@ namespace Koubot.Tool.Web.RateLimiter
             LimitSize = limitSize;
 
             limitedQueue = new LimitedQueue<object>(limitSize);
-            for (int i = 0; i < limitSize; i++)//先放满令牌
+            for (var i = 0; i < limitSize; i++)//先放满令牌
             {
                 limitedQueue.Enqueue(new object());
             }
@@ -52,9 +52,9 @@ namespace Koubot.Tool.Web.RateLimiter
         /// </summary>
         private void TokenProcess()
         {
-            int sleep = (1000 / MaxQPS).Ceiling();
+            var sleep = (1000 / MaxQPS).Ceiling();
             if (sleep == 0) sleep = 1; //测试过只要不是while(true)且不sleep，就算sleep(1)CPU也没什么开销
-            DateTime start = DateTime.Now;
+            var start = DateTime.Now;
             while (cancellationToken.Token.IsCancellationRequested == false)
             {
                 lock (lockObject)
@@ -63,7 +63,7 @@ namespace Koubot.Tool.Web.RateLimiter
                 }
                 if (DateTime.Now - start < TimeSpan.FromMilliseconds(sleep)) //如果因为等待lock而大于需要的sleep了那就不需要sleep可以直接开始放令牌
                 {
-                    int newSleep = sleep - (int)(DateTime.Now - start).TotalMilliseconds;
+                    var newSleep = sleep - (int)(DateTime.Now - start).TotalMilliseconds;
                     if (newSleep >= 0) Thread.Sleep(newSleep);//做损失时间补偿（等待造成的时间丢失补偿回来）例如sleep是500ms，等待花费了200ms，那么只需要sleep300ms就够了
                 }
                 start = DateTime.Now;
@@ -99,7 +99,7 @@ namespace Koubot.Tool.Web.RateLimiter
                     {
                         if (limitedQueue.Count > 0) // 若是加锁一瞬间没令牌了也不行
                         {
-                            object token = limitedQueue.Dequeue();
+                            var token = limitedQueue.Dequeue();
                             if (token != null) return true;
                         }
                     }

@@ -21,6 +21,7 @@ namespace Koubot.Tool.General
         /// When enable this, Debug method will function.
         /// </summary>
         public static bool IsDebugging { get; set; }
+
         /// <summary>
         /// Use <see cref="System.Text.Json.JsonSerializer"/> to serialize given object.
         /// </summary>
@@ -29,16 +30,17 @@ namespace Koubot.Tool.General
         /// <see langword="true" /> if JSON should pretty print on serialization; otherwise, <see langword="false" />. The default is <see langword="false" />.
         /// </param>
         /// <param name="includeFields">default behavior will not serialize field.</param>
+        /// <param name="customOptions"></param>
         /// <remarks>Not support serialize <see cref="Exception"/> and <see cref="Type"/>. See <see href="https://github.com/dotnet/runtime/issues/43026"/> and <see href="https://github.com/dotnet/runtime/issues/31567#issuecomment-558335944"/></remarks>
         /// <returns></returns>
-        public static string? ToJsonString(this object? s, bool writeIndented = true, bool includeFields = false)
+        public static string? ToJsonString(this object? s, bool writeIndented = true, bool includeFields = false, JsonSerializerOptions? customOptions = null)
         {
             if (s == null) return null;
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = writeIndented,
-                IncludeFields = includeFields,
-            };
+
+            var options = customOptions ?? new JsonSerializerOptions();
+            options.WriteIndented = writeIndented;
+            options.IncludeFields = includeFields;
+            
             if (writeIndented)
             {
                 options.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
@@ -54,15 +56,15 @@ namespace Koubot.Tool.General
         /// <typeparam name="T"></typeparam>
         /// <param name="s"></param>
         /// <param name="writeIndented"></param>
+        /// <param name="customOptions"></param>
         /// <remarks><see cref="System.Text.Json.JsonSerializer"/> is not support to serialize <see cref="Exception"/> and <see cref="Type"/>. See <see href="https://github.com/dotnet/runtime/issues/43026"/> and <see href="https://github.com/dotnet/runtime/issues/31567#issuecomment-558335944"/></remarks>
         /// <returns>Not support to deserialize, only use to print Exception or other type info.</returns>
-        public static string? ToJsonStringForce<T>(this T? s, bool writeIndented = true)
+        public static string? ToJsonStringForce<T>(this T? s, bool writeIndented = true, JsonSerializerOptions? customOptions = null)
         {
             if (s == null) return null;
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = writeIndented,
-            };
+            var options = customOptions ?? new JsonSerializerOptions();
+            options.WriteIndented = writeIndented;
+
             if (writeIndented)
             {
                 options.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
@@ -127,13 +129,21 @@ namespace Koubot.Tool.General
         /// ToString() and Console.WriteLine() this obj. Only function when <see cref="IsDebugging"/> is true.
         /// </summary>
         /// <param name="s"></param>
-        public static void DebugPrintLn(this object? s) => Console.WriteLine(s?.ToString());
+        public static void DebugPrintLn(this object? s)
+        {
+            if(IsDebugging) PrintLn(s);
+        }
+
         /// <summary>
         /// ToString() and Console.WriteLine() this obj. Only function when <see cref="IsDebugging"/> is true.
         /// </summary>
         /// <param name="s"></param>
         /// <param name="format">Description of given obj to print.</param>
-        public static void DebugPrintLn(this object? s, string format) => Console.WriteLine(format + s);
+        public static void DebugPrintLn(this object? s, string format)
+        {
+            if (IsDebugging) PrintLn(s, format);
+        }
+
         /// <summary>
         /// string.Format() and Console.WriteLine() this obj. Only function when <see cref="IsDebugging"/> is true.
         /// </summary>
@@ -141,13 +151,20 @@ namespace Koubot.Tool.General
         /// <param name="format">format string to print</param>
         /// <param name="useFormat">Placeholder, either true or false will still use string.Format</param>
         [StringFormatMethod("format")]
-        public static void DebugPrintLn(this object? s, string format, bool useFormat) => Console.WriteLine(format, s);
+        public static void DebugPrintLn(this object? s, string format, bool useFormat)
+        {
+            if (IsDebugging) PrintLn(s, format, useFormat);
+        }
+
         /// <summary>
         /// Use string.join() and ToString() to format like an array, and finally Console.WriteLine() this obj. Only function when <see cref="IsDebugging"/> is true.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="objList"></param>
-        public static void DebugPrintLn<T>(this ICollection<T> objList) => Console.WriteLine($"[{objList.StringJoin(",")}]");
+        public static void DebugPrintLn<T>(this ICollection<T> objList)
+        {
+            if (IsDebugging) PrintLn(objList);
+        }
         /// <summary>
         /// Format dictionary into Console. Only function when <see cref="IsDebugging"/> is true.
         /// </summary>
@@ -156,10 +173,7 @@ namespace Koubot.Tool.General
         /// <param name="dictionary"></param>
         public static void DebugPrintLn<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
         {
-            foreach (var pair in dictionary)
-            {
-                Console.WriteLine($"{pair.Key} —— {pair.Value}");
-            }
+            if (IsDebugging) PrintLn(dictionary);
         }
     }
 

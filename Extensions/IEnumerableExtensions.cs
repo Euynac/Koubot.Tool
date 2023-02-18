@@ -76,11 +76,12 @@ namespace Koubot.Tool.Extensions
             return list;
         }
         /// <summary>
-        /// Add into list for specific count of custom values. (usually use in initialize list with default value). 
+        /// Add into list for specific count of custom values. (usually use in initialize list with default value).
+        /// <para>Must take attention when use reference type to add into list, because it reference to same object.</para>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
-        /// <param name="customValue">e.g. default(T)</param>
+        /// <param name="customValue">e.g. default(T) Must take attention when use reference type, because it reference to same object.</param>
         /// <param name="count"></param>
         /// <returns></returns>
         public static List<T> AddRepeatValue<T>(this List<T> list, T customValue, int count)

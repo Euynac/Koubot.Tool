@@ -25,7 +25,7 @@ public abstract class UnitConverterBase
         var tmp = Units.SelectMany(unit => unit.UnitNames.Select(name => new KeyValuePair<string, Unit>(name, unit)));
         UnitDictionary = nameIgnoreCase ? tmp.ToIgnoreCaseDictionary() : tmp.ToDictionary();
         _valueStrConverter = double.TryParse;
-        Regex = $"[{UnitDictionary.Keys.StringJoin('|')}]$";
+        Regex = $"({UnitDictionary.Keys.StringJoin('|')})$";
     }
 
     public void SetCustomValueStrConverter(ValueStrConverter converter)

@@ -31,7 +31,7 @@ namespace Koubot.Tool.General
         {
             Task.Factory.StartNew(() =>
             {
-                bool canStartTask = false;
+                var canStartTask = false;
                 while (true)
                 {
                     if (_sleepTaskList.Count <= 0) Thread.Sleep(1000);
@@ -119,7 +119,7 @@ namespace Koubot.Tool.General
 
         public int Compare(TKey x, TKey y)
         {
-            int result = x.CompareTo(y);
+            var result = x.CompareTo(y);
             return result == 0 ? -1 : result;
         }
 

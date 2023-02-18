@@ -1,5 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Koubot.Tool.General
 {
@@ -8,6 +10,17 @@ namespace Koubot.Tool.General
     /// </summary>
     public static class SortTool
     {
+        /// <summary> 
+        /// Put null value to the last of collections.By definition, any object compares greater than (or follows) null, two null references compare equal to each other, and true greater than false.
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="keySelector">select null field not null</param>
+        /// <returns></returns>
+        [Obsolete("not recommend, only hint you the fact of definition")]
+        public static IOrderedEnumerable<TSource> OrderNullToLast<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector) => source.OrderByDescending(keySelector);
+
         /// <summary>
         /// 两个对象进行降序比较，用于Compare相关方法的快捷实现，支持null比较，支持链式比较
         /// （如果不相等返回null（判断返回为null才返回比较值），截断方法调用，返回值为比较结果。否则可以链式执行直到两者不相等后进行下一个权重的比较）（需要实现IComparable接口）
@@ -22,7 +35,7 @@ namespace Koubot.Tool.General
             bool nullIsLast = true)
         {
             result = -1;
-            if (CompareToNullObj(obj1, obj2, out int nullResult, nullIsLast))
+            if (CompareToNullObj(obj1, obj2, out var nullResult, nullIsLast))
             {
                 result = nullResult;
                 return null;
@@ -45,7 +58,7 @@ namespace Koubot.Tool.General
             bool nullIsLast = true)
         {
             result = 1;
-            if (CompareToNullObj(obj1, obj2, out int nullResult, nullIsLast))
+            if (CompareToNullObj(obj1, obj2, out var nullResult, nullIsLast))
             {
                 result = nullResult;
                 return null;
@@ -64,8 +77,8 @@ namespace Koubot.Tool.General
         public static int CompareToObj(this object? obj1, object? obj2, bool isDesc = false,
             bool nullIsLast = true)
         {
-            int result = isDesc ? -1 : 1;
-            if (CompareToNullObj(obj1, obj2, out int nullReturnValue, nullIsLast)) return nullReturnValue;
+            var result = isDesc ? -1 : 1;
+            if (CompareToNullObj(obj1, obj2, out var nullReturnValue, nullIsLast)) return nullReturnValue;
             return ((IComparable)obj1).CompareTo(obj2) * result;
         }
 

@@ -56,7 +56,7 @@ namespace Koubot.Tool.Web.RateLimiter
         //匀速排队模式暂时不支持 QPS > 1000 的场景。
         private void TokenProcess()
         {
-            int sleep = (1000 / MaxQPS).Ceiling();
+            var sleep = (1000 / MaxQPS).Ceiling();
             if (sleep == 0) sleep = 1;
             sleep += 1;//不能卡那么准
             while (cancellationToken.Token.IsCancellationRequested == false)
@@ -73,7 +73,7 @@ namespace Koubot.Tool.Web.RateLimiter
 
                 if (DateTime.Now - start < TimeSpan.FromMilliseconds(sleep))//如果还未到一个sleep间隔，修正到一个sleep间隔
                 {
-                    int newSleep = sleep - (int)(DateTime.Now - start).TotalMilliseconds;
+                    var newSleep = sleep - (int)(DateTime.Now - start).TotalMilliseconds;
                     if (newSleep >= 0) Thread.Sleep(newSleep);
                 }
             }
@@ -113,7 +113,7 @@ namespace Koubot.Tool.Web.RateLimiter
         {
             if (retryCount < 0) return false;
             RequestObject requestObject = new();
-            bool isInBucket = false;
+            var isInBucket = false;
             while (retryCount != 0)
             {
 

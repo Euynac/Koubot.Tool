@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Koubot.Tool.Algorithm;
 using Koubot.Tool.Extensions;
 using Koubot.Tool.Maths;
 
@@ -24,8 +25,8 @@ namespace Koubot.Tool.General
                 return "";
             }
             // 半角转全角：
-            char[] array = input.ToCharArray();
-            for (int i = 0; i < array.Length; i++)
+            var array = input.ToCharArray();
+            for (var i = 0; i < array.Length; i++)
             {
                 if (array[i] == 32)
                 {
@@ -53,8 +54,8 @@ namespace Koubot.Tool.General
             {
                 return "";
             }
-            char[] array = input.ToCharArray();
-            for (int i = 0; i < array.Length; i++)
+            var array = input.ToCharArray();
+            for (var i = 0; i < array.Length; i++)
             {
                 if (array[i] == 12288)
                 {
@@ -125,6 +126,22 @@ namespace Koubot.Tool.General
                     return encoding.GetString(list.ToArray());
                 });
         }
+
+        /// <summary>
+        /// [LevenshteinDistance] Get similarity ratio of given two strings.
+        /// </summary>
+        /// <param name="str1"></param>
+        /// <param name="str2"></param>
+        /// <returns></returns>
+        public static double Similarity(string str1, string str2) => LevenshteinDistance.Similarity(str1, str2);
+        /// <summary>
+        /// [LevenshteinDistance] Calculate the difference between 2 strings using the Levenshtein distance algorithm
+        /// </summary>
+        /// <param name="str1">First string</param>
+        /// <param name="str2">Second string</param>
+        /// <returns></returns>
+        public static int Calculate(string str1, string str2) => LevenshteinDistance.Calculate(str1, str2);
+
         #region Unicode与Ascii转换
         public static string UnicodeEncode(string value, bool notEncodeAscii = false)
         {

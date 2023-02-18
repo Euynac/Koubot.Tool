@@ -107,8 +107,8 @@ namespace Koubot.Tool.Extensions
         /// <returns>注意是以本地时区为准的</returns>
         public static DateTime ToDateTime(this long timestamp, TimeStampType timeStampType = TimeStampType.Unix)
         {
-            DateTime startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
-            DateTime daTime = new DateTime();
+            var startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
+            var daTime = new DateTime();
             switch (timeStampType)
             {
                 case TimeStampType.Unix:
@@ -128,7 +128,7 @@ namespace Koubot.Tool.Extensions
         /// <returns>注意是以本地时区为准的</returns>
         public static long ToTimeStamp(this DateTime dateTime, TimeStampType timeStampType = TimeStampType.Unix)
         {
-            DateTime startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
+            var startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
             long timestamp = 0;
             switch (timeStampType)
             {

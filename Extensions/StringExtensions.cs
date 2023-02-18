@@ -336,6 +336,19 @@ namespace Koubot.Tool.Extensions
         /// </summary>
         /// <param name="str"></param>
         /// <param name="maxLength">length big than 0</param>
+        /// <param name="appendEnd">if exceed max length, this part will append to trimmed string end.</param>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <returns>if exceed max length will cut of to match max length.</returns>
+        public static string LimitMaxLength(this string str, int maxLength, string appendEnd)
+        {
+            if (maxLength <= 0) throw new InvalidOperationException($"{nameof(maxLength)} must big than 0");
+            return str.Length > maxLength ? str[..maxLength] + appendEnd : str;
+        }
+        /// <summary>
+        /// Limit string max length to given length.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="maxLength">length big than 0</param>
         /// <exception cref="InvalidOperationException"></exception>
         /// <returns>if exceed max length will cut of to match max length.</returns>
         public static string LimitMaxLength(this string str, int maxLength)

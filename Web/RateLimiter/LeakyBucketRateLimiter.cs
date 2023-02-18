@@ -156,7 +156,7 @@ namespace Koubot.Tool.Web.RateLimiter
                 }
 
                 var remnantCount = _endNum - limiterQueue.DequeueTimes;
-                double waitTimeFactor = 1000.0 / remnantCount + 1;
+                var waitTimeFactor = 1000.0 / remnantCount + 1;
                 var sleepTime = remnantCount * _sleepTime / waitTimeFactor;
                 if (sleepTime <= 0) sleepTime = 1;
                 Thread.Sleep(sleepTime.Ceiling());

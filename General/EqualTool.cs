@@ -35,7 +35,7 @@ namespace Koubot.Tool.General
         [Obsolete("Use HashCode.Combine instead?")]
         public static int GetHashCodeWith(this object? obj, params object[] toJointComputedObjects)
         {
-            int hash = 13;
+            var hash = 13;
             hash = hash * 7 + (obj?.GetHashCode() ?? 0);
             foreach (var o in toJointComputedObjects)
             {

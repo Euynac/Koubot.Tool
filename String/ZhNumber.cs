@@ -99,9 +99,9 @@ public class ZhNumber
         long firstUnit = 1;//一级单位                
         long secondUnit = 1;//二级单位 
         long result = 0;//结果
-        for (int i = cnum.Length - 1; i >= 0; --i)//从低到高位依次处理
+        for (var i = cnum.Length - 1; i >= 0; --i)//从低到高位依次处理
         {
-            long tmpUnit = CharToUnit(cnum[i]);
+            var tmpUnit = CharToUnit(cnum[i]);
             if (tmpUnit > firstUnit)//判断此位是数字还是单位
             {
                 firstUnit = tmpUnit;//是的话就赋值,以备下次循环使用
@@ -256,17 +256,17 @@ internal static class ChineseNumber
             {
                 var mod = s_number.Length % PART_COUNT;
                 levelParts[0] = new char[mod > 0 ? mod : 4];
-                for (int j = 0; j < levelParts[0].Length; j++)
+                for (var j = 0; j < levelParts[0].Length; j++)
                 {
                     enumerator_s_number.MoveNext();
                     levelParts[0][j] = enumerator_s_number.Current;
                 }
 
-                int i = 1;
+                var i = 1;
                 while (enumerator_levelParts.MoveNext())
                 {
                     levelParts[i] = new char[4];
-                    for (int j = 0; j < PART_COUNT; j++)
+                    for (var j = 0; j < PART_COUNT; j++)
                     {
                         enumerator_s_number.MoveNext();
                         levelParts[i][j] = enumerator_s_number.Current;
@@ -276,8 +276,8 @@ internal static class ChineseNumber
             }
 
             var sb = new StringBuilder();
-            int part_i = 0;
-            bool prevZero = false;
+            var part_i = 0;
+            var prevZero = false;
             foreach (var part in levelParts)
             {
                 var partString = GetPartString(part, SuperiorLevels[levelParts.Length - 1 - part_i], prevZero);

@@ -23,14 +23,14 @@ namespace Koubot.Tool.Web
         /// <returns></returns>
         public static string HttpGet(string url, WebContentType contentType = WebContentType.Html, int timeout = 6000)
         {
-            Encoding encoding = Encoding.UTF8;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            var encoding = Encoding.UTF8;
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "GET";
             request.ContentType = contentType.GetDescription() + ";charset=UTF-8";
             request.Timeout = timeout;
             var response = ((HttpWebResponse)request.GetResponse()).GetResponseStream();
             if (response == null) return null;
-            using StreamReader reader = new StreamReader(response, encoding);
+            using var reader = new StreamReader(response, encoding);
             return reader.ReadToEnd();
         }
 
@@ -43,17 +43,17 @@ namespace Koubot.Tool.Web
         /// <returns></returns>
         public static string HttpPost(string url, string body, WebContentType contentType = WebContentType.General)
         {
-            Encoding encoding = Encoding.UTF8;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            var encoding = Encoding.UTF8;
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
             //request.Accept = "text/html, application/xhtml+xml, */*";
             request.ContentType = contentType.GetDescription();
-            byte[] buffer = encoding.GetBytes(body);
+            var buffer = encoding.GetBytes(body);
             request.ContentLength = buffer.Length;
             request.GetRequestStream().Write(buffer, 0, buffer.Length);
             var response = ((HttpWebResponse)request.GetResponse()).GetResponseStream();
             if (response == null) return null;
-            using StreamReader reader = new StreamReader(response, encoding);
+            using var reader = new StreamReader(response, encoding);
             return reader.ReadToEnd();
         }
 
@@ -100,7 +100,7 @@ namespace Koubot.Tool.Web
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12; //加上这一句
             ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-            ClientWebSocket a = new ClientWebSocket();
+            var a = new ClientWebSocket();
             a.ConnectAsync(new Uri(serverLocation), new CancellationToken()).Wait();
             Console.WriteLine("成功");
             exception = new Exception();
