@@ -11,6 +11,15 @@ namespace Koubot.Tool.Extensions
     public static class TypeExtensions
     {
         /// <summary>
+        /// Judge whether the method is override the base class's virtual method.
+        /// </summary>
+        /// <param name="methodInfo"></param>
+        /// <returns></returns>
+        public static bool IsOverride(this MethodInfo methodInfo)
+        {
+            return methodInfo.GetBaseDefinition().DeclaringType != methodInfo.DeclaringType;
+        }
+        /// <summary>
         /// Judge whether the specific type is nullable value type or not.
         /// </summary>
         /// <param name="type"></param>

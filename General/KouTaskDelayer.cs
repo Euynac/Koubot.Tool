@@ -58,6 +58,20 @@ namespace Koubot.Tool.General
         }
 
         /// <summary>
+        /// Completes action after a specified number of milliseconds.
+        /// </summary>
+        /// <param name="milliseconds"></param>
+        /// <param name="action"></param>
+        public static void DelayInvoke(int milliseconds, Action action)
+        {
+            Task.Factory.StartNew(async () =>
+            {
+                await Task.Delay(milliseconds);
+                action.Invoke();
+            });
+        }
+
+        /// <summary>
         /// 向定时池增加需要执行的任务
         /// </summary>
         /// <param name="executeTime"></param>

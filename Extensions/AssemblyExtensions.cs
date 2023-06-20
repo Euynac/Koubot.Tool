@@ -5,5 +5,11 @@ namespace Koubot.Tool.Extensions;
 
 public static class AssemblyExtensions
 {
-    public static Version GetVersion(this Assembly assembly) => assembly.GetName().Version;
+    /// <summary>
+    /// 获取程序集的版本号。
+    /// <br/>English: Get the version number of the assembly.
+    /// </summary>
+    /// <param name="assembly"></param>
+    /// <returns></returns>
+    public static Version? GetVersion(this Assembly assembly) => assembly.GetName().Version;
 }

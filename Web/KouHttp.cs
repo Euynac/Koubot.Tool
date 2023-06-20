@@ -82,10 +82,27 @@ public class KouHttp :IKouErrorMsg
         return this;
     }
 
+    /// <summary>
+    /// Set Max QPM. Use LeakyBucket algorithm to send request based on request host.
+    /// </summary>
+    /// <param name="maxQPM"></param>
+    /// <returns></returns>
+    public KouHttp SetQPM(double maxQPM)
+    {
+        MaxQPS = maxQPM / 60;
+        return this;
+    }
+
+    /// <summary>
+    /// Use ISignableModel to set url query of request.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="queryModel"></param>
+    /// <returns></returns>
     public KouHttp SetQuery<T>(ISignableModel<T> queryModel) where T : class, ISignableModel<T>
     {
         _request.ContentType = WebContentType.General.GetDescription();
-        RequestBody = queryModel.GetConcatStr();
+        RequestBody = queryModel.GetConcatStr();//BUG 似乎不应该设置Body
         return this;
     }
 
@@ -153,7 +170,7 @@ public class KouHttp :IKouErrorMsg
         _request.CookieContainer.Add(new Uri(Url), new Cookie(name, value));
         return this;
     }
-
+ 
     public KouHttp AddHeader(IReadOnlyDictionary<string, string> dict)
     {
         foreach (var (key, value) in dict)
@@ -231,13 +248,25 @@ public class KouHttp :IKouErrorMsg
             
             _response = (HttpWebResponse)_request.GetResponse();
         }
-        catch (WebException ex)
+        catch (WebException e)
         {
-            _response = (HttpWebResponse?)ex.Response;
-            exceptionStatus = ex.Status;
-            return new Response(ex.Message, _response, Array.Empty<byte>())
+            _response = (HttpWebResponse?)e.Response;
+            var errorBody = "";
+            exceptionStatus = e.Status;
+            if (exceptionStatus == WebExceptionStatus.ProtocolError)
             {
-                ExceptionStatus = exceptionStatus
+                var code = (int) ((HttpWebResponse)e.Response).StatusCode;
+                var stream = e.Response.GetResponseStream();
+                if (stream != null)
+                {
+                    using var reader = new StreamReader(stream);
+                    errorBody = reader.ReadToEnd();
+                }
+            }
+            return new Response(errorBody, _response, Array.Empty<byte>())
+            {
+                ExceptionStatus = exceptionStatus,
+                ExceptionMsg = e.Message
             };
         }
         
@@ -265,7 +294,10 @@ public class KouHttp :IKouErrorMsg
         /// 错误状态
         /// </summary>
         public WebExceptionStatus? ExceptionStatus { get; internal set; }
-
+        /// <summary>
+        /// 异常信息
+        /// </summary>
+        public string? ExceptionMsg { get; set; }
         internal Response(WebExceptionStatus status)
         {
             ExceptionStatus = status;

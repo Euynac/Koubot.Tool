@@ -11,7 +11,7 @@ namespace Koubot.Tool.Extensions
         #region 格式化
 
         /// <summary>
-        /// 时间间隔转换为中文格式 <paramref name="duration"/>.Days 天 <paramref name="duration"/>.Hours 小时 <paramref name="duration"/>.Minutes 分 <paramref name="duration"/>.Seconds 秒
+        /// Time interval conversion to Chinese format <paramref name="duration"/>.Days 天 <paramref name="duration"/>.Hours 小时 <paramref name="duration"/>.Minutes 分 <paramref name="duration"/>.Seconds 秒
         /// </summary>
         /// <param name="duration"></param>
         /// <returns></returns>
@@ -38,12 +38,12 @@ namespace Koubot.Tool.Extensions
             /// <summary>
             /// 总秒数（10位）
             /// </summary>
-            [KouEnumName("总秒数","unix","10位","秒")]
+            [KouEnumName("总秒数", "unix", "10位", "秒")]
             Unix,
             /// <summary>
             /// 总毫秒数（13位）
             /// </summary>
-            [KouEnumName("总毫秒数","javascript","js","13位","毫秒")]
+            [KouEnumName("总毫秒数", "javascript", "js", "13位", "毫秒")]
             Javascript
         }
         #region 时间类拓展
@@ -177,8 +177,9 @@ namespace Koubot.Tool.Extensions
         /// <param name="date"></param>
         /// <param name="time"></param>
         /// <returns></returns>
-        public static DateTime CombineDateAndTime(this DateTime date, DateTime time) => 
-            new(date.Year, date.Month , date.Day, time.Hour, time.Minute, time.Second, time.Millisecond);
+        public static DateTime CombineDateAndTime(this DateTime date, DateTime time) =>
+            new(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, time.Millisecond);
+
         public enum DateTimePart
         {
             Year,
@@ -189,7 +190,31 @@ namespace Koubot.Tool.Extensions
             Second,
             Millisecond
         }
-
+        /// <summary>
+        /// Returns a <see cref="T:System.DateOnly" /> instance that is set to the date part of the specified <paramref name="dateTime" />.
+        /// </summary>
+        /// <param name="dateTime">The <see cref="T:System.DateTime" /> instance.</param>
+        /// <returns>The <see cref="T:System.DateOnly" /> instance composed of the date part of the specified input time <paramref name="dateTime" /> instance.</returns>
+        public static DateOnly ToDateOnly(this DateTime dateTime) => DateOnly.FromDateTime(dateTime);
+        /// <summary>
+        /// Constructs a <see cref="T:System.TimeOnly" /> object from a <see cref="T:System.DateTime" /> representing the time of the day in this <see cref="T:System.DateTime" /> object.
+        /// </summary>
+        /// <param name="dateTime">The <see cref="T:System.DateTime" /> object to extract the time of the day from.</param>
+        /// <returns>A <see cref="T:System.TimeOnly" /> object representing time of the day specified in the <see cref="T:System.DateTime" /> object.</returns>
+        public static TimeOnly ToTimeOnly(this DateTime dateTime) => TimeOnly.FromDateTime(dateTime);
+        /// <summary>
+        /// Converts a <see cref="T:System.DateOnly" /> object to a <see cref="T:System.DateTime" /> object using TimeOnly.Minvalue as the time.
+        /// </summary>
+        /// <param name="dateOnly"></param>
+        /// <returns></returns>
+        public static DateTime ToDateTime(this DateOnly dateOnly) => dateOnly.ToDateTime(TimeOnly.MinValue);
+        /// <summary>
+        /// Truncate given date time to given part.
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <param name="part"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static DateTime Truncate(DateTime dateTime, DateTimePart part)
         {
             return part switch

@@ -60,6 +60,27 @@ namespace Koubot.Tool.General
         }
 
         /// <summary>
+        ///  For a tuple of action name and action need amount of data, test and print the invoke-time of specific action.
+        /// </summary>
+        /// <param name="dataAmount">the amount of data give to action to invoke. (usually use in Take() method)</param>
+        /// <param name="tuples"></param>
+        public static void Start(int[] dataAmount, params (string, Action<int> actions)[] tuples)
+        {
+            foreach (var (actionName, action) in tuples)
+            {
+                Console.WriteLine($"Testing \"{actionName}\" action...");
+                foreach (var amount in dataAmount)
+                {
+                    var watch = new Stopwatch();
+                    watch.Start();
+                    action.Invoke(amount);
+                    watch.Stop();
+                    Console.WriteLine($"For {amount} count of data, the invoke time: {watch.ElapsedMilliseconds}ms");
+                }
+            }
+        }
+
+        /// <summary>
         /// Two actions to test the advantages and disadvantages.
         /// Automatically start timing, end, output the execution time, and print the result of comparing the two actions.
         /// </summary>

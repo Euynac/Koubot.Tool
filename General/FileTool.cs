@@ -247,5 +247,21 @@ namespace Koubot.Tool.General
                 return null;
             }
         }
+        /// <summary>
+        ///  Directory will have ending '\'.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static (string? directory, string? fileName) SeparateDirectoryAndFileName(string path)
+        {
+            var directory = Path.GetDirectoryName(path);
+            // if directory don't have ending \', then add it.
+            if (!string.IsNullOrEmpty(directory) && !directory.EndsWith(@"\"))
+            {
+                directory += @"\";
+            }
+            var fileName = Path.GetFileName(path);
+            return (directory, fileName);
+        }
     }
 }

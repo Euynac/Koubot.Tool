@@ -176,7 +176,8 @@ namespace Koubot.Tool.Extensions
             return count > 0 ? regex.Replace(input, replacement, count) : regex.Replace(input, replacement);
         }
         /// <summary>
-        /// 找到字符串中符合正则表达式的给定命名捕获组名的所有匹配项。未找到返回Count=0的List
+        /// 找到字符串中符合正则表达式的给定命名捕获组名的所有匹配项。未找到返回Count=0的List。
+        /// <br/>English: Finds all the matches in a string that match the regular expression pattern and the given named capture group name. Not found returns a List with Count=0.
         /// </summary>
         /// <param name="s">要测试的字符串</param>
         /// <param name="pattern">要匹配的正则表达式模式</param>
@@ -200,7 +201,8 @@ namespace Koubot.Tool.Extensions
         }
 
         /// <summary>
-        /// 判断是否是有效的正则表达式模式
+        /// 判断是否是有效的正则表达式模式。
+        /// <br/>English: Determine whether it is a valid regular expression pattern.
         /// </summary>
         /// <param name="s"></param>
         /// <param name="error">如果是无效正则表达式，输出错误原因</param>

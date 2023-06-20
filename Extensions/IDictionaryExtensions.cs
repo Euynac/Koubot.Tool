@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +12,7 @@ namespace Koubot.Tool.Extensions
     public static class IDictionaryExtensions
     {
         /// <summary>
-        /// 尝试将键和值添加到字典中，如果不存在才添加，存在则不添加且不抛异常
+        /// Try to add keys and values to the dictionary, if they don't exist then add them, if they do exist then don't add them and don't throw exceptions
         /// </summary>
         public static IDictionary<TKey, TValue> AddOrIgnore<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
         {
@@ -20,7 +21,7 @@ namespace Koubot.Tool.Extensions
         }
 
         /// <summary>
-        /// 将键和值添加到字典中，存在的会被替换 其实是dict[key] = value的更直白的写法
+        /// Add keys and values to the dictionary, existing ones will be replaced. Actually a more straightforward way of writing dict[key] = value
         /// </summary>
         public static IDictionary<TKey, TValue> AddOrReplace<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
         {
@@ -29,11 +30,11 @@ namespace Koubot.Tool.Extensions
         }
 
         /// <summary>
-        /// 向字典中批量添加键值对
+        /// Adding key-value pairs to the dictionary in bulk
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="values"></param>
-        /// <param name="replaceExisted">如果已存在，是否替换</param>
+        /// <param name="replaceExisted">If it already exists, then replaced</param>
         public static IDictionary<TKey, TValue> AddRange<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<KeyValuePair<TKey, TValue>> values, bool replaceExisted = false)
         {
             foreach (var pair in values)
@@ -71,6 +72,7 @@ namespace Koubot.Tool.Extensions
 
         /// <summary>
         /// 获取与指定的键相关联的值，如果没有则返回指定的默认值或Value类的默认值（引用类型默认值null，值类型返回0或false或'\0'等）（好处：不用写ContainsKey）
+        /// <br/>English: Gets the value associated with the specified key, or returns the specified default value or the default value of the Value class if not (reference type default value null, value type returns 0 or false or '\0', etc.) (advantage: no need to write ContainsKey)
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="key">如果是null也会返回默认值</param>
@@ -84,6 +86,7 @@ namespace Koubot.Tool.Extensions
 
         /// <summary>
         /// 检查指定字典中是否存在任意一个给定的元素
+        /// <br/>English: Check if any of the given elements exist in the specified dictionary
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="keys"></param>
@@ -96,6 +99,7 @@ namespace Koubot.Tool.Extensions
         }
         /// <summary>
         /// 检查指定字典中是否存在任意一个给定的元素
+        /// <br/>English: Check if any of the given elements exist in the specified dictionary
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="keys"></param>
@@ -119,6 +123,16 @@ namespace Koubot.Tool.Extensions
         {
             if(dict == null || dict.IsNullOrEmptySet()) return;
             dict[dict.ElementAt(index).Key] = setValue;
+        }
+
+        /// <summary>
+        /// Get IEnumerable&lt;KeyValuePair&lt;object, object?&gt;&gt; from IDictionary.
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <returns></returns>
+        public static IEnumerable<KeyValuePair<object, object?>> GetEnumerable(this IDictionary dict)
+        {
+            return from DictionaryEntry entry in dict select new KeyValuePair<object, object?>(entry.Key, entry.Value);
         }
     }
 }

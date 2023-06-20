@@ -32,7 +32,8 @@ namespace Koubot.Tool.Extensions
             values == null ? string.Empty : string.Join(separator.ToString(), values);
 
         /// <summary>
-        /// 判断一个集合是否是 null 或空集合
+        /// 判断一个集合是否是 null 或空集合。
+        /// <br/>English: Determine whether a collection is null or an empty collection.
         /// </summary>
         /// <param name="collection">指定的集合</param>
         /// <returns></returns>
@@ -41,7 +42,8 @@ namespace Koubot.Tool.Extensions
             => collection == null || !collection.Any();
 
         /// <summary>
-        /// 判断一个集合是否是 null 或空集合
+        /// 判断一个集合是否是 null 或空集合。
+        /// <br/>English: Determine whether a collection is null or an empty collection.
         /// </summary>
         /// https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/nullable-analysis
         [ContractAnnotation("null => true")] //能够教会ReSharper空判断(传入的是null，返回true)
@@ -94,12 +96,18 @@ namespace Koubot.Tool.Extensions
             return list;
         }
         /// <summary>
-        /// 尝试获取与指定的键相关联的值
+        /// 尝试获取与指定的键相关联的值。
+        /// <br/>English: Attempts to get the value associated with the specified key.
         /// </summary>
         /// <param name="dict">可为空</param>
-        /// <param name="value">当本方法返回时，如果找到了指定的键，则返回与该键相关联的值；否则，返回值参数类型的默认值或设定的值。这个参数是在未初始化的情况下传递的。</param>
-        /// <param name="key">要获取值的键，可为空，为空必返回false</param>
-        /// <param name="defaultValue">失败时返回的默认值或设定的值</param>
+        /// <param name="value">当本方法返回时，如果找到了指定的键，则返回与该键相关联的值；否则，返回值参数类型的默认值或设定的值。这个参数是在未初始化的情况下传递的。
+        ///<br/>English: When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter or the specified value. This parameter is passed uninitialized.</param>
+        /// <param name="key">要获取值的键，可为空，为空必返回false。
+        ///  <br/>English: The key of the value to get. key can be null, if null, return false.
+        /// </param>
+        /// <param name="defaultValue">失败时返回的默认值或设定的值。
+        /// <br/>English: The default value or the specified value to return if failed.
+        /// </param>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
@@ -129,7 +137,7 @@ namespace Koubot.Tool.Extensions
             if (dict.IsNullOrEmptySet()) return false;
             foreach (var pair in dict)
             {
-                if (pair.Value.Equals(value))
+                if (pair.Value != null && pair.Value.Equals(value))
                 {
                     key = pair.Key;
                     return true;

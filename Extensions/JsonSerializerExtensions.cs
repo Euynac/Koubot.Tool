@@ -16,7 +16,22 @@ public static class JsonSerializerExtensions
     /// <param name="json">Support <see langword="null"/>, <see cref="string.Empty"/> and whitespace.</param>
     /// <param name="options"></param>
     /// <returns>return <see langword="null"/> or <see langword="default"/> if <paramref name="json"/> is <see langword="null"/>, <see cref="string.Empty"/> or whitespace.</returns>
-    public static T? DeserializeJson<T>(this string? json, JsonSerializerOptions? options = default) => string.IsNullOrWhiteSpace(json) ? default : JsonSerializer.Deserialize<T>(json, options);
+    public static T? DeserializeJson<T>(this string? json, JsonSerializerOptions? options = default)
+    {
+        if(json.IsNullOrWhiteSpace()) return default;
+        try
+        {
+            return JsonSerializer.Deserialize<T>(json, options);
+        }
+        catch (Exception e)
+        {
+            //use Path (JsonToken) from exception to get culprit value
+            e.Data.Add("OriginJson", json.LimitMaxLength(3000, "...too long"));//todo: use Path (JsonToken) to get culprit value
+
+            throw;
+        }
+        
+    }
 
     /// <summary>
     /// Using <see cref="JsonSerializer"/> to deserialize json string to <typeparamref name="T"/> async.

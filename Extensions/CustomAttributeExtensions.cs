@@ -78,7 +78,7 @@ namespace Koubot.Tool.Extensions
         /// </summary>
         /// <typeparam name="TAttribute"></typeparam>
         /// <param name="type"></param>
-        /// <param name="name"></param>
+        /// <param name="name">nameof</param>
         /// <returns>返回Attribute的值，没有则返回null</returns>
         private static TAttribute GetValue<TAttribute>(Type type, string name)
             where TAttribute : Attribute

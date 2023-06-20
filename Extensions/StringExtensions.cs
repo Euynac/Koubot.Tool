@@ -394,6 +394,7 @@ namespace Koubot.Tool.Extensions
         /// <param name="pairList">提供的键值对集合</param>
         /// <param name="reverse">默认正向Key替换为Value，为true则Value替换Key</param>
         /// <returns></returns>
+        /// https://github.com/Caballero77/FlashText.NET
         public static string ReplaceBasedOnDict(this string source, IEnumerable<KeyValuePair<string, string>> pairList, bool reverse = false)
         {
             var stringBuilder = new StringBuilder(source);

@@ -197,7 +197,8 @@ namespace Koubot.Tool.Extensions
             flag ? trueReturn : falseReturn;
 
         /// <summary>
-        /// 判断是否存在一个元素给定的元素与之相等
+        /// 判断是否存在一个元素给定的元素与之相等。
+        /// <br/>English: Determine whether there is an element given element is equal to it.
         /// </summary>
         /// <typeparam name="T">可以为空</typeparam>
         /// <param name="this"></param>
@@ -210,7 +211,8 @@ namespace Koubot.Tool.Extensions
         }
 
         /// <summary>
-        /// 判断是否存在一个元素给定的元素与之相等
+        /// 判断是否存在一个元素给定的元素与之相等。
+        /// <br/>English: Determine whether there is an element given element is equal to it.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="this"></param>
@@ -223,7 +225,8 @@ namespace Koubot.Tool.Extensions
         }
 
         /// <summary>
-        /// 判断是否存在一个元素给定的元素与之相等
+        /// 判断是否存在一个元素给定的元素与之相等。
+        /// <br/>English: Determine whether there is an element given element is equal to it.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="this"></param>
@@ -234,7 +237,8 @@ namespace Koubot.Tool.Extensions
             return objects.Any(obj => obj.Equals(@this));
         }
         /// <summary>
-        /// 判断元素是否满足任意一个方法
+        /// 判断元素是否满足任意一个方法。
+        /// <br/>English: Determine whether the element satisfies any method.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -244,7 +248,8 @@ namespace Koubot.Tool.Extensions
         }
 
         /// <summary>
-        /// 判断元素是否满足所有方法
+        /// 判断元素是否满足所有方法。
+        /// <br/>English: Determine whether the element satisfies all methods.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>

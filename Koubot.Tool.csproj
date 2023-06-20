@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>7zou</Authors>
     <Product>Koubot.Tool</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>A toolkit to assist in the development of Koubot related projects, providing a large number of extension methods, as well as some tool classes, can also be used to develop other projects (for lazy people lol).
 PS: IDE hint language is Chinese (now slowly moving to English), but there is a compendious english document on Nuget and Github.</Description>
-    <PackageReleaseNotes>v2.0.2-alpha update
+    <PackageReleaseNotes>v2.0.3-alpha update
 [General] Add more extension and new tools. such as unit converter, debug tools and so on.
 [Hint] Hint language continuing migrating to English.</PackageReleaseNotes>
     <PackageTags>Koubot</PackageTags>
@@ -17,7 +17,7 @@ PS: IDE hint language is Chinese (now slowly moving to English), but there is a 
     <LangVersion>latest</LangVersion>
     <AssemblyVersion>2.0.0</AssemblyVersion>
         <Deterministic>false</Deterministic>
-        <Version>2.0.2-alpha</Version>
+        <Version>2.0.3-alpha</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Copyright>Copyright (c) 2022 7zou</Copyright>
         <FileVersion>2.0.0.0</FileVersion>
@@ -39,10 +39,6 @@ PS: IDE hint language is Chinese (now slowly moving to English), but there is a 
     <Compile Remove="Algorithm\Graph\**" />
     <EmbeddedResource Remove="Algorithm\Graph\**" />
     <None Remove="Algorithm\Graph\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="7.0.0" />
   </ItemGroup>
 
 </Project>

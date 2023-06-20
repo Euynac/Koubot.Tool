@@ -40,6 +40,12 @@ namespace Koubot.Tool.General
             }
             return new string(array);
         }
+        /// <summary>
+        ///  Judge whether the string contains Chinese characters
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static bool ContainsChinese(string input) => Regex.IsMatch(input, @"[\u4e00-\u9fa5]");
 
         /// <summary>
         /// 字符串转换为半角(half-width)
