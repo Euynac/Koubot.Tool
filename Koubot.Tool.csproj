@@ -7,9 +7,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>A toolkit to assist in the development of Koubot related projects, providing a large number of extension methods, as well as some tool classes, can also be used to develop other projects (for lazy people lol).
 PS: IDE hint language is Chinese (now slowly moving to English), but there is a compendious english document on Nuget and Github.</Description>
-    <PackageReleaseNotes>v2.0.3-alpha update
-[General] Add more extension and new tools. such as unit converter, debug tools and so on.
-[Hint] Hint language continuing migrating to English.</PackageReleaseNotes>
+    <PackageReleaseNotes>v2.0.5-alpha update
+Fix EndsWithAny bug. Another bug fixs. Add some extensions</PackageReleaseNotes>
     <PackageTags>Koubot</PackageTags>
     <RepositoryUrl>https://github.com/Euynac/Koubot.Tool</RepositoryUrl>
     <PackageProjectUrl></PackageProjectUrl>
@@ -17,7 +16,7 @@ PS: IDE hint language is Chinese (now slowly moving to English), but there is a 
     <LangVersion>latest</LangVersion>
     <AssemblyVersion>2.0.0</AssemblyVersion>
         <Deterministic>false</Deterministic>
-        <Version>2.0.3-alpha</Version>
+        <Version>2.0.5-alpha</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Copyright>Copyright (c) 2022 7zou</Copyright>
         <FileVersion>2.0.0.0</FileVersion>

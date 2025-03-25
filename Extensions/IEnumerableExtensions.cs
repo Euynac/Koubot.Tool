@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Koubot.Tool.Extensions
 {
@@ -235,13 +236,22 @@ namespace Koubot.Tool.Extensions
         public static IEnumerable<(int index, T item)> WithIndex<T>(this IEnumerable<T>? self) => self?.Select((item, index) => (index, item)) ?? Enumerable.Empty<(int,T)>();
 
         /// <summary>
-        /// Opposition of IEnumerable.Where.
+        /// Removes all item that match the condition from given list.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static IEnumerable<T> Remove<T>(this IEnumerable<T> list, Func<T, bool> func) => list.Where(p => !func(p));
+        public static void Remove<T>(this IList<T> list, Func<T, bool> func)
+        {
+            for (var i = list.Count - 1; i >= 0; --i)
+            {
+                if (func(list[i]))
+                {
+                    list.RemoveAt(i);
+                }
+            }
+        }
         /// <summary>
         /// Take specific item at given index to create a tuple.
         /// </summary>
@@ -255,5 +265,71 @@ namespace Koubot.Tool.Extensions
             var tmp = list.ToList();
             return (tmp.ElementAtOrDefault(index1), tmp.ElementAtOrDefault(index2));
         }
+
+        /// <summary>
+        /// Removes all item that match the condition from given list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static void RemoveItems<T>(this IList<T> list, Func<T, bool> func)
+        {
+            for (var i = list.Count - 1; i >= 0; --i)
+            {
+                if (func(list[i]))
+                {
+                    list.RemoveAt(i);
+                }
+            }
+        }
+        /// <summary>
+        /// Removes item that match the condition from given list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static void RemoveItem<T>(this IList<T> list, Func<T, bool> func)
+        {
+            for (var i = list.Count - 1; i >= 0; --i)
+            {
+                if (!func(list[i])) continue;
+                list.RemoveAt(i);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Do action for each item in given collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="action"></param>
+        public static void Do<T>(this IEnumerable<T> collection, Action<T> action)
+        {
+            foreach (var obj in collection)
+            {
+                if (obj != null) action(obj);
+            }
+        }
+
+        /// <summary>
+        /// Do action asynchronously for each item in given collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="action"></param>
+        public static async Task DoAsync<T>(this IEnumerable<T> collection, Func<T, Task> action)
+        {
+            foreach (var obj in collection)
+            {
+                if (obj != null)
+                {
+                    await action(obj);
+                }
+            }
+        }
+
     }
 }

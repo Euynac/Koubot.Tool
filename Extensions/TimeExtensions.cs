@@ -8,6 +8,7 @@ namespace Koubot.Tool.Extensions
     /// </summary>
     public static class TimeExtensions
     {
+
         #region 格式化
 
         /// <summary>

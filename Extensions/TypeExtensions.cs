@@ -34,6 +34,27 @@ namespace Koubot.Tool.Extensions
         /// <returns></returns>
         public static bool IsDerivedFromGenericType(this Type type, Type genericType) =>
             type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == genericType;
+       
+        /// <summary>
+        /// Judge whether the specific type is nullable or not.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsNullable(this Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>);
+        }    
+        /// <summary>
+        /// Get the underlying type of nullable type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Type StripNullable(this Type type)
+        {
+            return !IsNullable(type) ? type : type.GenericTypeArguments[0];
+        }
+        
+        
         /// <summary>
         /// Get the underlying type T in such as type of IEnumerable&lt;T&gt; and T?
         /// </summary>

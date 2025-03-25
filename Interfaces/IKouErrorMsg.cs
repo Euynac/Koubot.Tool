@@ -26,7 +26,7 @@ namespace Koubot.Tool.Interfaces
     }
 
     /// <summary>
-    /// IKouErrorMsg接口的拓展方法（当升级到.net standard 2.1后可迁移到接口默认实现）
+    /// IKouErrorMsg接口的拓展方法
     /// </summary>
     public static class KouErrorMsgExtension
     {

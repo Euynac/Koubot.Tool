@@ -344,6 +344,8 @@ public class KouHttp :IKouErrorMsg
         public WebHeaderCollection? Headers => _response?.Headers;
 
         public bool HasError => ExceptionStatus != null;
+
+        public string ErrorMsg => ExceptionMsg ??= ExceptionStatus?.GetDescription() ?? "未知错误";
     }
 
     /// <summary>
